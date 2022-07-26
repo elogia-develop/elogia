@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mail_activity_view_form_elogia_popup" model="ir.ui.view">
+            <field name="name">mail.activity.form.inherit.elogia.calendar</field>
+            <field name="model">mail.activity</field>
+            <field name="inherit_id" ref="calendar.mail_activity_view_form_popup"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='summary']" position="after">
+                    <field name="action_required"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
