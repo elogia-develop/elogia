@@ -17,7 +17,7 @@ class MailActivity(models.Model):
         if active_id and obj_task.search([('id', '=', self._context['default_res_id'])], limit=1):
             obj_task_write = obj_task.search([('id', '=', self._context['default_res_id'])], limit=1)
             obj_task_write.write({'action_user_id': self.user_id.id})
-        return {'type': 'ir.actions.act_window_close'}
+        return super(MailActivity, self).action_close_dialog()
 
 
 
