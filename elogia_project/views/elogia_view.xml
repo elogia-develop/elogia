@@ -7,7 +7,7 @@
             <field name="model">project.task</field>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='parent_id']" position="after">
-                    <field name="action_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                    <field name="action_user_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                 </xpath>
             </field>
         </record>
@@ -22,7 +22,7 @@
                     <field name="sequence"/>
                 </xpath>
                 <xpath expr="//field[@name='user_ids']" position="after">
-                    <field name="action_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                    <field name="action_user_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                 </xpath>
             </field>
         </record>

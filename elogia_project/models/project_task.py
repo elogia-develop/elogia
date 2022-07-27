@@ -7,4 +7,4 @@ from odoo import models, fields, api, _
 class Task(models.Model):
     _inherit = "project.task"
 
-    action_id = fields.Many2one('res.users', string="Action required by", help='Action required by any user', tracking=1)
+    action_user_id = fields.Many2one('res.users', string="Action required by", help='Action required by any user', tracking=1)
