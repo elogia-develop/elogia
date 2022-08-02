@@ -14,6 +14,6 @@ class Task(models.Model):
     def _check_subtask(self):
         for record in self:
             if record.timesheet_ids and record.parent_id:
-                raise UserError(_('You cannot charge hours into a child task. Contact with an Administrator.'))
+                raise UserError(_('You cannot charge hours into a child task, only in the parent tasks. Contact with an Administrator.'))
             if any(item for item in record.timesheet_ids if not item.employee_id.timesheet_cost):
                 raise UserError(_('You cannot charge hours because the Employee does not have a Cost. Contact with an Administrator.'))
