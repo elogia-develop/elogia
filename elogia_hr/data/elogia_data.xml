@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="employee_hub00" model="employee.hub">
+        <field name="name">Social media</field>
+        <field name="description">Area Social media</field>
+    </record>
+    <record id="employee_hub01" model="employee.hub">
+        <field name="name">SEO</field>
+        <field name="description">Area SEO</field>
+    </record>
+    <record id="employee_hub02" model="employee.hub">
+        <field name="name">Paid Media</field>
+        <field name="description">Area Paid Media</field>
+    </record>
+    <record id="employee_hub03" model="employee.hub">
+        <field name="name">Data</field>
+        <field name="description">Area Data</field>
+    </record>
+    <record id="employee_hub04" model="employee.hub">
+        <field name="name">Social Finanzas</field>
+        <field name="description">Area Finanzas</field>
+    </record>
+
+    <record id="hr_contract_type00" model="hr.contract.type">
+        <field name="name">Indefinido</field>
+    </record>
+    <record id="hr_contract_type01" model="hr.contract.type">
+        <field name="name">Practicas</field>
+    </record>
+    <record id="hr_contract_type02" model="hr.contract.type">
+        <field name="name">Eventual</field>
+    </record>
+
+    <record id="hr_payroll_structure_type00" model="hr.payroll.structure.type">
+        <field name="name">Contrato</field>
+    </record>
+    <record id="hr_payroll_structure_type01" model="hr.payroll.structure.type">
+        <field name="name">Beca</field>
+    </record>
+    <record id="hr_payroll_structure_type02" model="hr.payroll.structure.type">
+        <field name="name">Freelance</field>
+    </record>
+
+    <record id="type_scholarship00" model="type.scholarship">
+        <field name="name">FEUGA</field>
+        <field name="description">Beca FEUGA</field>
+    </record>
+    <record id="type_scholarship01" model="type.scholarship">
+        <field name="name">Salcines</field>
+        <field name="description">Beca Salcines</field>
+    </record>
+    <record id="type_scholarship02" model="type.scholarship">
+        <field name="name">Universidad</field>
+        <field name="description">Beca Universidad</field>
+    </record>
+    <record id="type_scholarship03" model="type.scholarship">
+        <field name="name">Escuela de Negocios</field>
+        <field name="description">Beca Escuela de Negocios</field>
+    </record>
+
+    <record id="hr_departure_reason00" model="hr.departure.reason">
+        <field name="name">Baja Voluntaria</field>
+    </record>
+    <record id="hr_departure_reason01" model="hr.departure.reason">
+        <field name="name">Despido</field>
+    </record>
+    <record id="hr_departure_reason02" model="hr.departure.reason">
+        <field name="name">Finalizacion contrato/beca</field>
+    </record>
+    <record id="hr_departure_reason03" model="hr.departure.reason">
+        <field name="name">Cambio de empresa dentro del grupo</field>
+    </record>
+
+    <!-- Send email for coach and parent-->
+<!--    <record id="action_send_email_by_date" model="ir.actions.server">-->
+<!--        <field name="name">Contract: Send email by expiration date</field>-->
+<!--        <field name="model_id" ref="elogia_hr.model_hr_contract"/>-->
+<!--        <field name="binding_model_id" ref="elogia_hr.model_hr_contract"/>-->
+<!--        <field name="binding_view_types">list</field>-->
+<!--        <field name="state">code</field>-->
+<!--        <field name="code">-->
+<!--            if records:-->
+<!--                for record in records.filtered(lambda ct: ct.state in {'draft', 'open'}):-->
+<!--                    action = record.send_email_by_date()-->
+<!--        </field>-->
+<!--    </record>-->
+</odoo>
