@@ -1,0 +1,221 @@
+<odoo>
+    <data>
+        <!-- View form inherit hr.employee-->
+        <record model="ir.ui.view" id="hr_employee_view_employee_form_inherited_elogia">
+            <field name="name">hr.employee.view.employee.form.inherited.elogia</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="model">hr.employee</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='identification_id']" position="attributes">
+                    <attribute name="string">DNI / CURP</attribute>
+                </xpath>
+                <xpath expr="//field[@name='permit_no']" position="attributes">
+                    <attribute name="string">No. SS</attribute>
+                </xpath>
+                <xpath expr="//field[@name='work_email']" position="attributes">
+                    <attribute name="string">Email corporativo</attribute>
+                </xpath>
+                <xpath expr="//field[@name='private_email']" position="attributes">
+                    <attribute name="string">Email personal</attribute>
+                </xpath>
+                <xpath expr="//field[@name='job_title']" position="before">
+                    <field name="employee_number" placeholder="Employee´s number"/>
+                </xpath>
+                <xpath expr="//field[@name='coach_id']" position="after">
+                    <field name="date_init"/>
+                    <field name="date_init_mark"/>
+                    <field name="date_finish"/>
+                </xpath>
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="hub_id" options="{'no_create': True, 'no_open': True}"/>
+                </xpath>
+                <xpath expr="//field[@name='job_title']" position="replace">
+                    <h3>
+                        <field name="job_title" placeholder="Job Position"/>
+                    </h3>
+                </xpath>
+                <xpath expr="//page[@name='hr_settings']" position="after">
+                    <page name="hr_history" string="Employee History" groups="hr.group_hr_user">
+                        <field name="history_ids" context="{'default_employee_id': id}" readonly="True">
+                            <tree editable="bottom" decoration-success="type_model == 'contract'" decoration-info="type_model == 'employee'">
+                                <field name="employee_id" invisible="True"/>
+                                <field name="value_before"/>
+                                <field name="value_actual"/>
+                                <field name="type_action"/>
+                                <field name="type_model"/>
+                                <field name="create_uid" string="User"/>
+                                <field name="create_date" string="Date"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- View form inherit hr.contract-->
+        <record model="ir.ui.view" id="hr_contract_view_form_inherited_elogia">
+            <field name="name">hr.contract.view.form.inherited.elogia</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="model">hr.contract</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="attributes">
+                    <attribute name="invisible">False</attribute>
+                </xpath>
+                <xpath expr="//field[@name='department_id']" position="after">
+                    <field name="hub_id" options="{'no_create': True, 'no_open': True}"/>
+                </xpath>
+                <xpath expr="//field[@name='department_id']" position="before">
+                    <field name="contract_type_id"/>
+                    <field name="type_scholarship" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="location_id" options="{'no_create': True}"/>
+                </xpath>
+                <xpath expr="//div[@name='wage']" position="after">
+                    <field name="quotation_code"/>
+                </xpath>
+                <xpath expr="//field[@name='date_end']" position="after">
+                    <field name="date_finish_ctt"/>
+                    <field name="departure_date"/>
+                    <field name="departure_reason_id" options="{'no_create': True}"/>
+                </xpath>
+
+                <xpath expr="//group[@name='salary']" position="replace">
+                    <group name="salary">
+                        <label for="wage"/>
+                        <div class="o_row" name="wage">
+                            <field name="wage" nolabel="1"/>
+                            <span>/ annual</span>
+                        </div>
+                        <label for="wage_variable"/>
+                        <div class="o_row" name="wage">
+                            <field name="wage_variable" nolabel="1"/>
+                            <span>/ annual</span>
+                        </div>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- View form inherit hr.contract.history-->
+        <record model="ir.ui.view" id="hr_contract_history_view_form_inherited_elogia">
+            <field name="name">hr.contract.history.inherited.elogia</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_history_view_form"/>
+            <field name="model">hr.contract.history</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='structure_type_id']" position="after">
+                    <field name="contract_type_id"/>
+                    <field name="type_scholarship" readonly="True"/>
+                    <field name="date_finish_ctt" readonly="True"/>
+                </xpath>
+                <xpath expr="//field[@name='job_id']" position="after">
+                    <field name="hub_id" readonly="True"/>
+                </xpath>
+                <xpath expr="//page[@name='contract_others']" position="inside">
+                    <group>
+                        <label for="wage"/>
+                        <div class="o_row" name="wage">
+                            <field name="wage" nolabel="1"/>
+                            <span>/ annual</span>
+                        </div>
+                        <label for="wage_variable"/>
+                        <div class="o_row" name="wage">
+                            <field name="wage_variable" nolabel="1"/>
+                            <span>/ annual</span>
+                        </div>
+                    </group>
+                </xpath>
+                <xpath expr="//field[@name='contract_ids']/tree/field[@name='wage']" position="attributes">
+                    <attribute name="string">Annual Wage</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- View Form employee.hub -->
+        <record model="ir.ui.view" id="employee_hub_form">
+            <field name="name">employee.hub.form</field>
+            <field name="model">employee.hub</field>
+            <field name="arch" type="xml">
+                <form string="Hub">
+                    <sheet>
+                        <group>
+                            <group name="first_group">
+                                <field name="name" required="True"/>
+                            </group>
+                            <group name="second_group">
+                                <field name="description"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree employee.hub -->
+        <record model="ir.ui.view" id="employee_hub_tree">
+            <field name="name">employee.hub.tree</field>
+            <field name="model">employee.hub</field>
+            <field name="arch" type="xml">
+                <tree string="Hub" sample="1">
+                    <field name="name"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_employee_hub" model="ir.actions.act_window">
+            <field name="name">Hubs</field>
+            <field name="res_model">employee.hub</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Hub!
+                </p>
+            </field>
+        </record>
+
+        <!-- View Form type.scholarship -->
+        <record model="ir.ui.view" id="type_scholarship_form">
+            <field name="name">type.scholarship.form</field>
+            <field name="model">type.scholarship</field>
+            <field name="arch" type="xml">
+                <form string="Scholarship">
+                    <sheet>
+                        <group>
+                            <group name="first_group">
+                                <field name="name" required="True"/>
+                            </group>
+                            <group name="second_group">
+                                <field name="description"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree type.scholarship -->
+        <record model="ir.ui.view" id="type_scholarship_tree">
+            <field name="name">type.scholarship.tree</field>
+            <field name="model">type.scholarship</field>
+            <field name="arch" type="xml">
+                <tree string="Scholarship" sample="1">
+                    <field name="name"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_type_scholarship" model="ir.actions.act_window">
+            <field name="name">Scholarship</field>
+            <field name="res_model">type.scholarship</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Scholarship!
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_view_employee_category_form_item00" name="Hubs" action="action_employee_hub" parent="hr.menu_human_resources_configuration_employee" groups="base.group_no_one" sequence="3"/>
+        <menuitem id="menu_view_employee_category_form_item01" name="Scholarship" action="action_type_scholarship" parent="hr.menu_human_resources_configuration_employee" groups="base.group_no_one" sequence="4"/>
+    </data>
+</odoo>
