@@ -4,6 +4,9 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
 
 class EmployeeHistory(models.Model):
     _name = "employee.history"
@@ -44,6 +47,16 @@ class TypeScholarship(models.Model):
 
     name = fields.Char('Name', required=True, index=True)
     description = fields.Char('Description')
+
+
+class AgreementHr(models.Model):
+    _name = "agreement.hr"
+    _description = "Agreement"
+
+    name = fields.Char('Name', required=True, index=True)
+    type_leave_ids = fields.Many2many('hr.leave.type', 'rel_agreement_leave', 'agreement_id', 'leave_id')
+    company_ids = fields.Many2many('res.company', 'rel_agreement_company', 'agreement_id', 'company_id')
+    active = fields.Boolean('Active')
 
 
 class Employee(models.Model):
@@ -145,8 +158,9 @@ class Contract(models.Model):
     type_scholarship = fields.Many2one('type.scholarship', string='Type scholarship', tracking=1)
     wage = fields.Monetary('Fixed wage', required=True, tracking=True, help="Employee's annually gross wage fixed.")
     wage_variable = fields.Monetary('Variable Wage', required=True, tracking=True, help="Employee's annually gross wage variable.")
+    first_notification = fields.Boolean('First notification')
+    second_notification = fields.Boolean('Second notification')
 
-    @api.depends('company_id', 'department_id', 'job_id', 'hub_id', 'quotation_code', 'structure_type_id', 'contract_type_id', 'date_finish_ctt', 'type_scholarship', 'departure_date', 'departure_reason_id', 'wage', 'wage_variable')
     @api.onchange('company_id', 'department_id', 'job_id', 'hub_id', 'quotation_code', 'structure_type_id', 'contract_type_id', 'date_finish_ctt', 'type_scholarship', 'departure_date', 'departure_reason_id', 'wage', 'wage_variable')
     def onchange_fields_employee(self):
         for record in self:
@@ -177,6 +191,45 @@ class Contract(models.Model):
                     record.with_context({'from_model': 'contract'}).employee_id.wage = record.wage
                 if record.wage_variable and record.employee_id.wage_variable != record.wage_variable:
                     record.with_context({'from_model': 'contract'}).employee_id.wage_variable = record.wage_variable
+
+    @api.model
+    def update_state(self):
+        res = super(Contract, self).update_state()
+        contracts = self.search([('state', '=', 'open'), '|', ('first_notification', '!=', True), ('second_notification', '!=', True)])
+        for contract in contracts:
+            if contract.date_end == date.today() + relativedelta(days=60):
+                contract.first_notification = True
+            elif contract.date_end == date.today() + relativedelta(days=30):
+                contract.second_notification = True
+            contract.activity_schedule('mail.mail_activity_data_todo', contract.date_end, _("The contract of %s is about to expire.", contract.employee_id.name), user_id=contract.hr_responsible_id.id or self.env.uid)
+            mail_template = self.env['ir.model.data']._xmlid_to_res_id('elogia_hr.notification_email_contract_template')
+            self._create_mail_begin(mail_template, contract)
+        return res
+
+    def compose_email_message(self, contract):
+        obj_partner_id = self.env['res.partner'].search([('name', 'like', 'Admin')], limit=1)
+        email_from = obj_partner_id.email if obj_partner_id else 'admin@email.com'
+        email_to = contract.employee_id.user_id.email_formatted if contract.employee_id.user_id else 'user@email.com'
+        mail_data = {
+            'email_from': email_from,
+            'email_to': email_to,
+            'res_id': contract.id
+        }
+        return mail_data
+
+    def _create_mail_begin(self, template, contract):
+        template_browse = self.env['mail.template'].browse(template)
+        data_compose = self.compose_email_message(contract)
+        if template_browse and data_compose:
+            values = template_browse.generate_email(contract.id, ['subject', 'body_html', 'email_from', 'email_to', 'partner_to', 'reply_to'])
+            values['email_to'] = data_compose['email_to']
+            values['email_from'] = data_compose['email_from']
+            values['reply_to'] = data_compose['email_from']
+            values['res_id'] = data_compose['res_id']
+            msg_id = self.env['mail.mail'].sudo().create(values)
+            if msg_id:
+                msg_id.send()
+        return True
 
 
 class ContractHistory(models.Model):
