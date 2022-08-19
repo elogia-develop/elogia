@@ -71,17 +71,32 @@
         <field name="name">Cambio de empresa dentro del grupo</field>
     </record>
 
-    <!-- Send email for coach and parent-->
-<!--    <record id="action_send_email_by_date" model="ir.actions.server">-->
-<!--        <field name="name">Contract: Send email by expiration date</field>-->
-<!--        <field name="model_id" ref="elogia_hr.model_hr_contract"/>-->
-<!--        <field name="binding_model_id" ref="elogia_hr.model_hr_contract"/>-->
-<!--        <field name="binding_view_types">list</field>-->
-<!--        <field name="state">code</field>-->
-<!--        <field name="code">-->
-<!--            if records:-->
-<!--                for record in records.filtered(lambda ct: ct.state in {'draft', 'open'}):-->
-<!--                    action = record.send_email_by_date()-->
-<!--        </field>-->
-<!--    </record>-->
+    <!-- Expired Soon -->
+    <record id="ir_cron_data_contract_update_state" model="ir.cron">
+        <field name="name">HR Contract Elogia: update state</field>
+        <field name="model_id" ref="model_hr_contract"/>
+        <field name="type">ir.actions.server</field>
+        <field name="state">code</field>
+        <field name="code">model.update_state()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+    </record>
+
+    <!--Email template -->
+    <record id="notification_email_contract_template" model="mail.template">
+        <field name="name">HR Contract: Send Notification by Email</field>
+        <field name="model_id" ref="elogia_hr.model_hr_contract"/>
+        <field name="subject">Contract {{object.name}} is about to expire</field>
+        <field name="body_html" type="xml">
+            <div>
+                Dear <t t-out="object.employee_id.parent_id.name or ''">Gerente</t>.<br/>
+                The contract <t t-out="object.name or ''"># </t> with reference to the employee <t t-out="object.employee_id.name or ''">Employee </t> is about to expire.<br/><br/>
+                Kind regards,<br/><br/>
+                <t t-out="object.department_id.name or 'Department'"> Team</t>.
+            </div>
+        </field>
+        <field name="lang">{{ object.employee_id.user_id.lang or user.lang }}</field>
+        <field name="auto_delete" eval="False"/>
+    </record>
 </odoo>

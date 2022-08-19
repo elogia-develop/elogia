@@ -65,7 +65,6 @@
                     <field name="hub_id" options="{'no_create': True, 'no_open': True}"/>
                 </xpath>
                 <xpath expr="//field[@name='department_id']" position="before">
-                    <field name="contract_type_id"/>
                     <field name="type_scholarship" options="{'no_create': True, 'no_open': True}"/>
                     <field name="location_id" options="{'no_create': True}"/>
                 </xpath>
@@ -215,7 +214,55 @@
             </field>
         </record>
 
+         <!-- View Form agreement.hr -->
+        <record model="ir.ui.view" id="agreement_hr_form">
+            <field name="name">agreement.hr.form</field>
+            <field name="model">agreement.hr</field>
+            <field name="arch" type="xml">
+                <form string="Agreement">
+                    <sheet>
+                        <group>
+                            <group name="first_group">
+                                <field name="name" required="True"/>
+                                <field name="type_leave_ids" widget="many2many_tags"/>
+                            </group>
+                            <group name="second_group">
+                                <field name="company_ids" widget="many2many_tags"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree agreement.hr -->
+        <record model="ir.ui.view" id="agreement_hr_tree">
+            <field name="name">agreement.hr.tree</field>
+            <field name="model">agreement.hr</field>
+            <field name="arch" type="xml">
+                <tree string="Agreement" sample="1" decoration-info="active == True" decoration-muted= "active == False">
+                    <field name="name"/>
+                    <field name="type_leave_ids" widget="many2many_tags"/>
+                    <field name="company_ids" widget="many2many_tags"/>
+                    <field name="active" decoration-info="active == True" decoration-muted= "active == False"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_agreement_hr" model="ir.actions.act_window">
+            <field name="name">Agreement</field>
+            <field name="res_model">agreement.hr</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Agreement!
+                </p>
+            </field>
+        </record>
+
         <menuitem id="menu_view_employee_category_form_item00" name="Hubs" action="action_employee_hub" parent="hr.menu_human_resources_configuration_employee" groups="base.group_no_one" sequence="3"/>
         <menuitem id="menu_view_employee_category_form_item01" name="Scholarship" action="action_type_scholarship" parent="hr.menu_human_resources_configuration_employee" groups="base.group_no_one" sequence="4"/>
+        <menuitem id="menu_view_holidays_accruals_form_item03" name="Agreement" action="action_agreement_hr" parent="hr_holidays.menu_hr_holidays_configuration" groups="hr_holidays.group_hr_holidays_manager" sequence="99"/>
     </data>
 </odoo>
