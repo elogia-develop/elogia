@@ -15,6 +15,11 @@
                 <xpath expr="//field[@name='work_email']" position="attributes">
                     <attribute name="string">Email corporativo</attribute>
                 </xpath>
+
+                <xpath expr="//group[@name='departure']" position="attributes">
+                    <attribute name="invisible">False</attribute>
+                </xpath>
+
                 <xpath expr="//field[@name='private_email']" position="attributes">
                     <attribute name="string">Email personal</attribute>
                 </xpath>
@@ -224,12 +229,12 @@
                         <group>
                             <group name="first_group">
                                 <field name="name" required="True"/>
-                                <field name="type_leave_ids" widget="many2many_tags"/>
                             </group>
                             <group name="second_group">
                                 <field name="company_ids" widget="many2many_tags"/>
                                 <field name="active"/>
                             </group>
+                            <field name="type_leave_ids"/>
                         </group>
                     </sheet>
                 </form>
@@ -263,6 +268,6 @@
 
         <menuitem id="menu_view_employee_category_form_item00" name="Hubs" action="action_employee_hub" parent="hr.menu_human_resources_configuration_employee" groups="base.group_no_one" sequence="3"/>
         <menuitem id="menu_view_employee_category_form_item01" name="Scholarship" action="action_type_scholarship" parent="hr.menu_human_resources_configuration_employee" groups="base.group_no_one" sequence="4"/>
-        <menuitem id="menu_view_holidays_accruals_form_item03" name="Agreement" action="action_agreement_hr" parent="hr_holidays.menu_hr_holidays_configuration" groups="hr_holidays.group_hr_holidays_manager" sequence="99"/>
+        <menuitem id="menu_view_holidays_accruals_form_item03" name="Agreements" action="action_agreement_hr" parent="hr_holidays.menu_hr_holidays_configuration" groups="hr_holidays.group_hr_holidays_manager" sequence="99"/>
     </data>
 </odoo>
