@@ -8,7 +8,7 @@
     'website': "https://www.rapsodoo.com/es/",
     'category': 'Project/Project',
     'license': 'LGPL-3',
-    'version': '15.0.1.0.1',
+    'version': '15.0.1.0.2',
 
     'depends': [
         'base',
@@ -17,7 +17,8 @@
         'hr_holidays',
         'hr_contract',
         'hr_skills',
-        'hr_expense'
+        'hr_expense',
+        'resource'
     ],
     'data': [
         'security/ir.model.access.csv',

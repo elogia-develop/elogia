@@ -49,16 +49,6 @@ class TypeScholarship(models.Model):
     description = fields.Char('Description')
 
 
-class AgreementHr(models.Model):
-    _name = "agreement.hr"
-    _description = "Agreement"
-
-    name = fields.Char('Name', required=True, index=True)
-    type_leave_ids = fields.Many2many('hr.leave.type', 'rel_agreement_leave', 'agreement_id', 'leave_id')
-    company_ids = fields.Many2many('res.company', 'rel_agreement_company', 'agreement_id', 'company_id')
-    active = fields.Boolean('Active')
-
-
 class Employee(models.Model):
     _inherit = "hr.employee"
 
@@ -78,6 +68,8 @@ class Employee(models.Model):
     type_scholarship = fields.Many2one('type.scholarship', string='Type scholarship', tracking=1)
     wage = fields.Monetary('Fixed wage', help="Employee's annually gross wage fixed.", tracking=1)
     wage_variable = fields.Monetary('Variable Wage', help="Employee's annually gross wage variable.", tracking=1)
+    resource_calendar_id = fields.Many2one('resource.calendar', string="Agreement",
+                                           domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
     def write(self, vals):
         history_env = self.env['employee.history']
