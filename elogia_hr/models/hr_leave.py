@@ -9,3 +9,9 @@ class ResourceCalendarLeaves(models.Model):
     _inherit = "resource.calendar.leaves"
 
     calendar_id = fields.Many2one('resource.calendar', 'Agreement', index=True)
+
+
+class ResourceCalendar(models.Model):
+    _inherit = "resource.calendar"
+
+    type_leave_ids = fields.Many2many('hr.leave.type', 'rel_agreement_leave', 'agreement_id', 'leave_id')
