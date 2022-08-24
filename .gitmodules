@@ -1,0 +1,4 @@
+[submodule "third_party"]
+	path = third_party
+	url = https://github.com/elogia-develop/third_party.git
+	branch = 15.0
