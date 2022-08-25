@@ -220,6 +220,32 @@
             </field>
         </record>
 
+        <!-- View search resource.calendar.leaves -->
+        <record id="view_resource_calendar_leaves_elogia_search" model="ir.ui.view">
+            <field name="name">resource.calendar.leaves.elogia.search</field>
+            <field name="inherit_id" ref="resource.view_resource_calendar_leaves_search"/>
+            <field name="model">resource.calendar.leaves</field>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='leave_month']" position="after">
+                    <filter string="Agreement" name="agreement" domain="[]" context="{'group_by':'calendar_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- View form resource.calendar -->
+        <record model="ir.ui.view" id="resource_calendar_form_inherited_elogia">
+            <field name="name">resource.calendar.form.inherited.elogia</field>
+            <field name="inherit_id" ref="resource.resource_calendar_form"/>
+            <field name="model">resource.calendar</field>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='working_hours']" position="after">
+                    <page string="Motivo/Tipo ausencia" name="motive_type_off">
+                        <field name="type_leave_ids"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
 
         <menuitem id="menu_view_employee_category_form_item00" name="Hubs" action="action_employee_hub" parent="hr.menu_human_resources_configuration_employee" groups="base.group_no_one" sequence="3"/>
         <menuitem id="menu_view_employee_category_form_item01" name="Scholarship" action="action_type_scholarship" parent="hr.menu_human_resources_configuration_employee" groups="base.group_no_one" sequence="4"/>
