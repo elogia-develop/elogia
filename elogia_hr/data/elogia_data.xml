@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
-    <record id="employee_hub00" model="employee.hub">
+    <record id="employee_rol00" model="planning.role">
         <field name="name">Social media</field>
-        <field name="description">Area Social media</field>
     </record>
-    <record id="employee_hub01" model="employee.hub">
+    <record id="employee_rol01" model="planning.role">
         <field name="name">SEO</field>
-        <field name="description">Area SEO</field>
     </record>
-    <record id="employee_hub02" model="employee.hub">
+    <record id="employee_rol02" model="planning.role">
         <field name="name">Paid Media</field>
-        <field name="description">Area Paid Media</field>
     </record>
-    <record id="employee_hub03" model="employee.hub">
+    <record id="employee_rol03" model="planning.role">
         <field name="name">Data</field>
-        <field name="description">Area Data</field>
     </record>
-    <record id="employee_hub04" model="employee.hub">
+    <record id="employee_rol04" model="planning.role">
         <field name="name">Social Finanzas</field>
-        <field name="description">Area Finanzas</field>
     </record>
 
     <record id="hr_contract_type00" model="hr.contract.type">

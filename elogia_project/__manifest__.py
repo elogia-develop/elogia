@@ -8,13 +8,13 @@
     'website': "https://www.rapsodoo.com/es/",
     'category': 'Project/Project',
     'license': 'LGPL-3',
-    'version': '15.0.1.0.2',
-
+    'version': '15.0.1.0.4',
     'depends': [
         'base',
         'project',
         'calendar',
-        'elogia_base'
+        'elogia_base',
+        'elogia_hr'
     ],
     'data': [
         'views/elogia_view.xml',

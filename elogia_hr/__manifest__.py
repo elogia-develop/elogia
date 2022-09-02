@@ -8,8 +8,7 @@
     'website': "https://www.rapsodoo.com/es/",
     'category': 'Project/Project',
     'license': 'LGPL-3',
-    'version': '15.0.1.0.4',
-
+    'version': '15.0.1.0.5',
     'depends': [
         'base',
         'elogia_base',
@@ -18,7 +17,8 @@
         'hr_contract',
         'hr_skills',
         'hr_expense',
-        'resource'
+        'resource',
+        'planning',
     ],
     'data': [
         'security/ir.model.access.csv',
