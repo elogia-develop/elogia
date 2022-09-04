@@ -82,64 +82,64 @@ class Employee(models.Model):
                 type_model = 'contract'
             else:
                 type_model = 'employee'
-            if vals and 'company_id' in vals:
+            if 'company_id' in vals:
                 value_company = company_env.search([('id', '=', vals['company_id'])], limit=1)
                 if value_company != record.company_id:
                     list_field.append({'value_before': record.company_id.name, 'value_actual':
                         value_company.name, 'type_action': 'company', 'type_model': type_model, 'employee_id': record.id})
-            if vals and 'department_id' in vals:
+            if 'department_id' in vals:
                 value_department = department_env.search([('id', '=', vals['department_id'])], limit=1)
                 if value_department != record.department_id:
                     list_field.append({'value_before': record.department_id.name, 'value_actual':
                         value_department.name, 'type_action': 'department', 'type_model': type_model, 'employee_id': record.id})
-            if vals and 'parent_id' in vals:
+            if 'parent_id' in vals:
                 value_parent = employee_env.search([('id', '=', vals['parent_id'])], limit=1)
                 if value_parent != record.parent_id:
                     list_field.append({'value_before': record.parent_id.name, 'value_actual':
                         value_parent.name, 'type_action': 'responsible', 'type_model': type_model, 'employee_id': record.id})
-            if vals and 'default_planning_role_id' in vals:
+            if 'default_planning_role_id' in vals:
                 value_hub = hub_env.search([('id', '=', vals['default_planning_role_id'])], limit=1)
                 if value_hub != record.default_planning_role_id:
                     list_field.append({'value_before': record.default_planning_role_id.name, 'value_actual':
                         value_hub.name, 'type_action': 'hub', 'type_model': type_model, 'employee_id': record.id})
-            if vals and 'job_id' in vals:
+            if 'job_id' in vals:
                 value_job = job_env.search([('id', '=', vals['job_id'])], limit=1)
                 if value_job != record.job_id:
                     list_field.append({'value_before': record.job_id.name, 'value_actual':
                         value_job.name, 'type_action': 'rol', 'type_model': type_model, 'employee_id': record.id})
-            if vals and 'quotation_code' in vals:
+            if 'quotation_code' in vals:
                 list_field.append({'value_before': record.quotation_code, 'value_actual':
                     vals['quotation_code'], 'type_model': type_model, 'employee_id': record.id})
-            if vals and 'structure_type_id' in vals:
+            if 'structure_type_id' in vals:
                 value_struct = struct_env.search([('id', '=', vals['structure_type_id'])], limit=1)
                 if value_struct != record.structure_type_id:
                     list_field.append({'value_before': record.structure_type_id.name, 'value_actual':
                         value_struct.name, 'type_action': 'contract', 'type_model': type_model, 'employee_id': record.id})
-            if vals and 'contract_type_id' in vals:
+            if 'contract_type_id' in vals:
                 value_contract = contract_env.search([('id', '=', vals['contract_type_id'])], limit=1)
                 if value_contract != record.contract_type_id:
                     list_field.append({'value_before': record.contract_type_id.name, 'value_actual':
                         value_contract.name, 'type_action': 'contract', 'type_model': type_model, 'employee_id': record.id})
-            if vals and 'date_finish_ctt' in vals:
+            if 'date_finish_ctt' in vals:
                 list_field.append({'value_before': record.date_finish_ctt, 'value_actual':
                     vals['date_finish_ctt'], 'type_action': 'contract', 'type_model': type_model, 'employee_id': record.id})
-            if vals and 'type_scholarship' in vals:
+            if 'type_scholarship' in vals:
                 value_scholarship = scholarship_env.search([('id', '=', vals['type_scholarship'])], limit=1)
                 if value_scholarship != record.type_scholarship:
                     list_field.append({'value_before': record.type_scholarship.name, 'value_actual':
                         value_scholarship.name, 'type_action': 'contract', 'type_model': type_model, 'employee_id': record.id})
-            if vals and 'departure_date' in vals:
+            if 'departure_date' in vals:
                 list_field.append({'value_before': record.departure_date, 'value_actual':
                     vals['departure_date'], 'type_model': type_model, 'employee_id': record.id})
-            if vals and 'departure_reason_id' in vals:
+            if 'departure_reason_id' in vals:
                 value_departure = departure_env.search([('id', '=', vals['departure_reason_id'])], limit=1)
                 if value_departure != record.departure_reason_id:
                     list_field.append({'value_before': record.departure_reason_id.name, 'value_actual':
                         value_departure.name, 'type_model': type_model, 'employee_id': record.id})
-            if vals and 'wage' in vals:
+            if 'wage' in vals:
                 list_field.append({'value_before': record.wage, 'value_actual': vals['wage'], 'type_model':
                     type_model, 'type_action': 'contract', 'employee_id': record.id})
-            if vals and 'wage_variable' in vals:
+            if 'wage_variable' in vals:
                 list_field.append({'value_before': record.wage_variable, 'value_actual':
                     vals['wage_variable'], 'type_model': type_model, 'type_action': 'contract', 'employee_id': record.id})
             if list_field:
