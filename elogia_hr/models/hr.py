@@ -176,13 +176,13 @@ class Contract(models.Model):
                                     help="Employee's annually gross wage variable.")
     first_notification = fields.Boolean('First notification')
     second_notification = fields.Boolean('Second notification')
-
-    @api.model
-    def create(self, vals):
-        res = super(Contract, self).create(vals)
-        if res.state == 'draft':
-            res.state = 'open'
-        return res
+    state = fields.Selection([
+        ('draft', 'New'),
+        ('open', 'Running'),
+        ('close', 'Expired'),
+        ('cancel', 'Cancelled')
+    ], string='Status', group_expand='_expand_states', copy=False,
+        tracking=True, help='Status of the contract', default='open')
 
     @api.onchange('company_id', 'department_id', 'hub_id', 'job_id', 'quotation_code', 'structure_type_id',
                   'contract_type_id', 'date_finish_ctt', 'type_scholarship', 'departure_date', 'departure_reason_id',

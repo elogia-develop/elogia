@@ -27,11 +27,26 @@ class Planning(models.Model):
     role_id = fields.Many2one('planning.role', string="Hub", compute="_compute_role_id", store=True, readonly=False,
                               copy=True, group_expand='_read_group_role_id')
 
-    def _read_group_role_id(self, roles, domain, order):
-        res = super(Planning, self)._read_group_role_id(roles, domain, order)
+    @api.depends('start_datetime', 'end_datetime', 'employee_id.resource_calendar_id', 'allocated_hours')
+    def _compute_allocated_percentage(self):
+        res = super(Planning, self)._compute_allocated_percentage()
+        for slot in self:
+            if slot.allocated_percentage > 100:
+                raise UserError(_("The maximum limit for this planning must not exceed 100%."))
+            # list_slots = [item for item in self.search([('employee_id', '=', slot.employee_id.id)])]
+            # if slot.start_datetime.date() in [item.start_datetime.date() for item in list_slots]:
+            #     if sum([item.allocated_percentage for item in list_slots]) > 100:
+            #         check_process = True
         return res
 
-    @api.depends('employee_id', 'template_id')
-    def _compute_role_id(self):
-        res = super(Planning, self)._compute_role_id()
-        return res
+
+class AccountAnalyticLine(models.Model):
+    _inherit = 'account.analytic.line'
+
+    @api.constrains('unit_amount', 'employee_id')
+    def _check_unit_amount(self):
+        for record in self:
+            if record.unit_amount and record.employee_id.resource_calendar_id:
+                if record.unit_amount > record.employee_id.resource_calendar_id.hours_per_day:
+                    raise UserError(_("The maximum limit for this timesheet must not exceed %s hours per day.")
+                                    % record.employee_id.resource_calendar_id.hours_per_day)
