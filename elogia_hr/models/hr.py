@@ -190,31 +190,31 @@ class Contract(models.Model):
     def onchange_fields_employee(self):
         if self.state not in ['close', 'cancel']:
             contract = self.with_context({'from_model': 'contract'})
-            if self.company_id and self.employee_id.company_id != self.company_id:
+            if self.employee_id.company_id != self.company_id:
                 contract.employee_id.company_id = self.company_id.id
-            if self.department_id and self.employee_id.department_id != self.department_id:
+            if self.employee_id.department_id != self.department_id:
                 contract.employee_id.department_id = self.department_id.id
-            if self.job_id and self.employee_id.job_id != self.job_id:
+            if self.employee_id.job_id != self.job_id:
                 contract.employee_id.job_id = self.job_id.id
-            if self.hub_id and self.employee_id.default_planning_role_id != self.hub_id:
+            if self.employee_id.default_planning_role_id != self.hub_id:
                 contract.employee_id.default_planning_role_id = self.hub_id.id
-            if self.quotation_code and self.employee_id.quotation_code != self.quotation_code:
+            if self.employee_id.quotation_code != self.quotation_code:
                 contract.employee_id.quotation_code = self.quotation_code
-            if self.structure_type_id and self.employee_id.structure_type_id != self.structure_type_id:
+            if self.employee_id.structure_type_id != self.structure_type_id:
                 contract.employee_id.structure_type_id = self.structure_type_id.id
-            if self.contract_type_id and self.employee_id.contract_type_id != self.contract_type_id:
+            if self.employee_id.contract_type_id != self.contract_type_id:
                 contract.employee_id.contract_type_id = self.contract_type_id.id
-            if self.date_finish_ctt and self.employee_id.date_finish_ctt != self.date_finish_ctt:
+            if self.employee_id.date_finish_ctt != self.date_finish_ctt:
                 contract.employee_id.date_finish_ctt = self.date_finish_ctt
-            if self.type_scholarship and self.employee_id.type_scholarship != self.type_scholarship:
+            if self.employee_id.type_scholarship != self.type_scholarship:
                 contract.employee_id.type_scholarship = self.type_scholarship.id
-            if self.departure_date and self.employee_id.departure_date != self.departure_date:
+            if self.employee_id.departure_date != self.departure_date:
                 contract.employee_id.departure_date = self.departure_date
-            if self.departure_reason_id and self.employee_id.departure_reason_id != self.departure_reason_id:
+            if self.employee_id.departure_reason_id != self.departure_reason_id:
                 contract.employee_id.departure_reason_id = self.departure_reason_id.id
-            if self.wage and self.employee_id.wage != self.wage:
+            if self.employee_id.wage != self.wage:
                 contract.employee_id.wage = self.wage
-            if self.wage_variable and self.employee_id.wage_variable != self.wage_variable:
+            if self.employee_id.wage_variable != self.wage_variable:
                 contract.employee_id.wage_variable = self.wage_variable
 
     @api.model
