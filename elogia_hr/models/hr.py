@@ -34,6 +34,17 @@ class EmployeeHistory(models.Model):
         help="Type model to update in Contract or Employee History")
     effective_date = fields.Date('Effective date', default=lambda self: fields.Date.today())
 
+    @api.onchange('effective_date')
+    def onchange_effective_date(self):
+        history_env = self.env['employee.history']
+        if self.effective_date:
+            obj_history = history_env.search([('employee_id', '=', self.employee_id.id),
+                                              ('type_action', '=', self.type_action),
+                                              ('effective_date', '=', self.effective_date)])
+            if obj_history:
+                for item in obj_history:
+                    item.unlink()
+
 
 class TypeScholarship(models.Model):
     _name = "type.scholarship"
@@ -190,31 +201,31 @@ class Contract(models.Model):
     def onchange_fields_employee(self):
         if self.state not in ['close', 'cancel']:
             contract = self.with_context({'from_model': 'contract'})
-            if self.employee_id.company_id != self.company_id:
+            if self.company_id and self.employee_id.company_id != self.company_id:
                 contract.employee_id.company_id = self.company_id.id
-            if self.employee_id.department_id != self.department_id:
+            if self.department_id and self.employee_id.department_id != self.department_id:
                 contract.employee_id.department_id = self.department_id.id
-            if self.employee_id.job_id != self.job_id:
+            if self.job_id and self.employee_id.job_id != self.job_id:
                 contract.employee_id.job_id = self.job_id.id
-            if self.employee_id.default_planning_role_id != self.hub_id:
+            if self.hub_id and self.employee_id.default_planning_role_id != self.hub_id:
                 contract.employee_id.default_planning_role_id = self.hub_id.id
-            if self.employee_id.quotation_code != self.quotation_code:
+            if self.quotation_code and self.employee_id.quotation_code != self.quotation_code:
                 contract.employee_id.quotation_code = self.quotation_code
-            if self.employee_id.structure_type_id != self.structure_type_id:
+            if self.structure_type_id and self.employee_id.structure_type_id != self.structure_type_id:
                 contract.employee_id.structure_type_id = self.structure_type_id.id
-            if self.employee_id.contract_type_id != self.contract_type_id:
+            if self.contract_type_id and self.employee_id.contract_type_id != self.contract_type_id:
                 contract.employee_id.contract_type_id = self.contract_type_id.id
-            if self.employee_id.date_finish_ctt != self.date_finish_ctt:
+            if self.date_finish_ctt and self.employee_id.date_finish_ctt != self.date_finish_ctt:
                 contract.employee_id.date_finish_ctt = self.date_finish_ctt
-            if self.employee_id.type_scholarship != self.type_scholarship:
+            if self.type_scholarship and self.employee_id.type_scholarship != self.type_scholarship:
                 contract.employee_id.type_scholarship = self.type_scholarship.id
-            if self.employee_id.departure_date != self.departure_date:
+            if self.departure_date and self.employee_id.departure_date != self.departure_date:
                 contract.employee_id.departure_date = self.departure_date
-            if self.employee_id.departure_reason_id != self.departure_reason_id:
+            if self.departure_reason_id and self.employee_id.departure_reason_id != self.departure_reason_id:
                 contract.employee_id.departure_reason_id = self.departure_reason_id.id
-            if self.employee_id.wage != self.wage:
+            if self.wage and self.employee_id.wage != self.wage:
                 contract.employee_id.wage = self.wage
-            if self.employee_id.wage_variable != self.wage_variable:
+            if self.wage_variable and self.employee_id.wage_variable != self.wage_variable:
                 contract.employee_id.wage_variable = self.wage_variable
 
     @api.model

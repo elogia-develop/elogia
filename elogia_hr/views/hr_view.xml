@@ -32,11 +32,6 @@
                     <field name="date_init_mark"/>
                     <field name="date_finish"/>
                 </xpath>
-                <xpath expr="//field[@name='job_title']" position="replace">
-                    <h3>
-                        <field name="job_title" placeholder="Job Position"/>
-                    </h3>
-                </xpath>
             </field>
         </record>
 
