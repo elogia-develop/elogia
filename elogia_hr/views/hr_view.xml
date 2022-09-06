@@ -185,6 +185,11 @@
             <field name="inherit_id" ref="resource.resource_calendar_form"/>
             <field name="model">resource.calendar</field>
             <field name="arch" type="xml">
+                <xpath expr="//group[@name='resource_details']" position="before">
+                    <button name="copy" class="btn-primary" string="COPY THIS Agreement" type="object"
+                            confirm='Are you sure you want to copy this agreement? You will have to change the "Company"
+                             or the "Public time"'/>
+                </xpath>
                 <xpath expr="//page[@name='working_hours']" position="after">
                     <page string="Motivo/Tipo ausencia" name="motive_type_off">
                         <field name="type_leave_ids"/>
@@ -210,7 +215,6 @@
                 </xpath>
             </field>
         </record>
-
 
         <!-- View Form employee.history -->
         <record model="ir.ui.view" id="employee_history_form">
