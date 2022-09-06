@@ -1,0 +1,99 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* elogia_project
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e-20220616\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-09-05 10:08+0000\n"
+"PO-Revision-Date: 2022-09-05 10:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: elogia_project
+#: model:ir.model.fields,field_description:elogia_project.field_project_task__action_user_id
+msgid "Action required by"
+msgstr "Acción requerida por"
+
+#. module: elogia_project
+#: model:ir.model.fields,help:elogia_project.field_project_task__action_user_id
+msgid "Action required by any user"
+msgstr "Acción requerida por un usuario"
+
+#. module: elogia_project
+#: model:ir.model.fields,field_description:elogia_project.field_mail_activity__action_required
+msgid "Action required?"
+msgstr "Acción requerida?"
+
+#. module: elogia_project
+#: model:ir.model,name:elogia_project.model_mail_activity
+msgid "Activity"
+msgstr "Actividad"
+
+#. module: elogia_project
+#: model:ir.model,name:elogia_project.model_account_analytic_line
+msgid "Analytic Line"
+msgstr "Línea analítica"
+
+#. module: elogia_project
+#: model_terms:ir.actions.act_window,help:elogia_project.planning_action_my_roles
+msgid "Define the different hubs by your employees."
+msgstr "Defina los diferentes hubs por sus empleados"
+
+#. module: elogia_project
+#: model:ir.model.fields,field_description:elogia_project.field_planning_slot__role_id
+msgid "Hub"
+msgstr "Hub"
+
+#. module: elogia_project
+#: model:ir.actions.act_window,name:elogia_project.planning_action_my_roles
+msgid "Hubs"
+msgstr "Hubs"
+
+#. module: elogia_project
+#: model_terms:ir.actions.act_window,help:elogia_project.planning_action_my_roles
+msgid "No hub found"
+msgstr "No hub encontrado"
+
+#. module: elogia_project
+#: model:ir.model,name:elogia_project.model_planning_slot
+msgid "Planning Shift"
+msgstr "Planificar turnos"
+
+#. module: elogia_project
+#: model:ir.model,name:elogia_project.model_project_task
+msgid "Task"
+msgstr "Tarea"
+
+#. module: elogia_project
+#: code:addons/elogia_project/models/project_task.py:0
+#, python-format
+msgid "The maximum limit for this planning must not exceed 100%."
+msgstr "El límite máximo para esta planificación no debe superar el 100%."
+
+#. module: elogia_project
+#: code:addons/elogia_project/models/project_task.py:0
+#, python-format
+msgid "The maximum limit for this timesheet must not exceed %s hours per day."
+msgstr "El límite máximo para este timesheet no debe exceder %s horas por día."
+
+#. module: elogia_project
+#: code:addons/elogia_project/models/project_task.py:0
+#, python-format
+msgid ""
+"You cannot charge hours because the Employee does not have a Cost. Contact "
+"with an Administrator."
+msgstr "No se pueden cargar horas porque el Empleado no tiene Costo. Contacta"
+"con un administrador.""
+
+#. module: elogia_project
+#: code:addons/elogia_project/models/project_task.py:0
+#, python-format
+msgid ""
+"You cannot charge hours into a child task. Contact with an Administrator."
+msgstr "No puede cargar horas en una tarea secundaria. Contacta con un Administrador."
