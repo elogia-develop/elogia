@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e-20220616\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-23 15:40+0000\n"
-"PO-Revision-Date: 2022-08-23 15:40+0000\n"
+"POT-Creation-Date: 2022-09-06 10:31+0000\n"
+"PO-Revision-Date: 2022-09-06 10:31+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -27,14 +27,22 @@ msgid ""
 "            </div>\n"
 "        "
 msgstr ""
-"<?xml version=\"1.0\"?>\n"
+"<!--?xml version=\"1.0\"?-->\n"
 "<div>\n"
-"                Querido <t t-out=\"object.employee_id.parent_id.name or ''\">Gerente</t>.<br/>\n"
-"                El contrato <t t-out=\"object.name or ''\"># </t> realcioado al empleado <t t-out=\"object.employee_id.name or ''\">Employee </t> está por expirar.<br/><br/>\n"
-"                Saludos,<br/><br/>\n"
-"                <t t-out=\"object.department_id.name or 'Department'\"> Team</t>.\n"
+"                Querido <t t-out=\"object.employee_id.parent_id.name or ''\" data-oe-t-inline=\"true\">Gerente</t>.<br>\n"
+"                El contrato <t t-out=\"object.name or ''\" data-oe-t-inline=\"true\"># </t> relacionado con el empleado <t t-out=\"object.employee_id.name or ''\" data-oe-t-inline=\"true\">Employee </t> está por expirar.<br><br>\n"
+"                Saludos,<br><br>\n"
+"                <t t-out=\"object.department_id.name or 'Department'\" data-oe-t-inline=\"true\"> Team</t>.\n"
 "            </div>\n"
 "        "
+
+#. module: elogia_hr
+#: model_terms:ir.ui.view,arch_db:elogia_hr.view_hr_employee_view_form2_inherited_elogia
+msgid ""
+"<span class=\"o_stat_text\">\n"
+"                                History\n"
+"                            </span>"
+msgstr ""
 
 #. module: elogia_hr
 #: model_terms:ir.ui.view,arch_db:elogia_hr.hr_contract_history_view_form_inherited_elogia
@@ -51,12 +59,13 @@ msgstr "Código cuenta cotización"
 #. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_employee_history__type_action
 msgid "Action"
-msgstr "Acción a actualizar"
+msgstr "Acción"
 
 #. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_hr_employee__resource_calendar_id
 #: model:ir.model.fields,field_description:elogia_hr.field_resource_calendar_leaves__calendar_id
 #: model_terms:ir.ui.view,arch_db:elogia_hr.hr_employee_view_employee_form_inherited_elogia
+#: model_terms:ir.ui.view,arch_db:elogia_hr.view_resource_calendar_leaves_elogia_search
 msgid "Agreement"
 msgstr "Convenio"
 
@@ -71,14 +80,43 @@ msgid "Annual Wage"
 msgstr "Salario Anual"
 
 #. module: elogia_hr
+#: model_terms:ir.ui.view,arch_db:elogia_hr.resource_calendar_form_inherited_elogia
+msgid ""
+"Are you sure you want to copy this agreement? You will have to change the "
+"\"Company\"                              or the \"Public time\""
+msgstr ""
+"¿Estás seguro de que quieres copiar este Convenio? Tendrás que hacer cambios en la "
+"\"Compañía\" o \"Días festivos públicos\""
+
+#. module: elogia_hr
+#: model_terms:ir.ui.view,arch_db:elogia_hr.hr_holiday_view_filter_inherited_elogia
+msgid "Attendance"
+msgstr ""
+
+#. module: elogia_hr
+#: model_terms:ir.ui.view,arch_db:elogia_hr.hr_holiday_view_filter_inherited_elogia
+msgid "Attendances"
+msgstr ""
+
+#. module: elogia_hr
 #: model:hr.departure.reason,name:elogia_hr.hr_departure_reason00
 msgid "Baja Voluntaria"
 msgstr "Baja Voluntaria"
 
 #. module: elogia_hr
+#: model_terms:ir.ui.view,arch_db:elogia_hr.resource_calendar_form_inherited_elogia
+msgid "COPY THIS Agreement"
+msgstr "COPIAR ESTE CONVENIO"
+
+#. module: elogia_hr
 #: model:hr.departure.reason,name:elogia_hr.hr_departure_reason03
 msgid "Cambio de empresa dentro del grupo"
 msgstr "Cambio de empresa dentro del grupo"
+
+#. module: elogia_hr
+#: model:ir.model.fields.selection,name:elogia_hr.selection__hr_contract__state__cancel
+msgid "Cancelled"
+msgstr "Baja"
 
 #. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_hr_contract__quotation_code
@@ -89,7 +127,7 @@ msgstr "Código cuenta cotización"
 #. module: elogia_hr
 #: model:ir.model.fields.selection,name:elogia_hr.selection__employee_history__type_action__company
 msgid "Company"
-msgstr "Empresa/Compañia"
+msgstr "Empresa/Compañía"
 
 #. module: elogia_hr
 #: model:ir.model,name:elogia_hr.model_hr_contract
@@ -121,25 +159,18 @@ msgid "Contratation Type"
 msgstr "Tipo contratación"
 
 #. module: elogia_hr
-#: model_terms:ir.actions.act_window,help:elogia_hr.action_employee_hub
-msgid "Create a new Hub!"
-msgstr "Crea un nuevo Hub"
-
-#. module: elogia_hr
 #: model_terms:ir.actions.act_window,help:elogia_hr.action_type_scholarship
 msgid "Create a new Scholarship!"
 msgstr "Crea una nueva beca"
 
 #. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_employee_history__create_uid
-#: model:ir.model.fields,field_description:elogia_hr.field_employee_hub__create_uid
 #: model:ir.model.fields,field_description:elogia_hr.field_type_scholarship__create_uid
 msgid "Created by"
 msgstr "Creado por"
 
 #. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_employee_history__create_date
-#: model:ir.model.fields,field_description:elogia_hr.field_employee_hub__create_date
 #: model:ir.model.fields,field_description:elogia_hr.field_type_scholarship__create_date
 msgid "Created on"
 msgstr "Creado el"
@@ -150,9 +181,14 @@ msgid "DNI / CURP"
 msgstr "DNI / CURP"
 
 #. module: elogia_hr
-#: model_terms:ir.ui.view,arch_db:elogia_hr.hr_employee_view_employee_form_inherited_elogia
-msgid "Date"
-msgstr "Fecha"
+#: model:planning.role,name:elogia_hr.employee_rol03
+msgid "Data"
+msgstr "Data"
+
+#. module: elogia_hr
+#: model:ir.model.fields.selection,name:elogia_hr.selection__employee_history__type_action__date_finish
+msgid "Date Finish"
+msgstr "Fecha Fin"
 
 #. module: elogia_hr
 #: model:ir.model.fields,help:elogia_hr.field_hr_employee__resource_calendar_id
@@ -175,7 +211,16 @@ msgid "Departure Reason"
 msgstr "Motivo de baja"
 
 #. module: elogia_hr
-#: model:ir.model.fields,field_description:elogia_hr.field_employee_hub__description
+#: model:ir.model.fields.selection,name:elogia_hr.selection__employee_history__type_action__departure_date
+msgid "Departure date"
+msgstr "Fecha baja"
+
+#. module: elogia_hr
+#: model:ir.model.fields.selection,name:elogia_hr.selection__employee_history__type_action__departure_reason
+msgid "Departure reason"
+msgstr "Motivo de baja"
+
+#. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_type_scholarship__description
 msgid "Description"
 msgstr "Descripción"
@@ -187,10 +232,14 @@ msgstr "Despido"
 
 #. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_employee_history__display_name
-#: model:ir.model.fields,field_description:elogia_hr.field_employee_hub__display_name
 #: model:ir.model.fields,field_description:elogia_hr.field_type_scholarship__display_name
 msgid "Display Name"
 msgstr "Nombre mostrado"
+
+#. module: elogia_hr
+#: model:ir.model.fields,field_description:elogia_hr.field_employee_history__effective_date
+msgid "Effective date"
+msgstr "Fecha efectiva"
 
 #. module: elogia_hr
 #: model_terms:ir.ui.view,arch_db:elogia_hr.hr_employee_view_employee_form_inherited_elogia
@@ -213,14 +262,8 @@ msgstr "Empleado"
 #. module: elogia_hr
 #: model:ir.model,name:elogia_hr.model_employee_history
 #: model:ir.model.fields,field_description:elogia_hr.field_hr_employee__history_ids
-#: model_terms:ir.ui.view,arch_db:elogia_hr.hr_employee_view_employee_form_inherited_elogia
 msgid "Employee History"
 msgstr "Histórico empleado"
-
-#. module: elogia_hr
-#: model:ir.model,name:elogia_hr.model_employee_hub
-msgid "Employee Hub"
-msgstr "Hub"
 
 #. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_hr_employee__employee_number
@@ -245,6 +288,11 @@ msgstr "Salario variable bruto anual del empleado"
 #: model_terms:ir.ui.view,arch_db:elogia_hr.hr_employee_view_employee_form_inherited_elogia
 msgid "Employee´s number"
 msgstr "Número empleado"
+
+#. module: elogia_hr
+#: model:ir.model.fields.selection,name:elogia_hr.selection__hr_contract__state__close
+msgid "Expired"
+msgstr "Expirado"
 
 #. module: elogia_hr
 #: model:ir.model.fields,help:elogia_hr.field_hr_employee__date_init
@@ -313,50 +361,39 @@ msgid "HR Contract: Send Notification by Email"
 msgstr "HR Contract: Send Notification by Email"
 
 #. module: elogia_hr
+#: model_terms:ir.ui.view,arch_db:elogia_hr.employee_history_form
+#: model_terms:ir.ui.view,arch_db:elogia_hr.employee_history_tree
+msgid "History"
+msgstr "Histórico"
+
+#. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_hr_contract__hub_id
 #: model:ir.model.fields,field_description:elogia_hr.field_hr_contract_history__hub_id
-#: model:ir.model.fields,field_description:elogia_hr.field_hr_employee__hub_id
+#: model:ir.model.fields,field_description:elogia_hr.field_hr_employee__default_planning_role_id
 #: model:ir.model.fields.selection,name:elogia_hr.selection__employee_history__type_action__hub
-#: model_terms:ir.ui.view,arch_db:elogia_hr.employee_hub_form
-#: model_terms:ir.ui.view,arch_db:elogia_hr.employee_hub_tree
 msgid "Hub"
 msgstr "Hub"
 
 #. module: elogia_hr
-#: model:ir.actions.act_window,name:elogia_hr.action_employee_hub
-#: model:ir.ui.menu,name:elogia_hr.menu_view_employee_category_form_item00
-msgid "Hubs"
-msgstr "Hubs"
-
-#. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_employee_history__id
-#: model:ir.model.fields,field_description:elogia_hr.field_employee_hub__id
 #: model:ir.model.fields,field_description:elogia_hr.field_type_scholarship__id
 msgid "ID"
 msgstr "ID"
 
 #. module: elogia_hr
-#: model_terms:ir.ui.view,arch_db:elogia_hr.hr_employee_view_employee_form_inherited_elogia
-msgid "Job Position"
-msgstr "Rol"
-
-#. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_employee_history____last_update
-#: model:ir.model.fields,field_description:elogia_hr.field_employee_hub____last_update
 #: model:ir.model.fields,field_description:elogia_hr.field_type_scholarship____last_update
 msgid "Last Modified on"
 msgstr "Última modificación el"
 
 #. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_employee_history__write_uid
-#: model:ir.model.fields,field_description:elogia_hr.field_employee_hub__write_uid
 #: model:ir.model.fields,field_description:elogia_hr.field_type_scholarship__write_uid
 msgid "Last Updated by"
 msgstr "Última modificación por"
 
 #. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_employee_history__write_date
-#: model:ir.model.fields,field_description:elogia_hr.field_employee_hub__write_date
 #: model:ir.model.fields,field_description:elogia_hr.field_type_scholarship__write_date
 msgid "Last Updated on"
 msgstr "Última actualización el"
@@ -369,18 +406,32 @@ msgstr "Oficina ref."
 #. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_employee_history__type_model
 msgid "Model"
-msgstr "Actualizado desde"
+msgstr "Modelo"
 
 #. module: elogia_hr
-#: model:ir.model.fields,field_description:elogia_hr.field_employee_hub__name
+#: model_terms:ir.ui.view,arch_db:elogia_hr.resource_calendar_form_inherited_elogia
+msgid "Motivo/Tipo ausencia"
+msgstr "Motivo/Tipo ausencia"
+
+#. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_type_scholarship__name
 msgid "Name"
 msgstr "Nombre"
 
 #. module: elogia_hr
+#: model:ir.model.fields.selection,name:elogia_hr.selection__hr_contract__state__draft
+msgid "New"
+msgstr "Nuevo"
+
+#. module: elogia_hr
 #: model_terms:ir.ui.view,arch_db:elogia_hr.hr_employee_view_employee_form_inherited_elogia
 msgid "No. SS"
 msgstr "No. SS"
+
+#. module: elogia_hr
+#: model:planning.role,name:elogia_hr.employee_rol02
+msgid "Paid Media"
+msgstr "Paid Media"
 
 #. module: elogia_hr
 #: model:ir.model.fields,field_description:elogia_hr.field_hr_contract__date_finish_ctt
@@ -390,9 +441,19 @@ msgid "Proximo vencimiento"
 msgstr "Próximo vencimiento"
 
 #. module: elogia_hr
+#: model:ir.model.fields.selection,name:elogia_hr.selection__employee_history__type_action__quotation
+msgid "Quotation"
+msgstr "C Cotización"
+
+#. module: elogia_hr
 #: model:ir.model,name:elogia_hr.model_resource_calendar_leaves
 msgid "Resource Time Off Detail"
 msgstr "Detalle de las ausencias de los recursos"
+
+#. module: elogia_hr
+#: model:ir.model,name:elogia_hr.model_resource_calendar
+msgid "Resource Working Time"
+msgstr "Tiempo de Trabajo de Recursos"
 
 #. module: elogia_hr
 #: model:ir.model.fields.selection,name:elogia_hr.selection__employee_history__type_action__responsible
@@ -405,7 +466,28 @@ msgid "Rol"
 msgstr "Rol"
 
 #. module: elogia_hr
+#: model:ir.model.fields.selection,name:elogia_hr.selection__hr_contract__state__open
+msgid "Running"
+msgstr "En proceso"
+
+#. module: elogia_hr
+#: model:planning.role,name:elogia_hr.employee_rol01
+msgid "SEO"
+msgstr "SEO"
+
+#. module: elogia_hr
+#: model:ir.model.fields.selection,name:elogia_hr.selection__employee_history__type_action__wage_normal
+msgid "Salary"
+msgstr "Salario"
+
+#. module: elogia_hr
+#: model:ir.model.fields.selection,name:elogia_hr.selection__employee_history__type_action__wage_variable
+msgid "Salary V"
+msgstr "Salario V"
+
+#. module: elogia_hr
 #: model:ir.actions.act_window,name:elogia_hr.action_type_scholarship
+#: model:ir.model.fields.selection,name:elogia_hr.selection__employee_history__type_action__type_scholarship
 #: model:ir.ui.menu,name:elogia_hr.menu_view_employee_category_form_item01
 #: model_terms:ir.ui.view,arch_db:elogia_hr.type_scholarship_form
 #: model_terms:ir.ui.view,arch_db:elogia_hr.type_scholarship_tree
@@ -418,10 +500,45 @@ msgid "Second notification"
 msgstr "Segunda notificación"
 
 #. module: elogia_hr
+#: model:planning.role,name:elogia_hr.employee_rol04
+msgid "Social Finanzas"
+msgstr "Social Finanzas"
+
+#. module: elogia_hr
+#: model:planning.role,name:elogia_hr.employee_rol00
+msgid "Social media"
+msgstr "Social media"
+
+#. module: elogia_hr
+#: model:ir.model.fields,field_description:elogia_hr.field_hr_contract__state
+msgid "Status"
+msgstr "Estado"
+
+#. module: elogia_hr
+#: model:ir.model.fields,help:elogia_hr.field_hr_contract__state
+msgid "Status of the contract"
+msgstr "Estado del contrato"
+
+#. module: elogia_hr
 #: code:addons/elogia_hr/models/hr.py:0
 #, python-format
 msgid "The contract of %s is about to expire."
 msgstr "El contrato %s está por expirar"
+
+#. module: elogia_hr
+#: model_terms:ir.ui.view,arch_db:elogia_hr.hr_holiday_view_filter_inherited_elogia
+msgid "Time Off"
+msgstr "Vacaciones"
+
+#. module: elogia_hr
+#: model:ir.model.fields.selection,name:elogia_hr.selection__employee_history__type_action__type_c
+msgid "Type Contract"
+msgstr "Tipo contrato"
+
+#. module: elogia_hr
+#: model:ir.model.fields,field_description:elogia_hr.field_resource_calendar__type_leave_ids
+msgid "Type Leave"
+msgstr "Tipo ausencia"
 
 #. module: elogia_hr
 #: model:ir.model,name:elogia_hr.model_type_scholarship
@@ -446,7 +563,7 @@ msgid "Type scholarship"
 msgstr "Tipo de beca"
 
 #. module: elogia_hr
-#: model_terms:ir.ui.view,arch_db:elogia_hr.hr_employee_view_employee_form_inherited_elogia
+#: model_terms:ir.ui.view,arch_db:elogia_hr.employee_history_tree
 msgid "User"
 msgstr "Usuario"
 
