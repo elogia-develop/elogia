@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='identification_id']" position="attributes">
                     <attribute name="string">DNI / CURP</attribute>
+                    <attribute name="required">True</attribute>
                 </xpath>
                 <xpath expr="//field[@name='permit_no']" position="attributes">
                     <attribute name="string">No. SS</attribute>
@@ -24,13 +25,48 @@
                 <xpath expr="//field[@name='resource_calendar_id']" position="attributes">
                     <attribute name="string">Agreement</attribute>
                 </xpath>
-                <xpath expr="//field[@name='job_title']" position="before">
-                    <field name="employee_number" placeholder="Employee´s number"/>
+                <xpath expr="//field[@name='job_title']" position="replace">
+                    <h2>
+                        <field name="employee_number" placeholder="Employee´s number" required="True"/>
+                    </h2>
+                    <h2>
+                        <field name="job_title" placeholder="Job Position"/>
+                    </h2>
                 </xpath>
                 <xpath expr="//field[@name='coach_id']" position="after">
-                    <field name="date_init"/>
-                    <field name="date_init_mark"/>
+                    <field name="date_init" required="True"/>
+                    <field name="date_init_mark" required="True"/>
                     <field name="date_finish"/>
+                </xpath>
+                <xpath expr="//field[@name='birthday']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='gender']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='permit_no']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='work_email']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='address_home_id']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='private_email']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='phone']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='emergency_contact']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='emergency_phone']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='default_planning_role_id']" position="attributes">
+                    <attribute name="required">True</attribute>
                 </xpath>
             </field>
         </record>
@@ -44,12 +80,19 @@
                 <xpath expr="//field[@name='company_id']" position="attributes">
                     <attribute name="invisible">False</attribute>
                 </xpath>
+                <xpath expr="//field[@name='job_id']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='structure_type_id']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
                 <xpath expr="//field[@name='department_id']" position="after">
-                    <field name="hub_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="hub_id" required="True" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="currency_id" invisible="True"/>
                 </xpath>
                 <xpath expr="//field[@name='department_id']" position="before">
                     <field name="type_scholarship" options="{'no_create': True, 'no_open': True}"/>
-                    <field name="location_id" options="{'no_create': True}"/>
+                    <field name="location_id" required="True" options="{'no_create': True}"/>
                 </xpath>
                 <xpath expr="//div[@name='wage']" position="after">
                     <field name="quotation_code"/>
@@ -64,12 +107,12 @@
                     <group name="salary">
                         <label for="wage"/>
                         <div class="o_row" name="wage">
-                            <field name="wage" nolabel="1"/>
+                            <field name="wage" nolabel="1" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                             <span>/ annual</span>
                         </div>
                         <label for="wage_variable"/>
                         <div class="o_row" name="wage">
-                            <field name="wage_variable" nolabel="1"/>
+                            <field name="wage_variable" nolabel="1"  widget='monetary' options="{'currency_field': 'currency_id'}"/>
                             <span>/ annual</span>
                         </div>
                     </group>
@@ -90,36 +133,25 @@
                 </xpath>
                 <xpath expr="//field[@name='job_id']" position="after">
                     <field name="hub_id" readonly="True"/>
+                    <field name="currency_id" invisible="True"/>
                 </xpath>
                 <xpath expr="//page[@name='contract_others']" position="inside">
                     <group>
                         <label for="wage"/>
                         <div class="o_row" name="wage">
-                            <field name="wage" nolabel="1"/>
+                            <field name="wage" nolabel="1"  widget='monetary' options="{'currency_field': 'currency_id'}"/>
                             <span>/ annual</span>
                         </div>
                         <label for="wage_variable"/>
                         <div class="o_row" name="wage">
-                            <field name="wage_variable" nolabel="1"/>
+                            <field name="wage_variable" nolabel="1"  widget='monetary' options="{'currency_field': 'currency_id'}"/>
                             <span>/ annual</span>
                         </div>
                     </group>
                 </xpath>
-                <xpath expr="//field[@name='contract_ids']/tree/field[@name='wage']" position="attributes">
-                    <attribute name="string">Annual Wage</attribute>
-                </xpath>
-            </field>
-        </record>
-
-        <!-- View form inherit hr.leave-->
-        <record model="ir.ui.view" id="hr_holiday_view_filter_inherited_elogia">
-            <field name="name">hr.holiday.view.filter.inherited.elogia</field>
-            <field name="inherit_id" ref="hr_holidays.view_hr_holidays_filter"/>
-            <field name="model">hr.leave</field>
-            <field name="arch" type="xml">
-                <xpath expr="//filter[@name='active_time_off']" position="before">
-                    <filter string="Time Off" name="timeoff_elogia" domain="[('holiday_status_id.active', '=', True), '|', ('employee_id', '!=', False), '&amp;', ('employee_id', '=', False), ('state', 'not in', ['draft', 'confirm'])]" help="Time Off"/>
-                    <filter string="Attendance" name="attendance_elogia" domain="[('holiday_status_id.active', '!=', True), ('employee_id', '!=', False)]" help="Attendances"/>
+                <xpath expr="//field[@name='contract_ids']/tree/field[@name='wage']" position="replace">
+                    <field name="wage" string="Annual Wage"  widget='monetary'
+                           options="{'currency_field': 'currency_id'}"/>
                 </xpath>
             </field>
         </record>

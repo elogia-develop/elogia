@@ -26,6 +26,16 @@ class Planning(models.Model):
 
     role_id = fields.Many2one('planning.role', string="Hub", compute="_compute_role_id", store=True, readonly=False,
                               copy=True, group_expand='_read_group_role_id')
+    hours_available = fields.Float('Hours available')
+
+    @api.model
+    def create(self, vals):
+        res = super(Planning, self).create(vals)
+        calendar_combine = res.employee_id.resource_calendar_id or res.company_id.resource_calendar_id
+        hours_by_combine = calendar_combine.get_work_hours_count(res.start_datetime, res.end_datetime) \
+            if calendar_combine else res._get_slot_duration()
+        res.hours_available = hours_by_combine if hours_by_combine else 0
+        return res
 
     @api.depends('start_datetime', 'end_datetime', 'employee_id.resource_calendar_id',
                  'company_id.resource_calendar_id', 'allocated_percentage', 'role_id', 'project_id', 'task_id')
@@ -44,20 +54,26 @@ class Planning(models.Model):
                     slot.allocated_hours = hours * ratio
             else:
                 slot.allocated_hours = 0.0
-            if slot.allocated_hours > 0:
+            if (slot.employee_id.resource_calendar_id or slot.company_id.resource_calendar_id) and slot.allocated_hours > 0:
                 calendar_combine = slot.employee_id.resource_calendar_id or slot.company_id.resource_calendar_id
                 hours_by_combine = calendar_combine.get_work_hours_count(slot.start_datetime, slot.end_datetime) \
                     if calendar_combine else slot._get_slot_duration()
                 if slot.allocated_hours > hours_by_combine:
                     raise UserError(_("The maximum limit for this planning must not exceed %s hours per day.")
-                                    % slot.resource_id.calendar_id.hours_per_day)
+                                    % hours_by_combine)
 
     def _get_slot_duration(self):
         """Return the slot (effective) duration expressed in hours.
         """
         self.ensure_one()
-        if (self.end_datetime - self.start_datetime).days < 1 and self.company_id.resource_calendar_id:
-            return self.company_id.resource_calendar_id.hours_per_day
+        if (self.end_datetime - self.start_datetime).days < 1 and self.resource_id.calendar_id or \
+                self.company_id.resource_calendar_id:
+            if self.resource_id.calendar_id:
+                return self.resource_id.calendar_id.get_work_hours_count(self.start_datetime, self.end_datetime)
+            elif self.company_id.resource_calendar_id:
+                return self.company_id.resource_calendar_id.hours_per_day
+            else:
+                pass
         else:
             return (self.end_datetime - self.start_datetime).total_seconds() / 3600.0
 
