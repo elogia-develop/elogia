@@ -91,13 +91,13 @@ class ListActionChange(models.Model):
     ], string='Action', default='employee', required=True,
         help="Type action to update in Contract or Employee History")
 
-    @api.constrains('type_model')
+    @api.constrains('type_model', 'employee_id', 'employee_id.contract_id')
     def check_contact(self):
         for record in self:
             if record.type_model == 'contract' and not record.employee_id.contract_id:
                 raise UserError(_('The employee %s does not have an active contract.') % record.employee_id.name)
 
-    @api.constrains('state')
+    @api.constrains('state', 'planning_id', 'planning_id.list_ids')
     def onchange_state_planning(self):
         for record in self:
             if record.state == 'processed':
@@ -109,9 +109,6 @@ class EmployeeChangePlanning(models.Model):
     _name = "employee.change.planning"
     _description = "Employee Change"
     _rec_name = 'employee_id'
-
-    def _get_company_currency(self):
-        self.currency_id = self.env.user.company_id.currency_id
 
     employee_id = fields.Many2one('hr.employee', 'Employee', index=True, required=True, ondelete='restrict')
     state = fields.Selection([
@@ -155,13 +152,17 @@ class EmployeeChangePlanning(models.Model):
     wage_variable = fields.Float('Variable Wage', tracking=True, help="Employee's annually gross wage variable.")
     check_wage_variable = fields.Boolean('Wage V.?')
     process_wage_v = fields.Boolean('Process Wage V')
-    currency_id = fields.Many2one('res.currency', compute='_get_company_currency', readonly=True, string="Currency",
+    currency_id = fields.Many2one('res.currency', compute='_compute_get_company_currency', readonly=True, string="Currency",
                                   help='Utility field to express amount currency')
+
+    def _compute_get_company_currency(self):
+        for record in self:
+            record.currency_id = record.env.user.company_id.currency_id
 
     def action_open_wizard(self):
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Apply changes for %s.' % self.employee_id.name,
+            'name': 'Apply changes for {}' .format(self.employee_id.name),
             'res_model': 'apply.change.wizard',
             'view_mode': 'form',
             'view_type': 'form',
@@ -296,8 +297,9 @@ class EmployeeChangePlanning(models.Model):
         return super(EmployeeChangePlanning, self).write(vals)
 
     def unlink(self):
-        if any(item for item in self.list_ids if item.state == 'processed'):
-            raise UserError(_('This record cannot be deleted, there are elements that have already been processed.'))
+        for record in self:
+            if any(item for item in record.list_ids if item.state == 'processed'):
+                raise UserError(_('This record cannot be deleted, there are elements that have already been processed.'))
         res = super(EmployeeChangePlanning, self).unlink()
         return res
 
