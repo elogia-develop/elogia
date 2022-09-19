@@ -14,7 +14,8 @@
         'project',
         'calendar',
         'elogia_base',
-        'elogia_hr'
+        'elogia_hr',
+        'project_forecast'
     ],
     'data': [
         'views/elogia_view.xml',
