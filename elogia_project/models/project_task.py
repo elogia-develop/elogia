@@ -1,8 +1,13 @@
 # Copyright 2022-TODAY Rapsodoo Iberia S.r.L. (www.rapsodoo.com)
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
+from calendar import monthrange
+from datetime import date, datetime, timedelta, time
+from dateutil.relativedelta import relativedelta
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, float_utils, format_datetime
 
 
 class Task(models.Model):
@@ -36,6 +41,33 @@ class Planning(models.Model):
             if calendar_combine else res._get_slot_duration()
         res.hours_available = hours_by_combine if hours_by_combine else 0
         return res
+
+    @api.model
+    def action_copy_previous_month(self, date_start_week, view_domain):
+        date_end_copy = datetime.strptime(date_start_week, DEFAULT_SERVER_DATETIME_FORMAT)
+        daysInMonth = monthrange(date_end_copy.year, date_end_copy.month)[1]
+        date_start_copy = date_end_copy - relativedelta(days=daysInMonth)
+        domain = [
+            ('recurrency_id', '=', False),
+            ('was_copied', '=', False)
+        ]
+        for dom in view_domain:
+            if dom in ['|', '&', '!']:
+                domain.append(dom)
+            elif dom[0] == 'start_datetime':
+                domain.append(('start_datetime', '>=', date_start_copy))
+            elif dom[0] == 'end_datetime':
+                domain.append(('end_datetime', '<=', date_end_copy))
+            else:
+                domain.append(tuple(dom))
+        slots_to_copy = self.search(domain)
+        new_slot_values = []
+        new_slot_values = slots_to_copy._copy_slots(date_start_copy, date_end_copy, relativedelta(days=daysInMonth))
+        slots_to_copy.write({'was_copied': True})
+        if new_slot_values:
+            self.create(new_slot_values)
+            return True
+        return False
 
     @api.depends('start_datetime', 'end_datetime', 'employee_id.resource_calendar_id',
                  'company_id.resource_calendar_id', 'allocated_percentage', 'role_id', 'project_id', 'task_id')

@@ -1,5 +1,27 @@
 <odoo>
     <data>
+        <!-- Wizard View Form apply.change.wizard -->
+        <record model="ir.ui.view" id="apply_change_wizard_wizard_form">
+            <field name="name">Apply Change Wizard</field>
+            <field name="model">apply.change.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+					<h4>Do you want these changes to be effective today?</h4>
+                    <group>
+						<group>
+                            <field name="effective_date" readonly="True" invisible="True"/>
+                        </group>
+                        <group>
+                        </group>
+					</group>
+                    <footer>
+                        <button type="object" name="action_create_records" string="Apply" class="oe_highlight"/>
+                        <button special="cancel" string="Cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
         <!-- View form inherit hr.employee-->
         <record model="ir.ui.view" id="hr_employee_view_employee_form_inherited_elogia">
             <field name="name">hr.employee.view.employee.form.inherited.elogia</field>
@@ -237,6 +259,9 @@
             <field name="model">hr.employee</field>
             <field name="arch" type="xml">
                 <xpath expr="//div[@name='button_box']" position="inside">
+                    <button class="oe_stat_button" name="action_view_changes" type="object" icon="fa-file-text-o">
+                        <field string="Changes" name="count_changes" widget="statinfo"/>
+                    </button>
                     <button class="oe_stat_button" name="action_view_history" type="object" icon="fa-id-card">
                         <div class="o_stat_info">
                             <span class="o_stat_text">
@@ -265,7 +290,7 @@
                                 <field name="type_action"/>
                                 <field name="type_model"/>
                                 <field name="create_uid"/>
-                                <field name="effective_date"/>
+                                <field name="create_date"/>
                             </group>
                         </group>
                     </sheet>
@@ -279,16 +304,186 @@
             <field name="model">employee.history</field>
             <field name="arch" type="xml">
                 <tree string="History" editable="bottom" sample="1" create="false"
-                      delete="false" duplicate="false" import="false" decoration-success="type_model == 'contract'"
+                      delete="false" edit="false" duplicate="false" import="false" decoration-success="type_model == 'contract'"
                       decoration-info="type_model == 'employee'">
                     <field name="employee_id" invisible="1"/>
-                    <field name="value_before" readonly="1"/>
-                    <field name="value_actual" readonly="1"/>
-                    <field name="type_action" readonly="1"/>
-                    <field name="type_model" readonly="1"/>
-                    <field name="create_uid" string="User" readonly="1"/>
-                    <field name="effective_date" required="1"/>
+                    <field name="value_before"/>
+                    <field name="value_actual"/>
+                    <field name="type_action"/>
+                    <field name="type_model"/>
+                    <field name="create_uid" string="User"/>
+                    <field name="create_date"/>
                 </tree>
+            </field>
+        </record>
+
+        <!-- View form inherit res.partner-->
+        <record model="ir.ui.view" id="view_partner_form_inherited_elogia">
+            <field name="name">view.partner.form.inherited.elogia</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='phone']" position="attributes">
+                    <attribute name="attrs">{'required':[('company_type','=','person')]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='email']" position="attributes">
+                    <attribute name="attrs">{'required':[('company_type','=','person')]}</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- View Form employee.change.planning -->
+        <record model="ir.ui.view" id="employee_change_planning_form">
+            <field name="name">employee.change.planning.form</field>
+            <field name="model">employee.change.planning</field>
+            <field name="arch" type="xml">
+                <form string="Employee Change" import="false" duplicate="false">
+                    <header>
+                        <button name="action_open_wizard" string="Apply change" type="object" class="btn-primary"
+                                attrs="{'invisible':[('state','=','processed')]}"/>
+                        <field name="state" widget="statusbar" required="True"/>
+                    </header>
+                    <sheet>
+                        <h2>
+                            <field name="employee_id" options="{'no_create': True, 'no_open': True}"/>
+                        </h2>
+                        <group>
+                            <group name="first_group00">
+                                <field name="check_company" attrs="{'readonly': [('process_company', '=', True)]}"/>
+                                <field name="check_department" attrs="{'readonly': [('process_department', '=', True)]}"/>
+                                <field name="check_parent" attrs="{'readonly': [('process_parent', '=', True)]}"/>
+                                <field name="check_hub" attrs="{'readonly': [('process_hub', '=', True)]}"/>
+                            </group>
+                            <group name="second_group00">
+                                <field name="company_id" options="{'no_create': True, 'no_open': True}"
+                                       attrs="{'invisible': [('check_company', '!=', True)],
+                                       'required': [('check_company', '=', True)], 'readonly':
+                                       [('process_company', '=', True)]}"/>
+                                <field name="department_id" options="{'no_create': True, 'no_open': True}"
+                                       attrs="{'invisible': [('check_department', '!=', True)],
+                                       'required': [('check_department', '=', True)], 'readonly':
+                                       [('process_department', '=', True)]}"/>
+                                <field name="parent_id" options="{'no_create': True, 'no_open': True}"
+                                       attrs="{'invisible': [('check_parent', '!=', True)],
+                                       'required': [('check_parent', '=', True)], 'readonly':
+                                       [('process_parent', '=', True)]}"/>
+                                <field name="hub_id" options="{'no_create': True, 'no_open': True}"
+                                       attrs="{'invisible': [('check_hub', '!=', True)],
+                                       'required': [('check_hub', '=', True)], 'readonly':
+                                       [('process_hub', '=', True)]}"/>
+                            </group>
+                            <group name="first_group01">
+                                <field name="check_job" attrs="{'readonly': [('process_job', '=', True)]}"/>
+                                <field name="check_structure" attrs="{'readonly': [('process_structure', '=', True)]}"/>
+                                <field name="check_contract"  attrs="{'readonly': [('process_contract', '=', True)]}"/>
+                                <field name="check_scholarship" attrs="{'readonly': [('process_scholarship', '=', True)]}"/>
+                            </group>
+                            <group name="second_group01">
+                                <field name="job_id" options="{'no_create': True, 'no_open': True}"
+                                       attrs="{'invisible': [('check_job', '!=', True)],
+                                       'required': [('check_job', '=', True)], 'readonly': [('process_job', '=', True)]}"/>
+                                <field name="structure_type_id" options="{'no_create': True, 'no_open': True}"
+                                       attrs="{'invisible': [('check_structure', '!=', True)],
+                                       'required': [('check_structure', '=', True)], 'readonly': [('process_structure', '=', True)]}"/>
+                                <field name="contract_type_id" options="{'no_create': True, 'no_open': True}"
+                                       attrs="{'invisible': [('check_contract', '!=', True)],
+                                       'required': [('check_contract', '=', True)], 'readonly': [('process_contract', '=', True)]}"/>
+                                <field name="scholarship_id" options="{'no_create': True, 'no_open': True}"
+                                       attrs="{'invisible': [('check_scholarship', '!=', True)],
+                                       'required': [('check_scholarship', '=', True)], 'readonly': [('process_scholarship', '=', True)]}"/>
+                            </group>
+                            <group name="first_group02">
+                                <field name="check_departure" attrs="{'readonly': [('process_departure', '=', True)]}"/>
+                                <field name="check_departure_date" attrs="{'readonly': [('process_departure_date', '=', True)]}"/>
+                                <field name="check_wage" attrs="{'readonly': [('process_wage', '=', True)]}"/>
+                                <field name="check_wage_variable" attrs="{'readonly': [('process_wage_v', '=', True)]}"/>
+                            </group>
+                            <group name="second_group02">
+                                <field name="departure_id" options="{'no_create': True, 'no_open': True}"
+                                       attrs="{'invisible': [('check_departure', '!=', True)],
+                                       'required': [('check_departure', '=', True)], 'readonly': [('process_departure', '=', True)]}"/>
+                                <field name="departure_date" attrs="{'invisible': [('check_departure_date', '!=', True)],
+                                'required': [('check_departure_date', '=', True)], 'readonly': [('process_departure_date', '=', True)]}"/>
+                                <field name="wage"  attrs="{'invisible': [('check_wage', '!=', True)],
+                                'required': [('check_wage', '=', True)], 'readonly': [('process_wage', '=', True)]}"
+                                       widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                <field name="wage_variable" attrs="{'invisible': [('check_wage_variable', '!=', True)],
+                                'required': [('check_wage_variable', '=', True)],
+                                'readonly': [('process_wage_v', '=', True)]}" widget='monetary'
+                                       options="{'currency_field': 'currency_id'}"/>
+                            </group>
+                            <group name="thirty_group">
+                                <field name="process_company" invisible="True"/>
+                                <field name="process_department" invisible="True"/>
+                                <field name="process_parent" invisible="True"/>
+                                <field name="process_hub" invisible="True"/>
+                                <field name="process_job" invisible="True"/>
+                                <field name="process_structure" invisible="True"/>
+                                <field name="process_contract" invisible="True"/>
+                                <field name="process_scholarship" invisible="True"/>
+                                <field name="process_departure" invisible="True"/>
+                                <field name="process_wage" invisible="True"/>
+                                <field name="process_wage_v" invisible="True"/>
+                                <field name="currency_id" invisible="True"/>
+                                <field name="process_departure_date" invisible="True"/>
+                            </group>
+                        </group>
+                        <field name="list_ids">
+                            <tree editable="bottom" create="false" sample="1" delete="false"
+                                  decoration-info="state == 'not_processed'" decoration-muted = "state == 'processed'">
+                                <field name="employee_id" invisible="True"/>
+                                <field name="type_action" required="True" readonly="True"/>
+                                <field name="type_model"/>
+                                <field name="effective_date" required="True"/>
+                                <field name="last_date" readonly="True" optional="hide"/>
+                                <field name="state" decoration-info="state == 'not_processed'"
+                                       decoration-muted = "state == 'processed'"  widget="badge" readonly="True"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree employee.change.planning -->
+        <record model="ir.ui.view" id="employee_change_planning_tree">
+            <field name="name">employee.change.planning.tree</field>
+            <field name="model">employee.change.planning</field>
+            <field name="arch" type="xml">
+                <tree string="Employee Change" sample="1" import="false"
+                      decoration-info="state == 'not_processed'" decoration-muted = "state == 'processed'">
+                    <field name="employee_id"/>
+                    <field name="create_uid" string="User"/>
+                    <field name="create_date"/>
+                    <field name="state" decoration-info="state == 'not_processed'"
+                           decoration-muted = "state == 'processed'"  widget="badge"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_employee_change_planning" model="ir.actions.act_window">
+            <field name="name">Employee Change</field>
+            <field name="res_model">employee.change.planning</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Employee change!
+                </p>
+            </field>
+        </record>
+
+        <!-- View form inherit res.partner-->
+        <record model="ir.ui.view" id="view_res_partner_form_private_inherited_elogia">
+            <field name="name">view.res.partner.form.private.inherited.elogia</field>
+            <field name="inherit_id" ref="base.res_partner_view_form_private"/>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='phone']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='email']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
             </field>
         </record>
 
@@ -298,5 +493,7 @@
         <menuitem id="menu_view_resource_calendar_form_item03" name="Agreements"
                   action="resource.action_resource_calendar_form" parent="hr_holidays.menu_hr_holidays_configuration"
                   groups="hr_holidays.group_hr_holidays_manager" sequence="2"/>
+        <menuitem id="menu_employee_change_planning_item04" name="Employee Change"
+                  parent="hr.menu_hr_employee_payroll" sequence="4" action="action_employee_change_planning" />
     </data>
 </odoo>
