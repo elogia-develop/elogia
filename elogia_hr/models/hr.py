@@ -9,6 +9,18 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 
+class ApplyChangeWizard(models.TransientModel):
+    _name = 'apply.change.wizard'
+    _description = 'Apply Change Wizard'
+    _rec_name = 'effective_date'
+
+    effective_date = fields.Date('Effective date', default=lambda self: fields.Date.today())
+
+    def action_create_records(self):
+        for planning_id in self.env['employee.change.planning'].search([('state', '=', 'not_processed')]):
+            planning_id.update_list_action()
+
+
 class EmployeeHistory(models.Model):
     _name = "employee.history"
     _description = "Employee History"
@@ -40,18 +52,354 @@ class EmployeeHistory(models.Model):
         ('contract', 'Contract'),
     ], string='Model', default='employee', required=True,
         help="Type model to update in Contract or Employee History")
-    effective_date = fields.Date('Effective date', default=lambda self: fields.Date.today())
 
-    @api.onchange('effective_date')
-    def onchange_effective_date(self):
-        history_env = self.env['employee.history']
-        if self.effective_date:
-            obj_history = history_env.search([('employee_id', '=', self.employee_id.id),
-                                              ('type_action', '=', self.type_action),
-                                              ('effective_date', '=', self.effective_date)])
-            if obj_history:
-                for item in obj_history:
-                    item.unlink()
+
+class ListActionChange(models.Model):
+    _name = 'list.action.change'
+    _description = 'List Action Change'
+    _rec_name = 'planning_id'
+
+    planning_id = fields.Many2one('employee.change.planning', 'Employee Change', ondelete='cascade')
+    employee_id = fields.Many2one('hr.employee', related='planning_id.employee_id', string='Employee')
+    effective_date = fields.Date('Effective date', states={'not_processed': [('readonly', False)],
+                                                           'processed': [('readonly', True)]})
+    last_date = fields.Date('Last date')
+    type_model = fields.Selection([
+        ('employee', 'Employee'),
+        ('contract', 'Contract'),
+    ], string='Model', default='employee', required=True,
+        help="Type model to update in Contract or Employee History", states={'not_processed': [('readonly', False)],
+                                                                             'processed': [('readonly', True)]})
+    state = fields.Selection([
+        ('not_processed', 'Not processed'),
+        ('processed', 'Processed'),
+    ], string='Status', default='not_processed', required=True)
+    type_action = fields.Selection([
+        ('employee', '-'),
+        ('responsible', 'Responsible'),
+        ('company', 'Company'),
+        ('department', 'Department'),
+        ('rol', 'Job'),
+        ('hub', 'Hub'),
+        ('contract', 'Contratation Type'),
+        ('type_c', 'Type Contract'),
+        ('type_scholarship', 'Scholarship'),
+        ('departure_reason', 'Departure reason'),
+        ('departure_date', 'Departure date'),
+        ('wage_normal', 'Salary'),
+        ('wage_variable', 'Salary V'),
+    ], string='Action', default='employee', required=True,
+        help="Type action to update in Contract or Employee History")
+
+    @api.constrains('type_model', 'employee_id', 'employee_id.contract_id')
+    def check_contact(self):
+        for record in self:
+            if record.type_model == 'contract' and not record.employee_id.contract_id:
+                raise UserError(_('The employee %s does not have an active contract.') % record.employee_id.name)
+
+    @api.constrains('state', 'planning_id', 'planning_id.list_ids')
+    def onchange_state_planning(self):
+        for record in self:
+            if record.state == 'processed':
+                if not any(item for item in record.planning_id.list_ids if item.state == 'not_processed'):
+                    record.planning_id.state = 'processed'
+
+
+class EmployeeChangePlanning(models.Model):
+    _name = "employee.change.planning"
+    _description = "Employee Change"
+    _rec_name = 'employee_id'
+
+    employee_id = fields.Many2one('hr.employee', 'Employee', index=True, required=True, ondelete='restrict')
+    state = fields.Selection([
+        ('not_processed', 'Not processed'),
+        ('processed', 'Processed'),
+    ], string='Status', default='not_processed', required=True)
+    list_ids = fields.One2many('list.action.change', 'planning_id', 'List Action')
+    check_company = fields.Boolean('Company?')
+    process_company = fields.Boolean('Process Company')
+    company_id = fields.Many2one('res.company', 'Company', ondelete='restrict')
+    department_id = fields.Many2one('hr.department', 'Department', ondelete='restrict')
+    check_department = fields.Boolean('Department?')
+    process_department = fields.Boolean('Process Department')
+    parent_id = fields.Many2one('hr.employee', 'Responsible', ondelete='restrict')
+    check_parent = fields.Boolean('Responsible?')
+    process_parent = fields.Boolean('Process Parent')
+    hub_id = fields.Many2one('planning.role', 'Rol/Hub', ondelete='restrict')
+    check_hub = fields.Boolean('Rol/Hub?')
+    process_hub = fields.Boolean('Process Hub')
+    job_id = fields.Many2one('hr.job', 'Job', ondelete='restrict')
+    check_job = fields.Boolean('Job?')
+    process_job = fields.Boolean('Process Job')
+    structure_type_id = fields.Many2one('hr.payroll.structure.type', 'Contratation Type', ondelete='restrict')
+    check_structure = fields.Boolean('Contratation Type?')
+    process_structure = fields.Boolean('Process Structure')
+    contract_type_id = fields.Many2one('hr.contract.type', 'Type Contract', ondelete='restrict')
+    check_contract = fields.Boolean('Type Contract?')
+    process_contract = fields.Boolean('Process Contract')
+    scholarship_id = fields.Many2one('type.scholarship', 'Type Scholarship', ondelete='restrict')
+    check_scholarship = fields.Boolean('Type Scholarship?')
+    process_scholarship = fields.Boolean('Process Scholarship')
+    departure_id = fields.Many2one('hr.departure.reason', 'Departure Reason', ondelete='restrict')
+    check_departure = fields.Boolean('Departure Reason?')
+    process_departure = fields.Boolean('Process Departure')
+    departure_date = fields.Date('Departure Date')
+    check_departure_date = fields.Boolean('Departure Date?')
+    process_departure_date = fields.Boolean('Process Departure Date')
+    wage = fields.Float('Fixed wage', tracking=True, help="Employee's annually gross wage fixed.")
+    check_wage = fields.Boolean('Wage?')
+    process_wage = fields.Boolean('Process Wage')
+    wage_variable = fields.Float('Variable Wage', tracking=True, help="Employee's annually gross wage variable.")
+    check_wage_variable = fields.Boolean('Wage V.?')
+    process_wage_v = fields.Boolean('Process Wage V')
+    currency_id = fields.Many2one('res.currency', compute='_compute_get_company_currency', readonly=True, string="Currency",
+                                  help='Utility field to express amount currency')
+
+    def _compute_get_company_currency(self):
+        for record in self:
+            record.currency_id = record.env.user.company_id.currency_id
+
+    def action_open_wizard(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Apply changes for {}' .format(self.employee_id.name),
+            'res_model': 'apply.change.wizard',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'target': 'new',
+            'context': {'origin_view': 'wizard_filter'}
+        }
+
+    @api.model
+    def create(self, vals_list):
+        list_field = []
+        res = super(EmployeeChangePlanning, self).create(vals_list)
+        if res.check_company:
+            list_field.append({'planning_id': res.id, 'effective_date': fields.Date.today(), 'type_action': 'company'})
+        if res.check_department:
+            list_field.append({'planning_id': res.id, 'effective_date': fields.Date.today(),
+                               'type_action': 'department'})
+        if res.check_parent:
+            list_field.append({'planning_id': res.id, 'effective_date': fields.Date.today(),
+                               'type_action': 'responsible'})
+        if res.check_hub:
+            list_field.append({'planning_id': res.id, 'effective_date': fields.Date.today(), 'type_action': 'hub'})
+        if res.check_job:
+            list_field.append({'planning_id': res.id, 'effective_date': fields.Date.today(), 'type_action': 'rol'})
+        if res.check_structure:
+            list_field.append({'planning_id': res.id, 'effective_date': fields.Date.today(), 'type_action': 'contract'})
+        if res.check_contract:
+            list_field.append({'planning_id': res.id, 'effective_date': fields.Date.today(), 'type_action': 'type_c'})
+        if res.check_scholarship:
+            list_field.append({'planning_id': res.id, 'effective_date': fields.Date.today(),
+                               'type_action': 'type_scholarship'})
+        if res.check_departure:
+            list_field.append({'planning_id': res.id, 'effective_date': fields.Date.today(),
+                               'type_action': 'departure_reason'})
+        if res.check_departure_date:
+            list_field.append({'planning_id': res.id, 'effective_date': fields.Date.today(),
+                               'type_action': 'departure_date'})
+        if res.check_wage:
+            list_field.append({'planning_id': res.id, 'effective_date': fields.Date.today(),
+                               'type_action': 'wage_normal'})
+        if res.check_wage_variable:
+            list_field.append({'planning_id': res.id, 'effective_date': fields.Date.today(),
+                               'type_action': 'wage_variable'})
+        if list_field:
+            for item in list_field:
+                self.env['list.action.change'].create(item)
+        return res
+
+    def write(self, vals):
+        list_action = []
+        list_field = []
+        if 'check_company' in vals:
+            if not vals.get('check_company'):
+                list_action.append('company')
+            else:
+                list_field.append({'planning_id': self.id, 'effective_date': fields.Date.today(),
+                                   'type_action': 'company'})
+        if 'check_department' in vals:
+            if not vals.get('check_department'):
+                list_action.append('department')
+            else:
+                list_field.append({'planning_id': self.id, 'effective_date': fields.Date.today(),
+                                   'type_action': 'department'})
+        if 'check_parent' in vals:
+            if not vals.get('check_parent'):
+                list_action.append('responsible')
+            else:
+                list_field.append({'planning_id': self.id, 'effective_date': fields.Date.today(),
+                                   'type_action': 'responsible'})
+        if 'check_hub' in vals:
+            if not vals.get('check_hub'):
+                list_action.append('hub')
+            else:
+                list_field.append({'planning_id': self.id, 'effective_date': fields.Date.today(),
+                                   'type_action': 'hub'})
+        if 'check_job' in vals:
+            if not vals.get('check_job'):
+                list_action.append('rol')
+            else:
+                list_field.append({'planning_id': self.id, 'effective_date': fields.Date.today(),
+                                   'type_action': 'rol'})
+        if 'check_structure' in vals:
+            if not vals.get('check_structure'):
+                list_action.append('contract')
+            else:
+                list_field.append({'planning_id': self.id, 'effective_date': fields.Date.today(),
+                                   'type_action': 'contract'})
+        if 'check_contract' in vals:
+            if not vals.get('check_contract'):
+                list_action.append('type_c')
+            else:
+                list_field.append({'planning_id': self.id, 'effective_date': fields.Date.today(),
+                                   'type_action': 'type_c'})
+        if 'check_scholarship' in vals:
+            if not vals.get('check_scholarship'):
+                list_action.append('type_scholarship')
+            else:
+                list_field.append({'planning_id': self.id, 'effective_date': fields.Date.today(),
+                                   'type_action': 'type_scholarship'})
+        if 'check_departure' in vals:
+            if not vals.get('check_departure'):
+                list_action.append('departure_reason')
+            else:
+                list_field.append({'planning_id': self.id, 'effective_date': fields.Date.today(),
+                                   'type_action': 'departure_reason'})
+        if 'check_departure_date' in vals:
+            if not vals.get('check_departure_date'):
+                list_action.append('departure_date')
+            else:
+                list_field.append({'planning_id': self.id, 'effective_date': fields.Date.today(),
+                                   'type_action': 'departure_date'})
+        if 'check_wage' in vals:
+            if not vals.get('check_wage'):
+                list_action.append('wage_normal')
+            else:
+                list_field.append({'planning_id': self.id, 'effective_date': fields.Date.today(),
+                                   'type_action': 'wage_normal'})
+        if 'check_wage_variable' in vals:
+            if not vals.get('check_wage_variable'):
+                list_action.append('wage_variable')
+            else:
+                list_field.append({'planning_id': self.id, 'effective_date': fields.Date.today(),
+                                   'type_action': 'wage_variable'})
+        if list_action:
+            action_ids = self.env['list.action.change'].search([('type_action', 'in', list_action),
+                                                                ('planning_id', '=', self.id)])
+            for element in action_ids:
+                element.unlink()
+        if list_field:
+            for item in list_field:
+                if item['type_action'] not in self.list_ids.mapped('type_action'):
+                    self.env['list.action.change'].create(item)
+        return super(EmployeeChangePlanning, self).write(vals)
+
+    def unlink(self):
+        for record in self:
+            if any(item for item in record.list_ids if item.state == 'processed'):
+                raise UserError(_('This record cannot be deleted, there are elements that have already been processed.'))
+        res = super(EmployeeChangePlanning, self).unlink()
+        return res
+
+    def update_dates(self, planning, list_actions):
+        if self.env.context.get('origin_view') and self.env.context.get('origin_view') == 'wizard_filter':
+            for item in list_actions:
+                item.last_date = item.effective_date
+                item.effective_date = date.today()
+        else:
+            list_actions = [item for item in planning.list_ids if item.state == 'not_processed' and
+                            item.effective_date <= date.today()]
+        return list_actions
+
+    def write_values(self, item, dict_write):
+        if item.type_model == 'employee':
+            if item.type_action == 'responsible':
+                dict_write['parent_id'] = item.planning_id.parent_id.id
+            if item.type_action == 'hub':
+                dict_write['default_planning_role_id'] = item.planning_id.hub_id.id
+            item.employee_id.write(dict_write)
+            item.state = 'processed'
+        if item.type_model == 'contract':
+            if item.type_action == 'responsible':
+                dict_write['hr_responsible_id'] = item.planning_id.parent_id.user_id.id
+            if item.type_action == 'hub':
+                dict_write['hub_id'] = item.planning_id.hub_id.id
+            item.employee_id.contract_id.write(dict_write)
+            item.state = 'processed'
+        return False
+
+    @api.model
+    def update_list_action(self):
+        dict_write = {}
+        dict_init = {}
+        planning_ids = self.search([('state', '=', 'not_processed')])
+        for planning in planning_ids:
+            list_actions = [item for item in planning.list_ids if item.state == 'not_processed']
+            if list_actions:
+                obj_update = self.update_dates(planning, list_actions)
+                if obj_update:
+                    for item in obj_update:
+                        if item.type_action == 'company' and planning.check_company:
+                            dict_write['company_id'] = planning.company_id.id
+                            self.write_values(item, dict_write)
+                            planning.process_company = True
+                            dict_write = dict_init
+                        if item.type_action == 'department' and planning.check_department:
+                            dict_write['department_id'] = planning.department_id.id
+                            self.write_values(item, dict_write)
+                            planning.process_department = True
+                            dict_write = dict_init
+                        if item.type_action == 'responsible' and planning.check_parent:
+                            self.write_values(item, dict_write)
+                            planning.process_parent = True
+                            dict_write = dict_init
+                        if item.type_action == 'hub' and planning.check_hub:
+                            self.write_values(item, dict_write)
+                            planning.process_hub = True
+                            dict_write = dict_init
+                        if item.type_action == 'rol' and planning.check_job:
+                            dict_write['job_id'] = planning.job_id.id
+                            self.write_values(item, dict_write)
+                            planning.process_job = True
+                            dict_write = dict_init
+                        if item.type_action == 'contract' and planning.check_structure:
+                            dict_write['structure_type_id'] = planning.structure_type_id.id
+                            self.write_values(item, dict_write)
+                            planning.process_structure = True
+                            dict_write = dict_init
+                        if item.type_action == 'type_c' and planning.check_contract:
+                            dict_write['contract_type_id'] = planning.contract_type_id.id
+                            self.write_values(item, dict_write)
+                            planning.process_contract = True
+                            dict_write = dict_init
+                        if item.type_action == 'type_scholarship' and planning.check_scholarship:
+                            dict_write['type_scholarship'] = planning.scholarship_id.id
+                            self.write_values(item, dict_write)
+                            planning.process_scholarship = True
+                            dict_write = dict_init
+                        if item.type_action == 'departure_reason' and planning.check_departure:
+                            dict_write['departure_reason_id'] = planning.departure_id.id
+                            self.write_values(item, dict_write)
+                            planning.process_departure = True
+                            dict_write = dict_init
+                        if item.type_action == 'departure_date' and planning.check_departure_date:
+                            dict_write['departure_date'] = planning.departure_date
+                            self.write_values(item, dict_write)
+                            planning.process_departure_date = True
+                            dict_write = dict_init
+                        if item.type_action == 'wage_normal' and planning.check_wage:
+                            dict_write['wage'] = planning.wage
+                            self.write_values(item, dict_write)
+                            planning.process_wage = True
+                            dict_write = dict_init
+                        if item.type_action == 'wage_variable' and planning.check_wage_variable:
+                            dict_write['wage_variable'] = planning.wage_variable
+                            self.write_values(item, dict_write)
+                            planning.process_wage_v = True
+                            dict_write = dict_init
+        return False
 
 
 class TypeScholarship(models.Model):
@@ -64,9 +412,6 @@ class TypeScholarship(models.Model):
 
 class Employee(models.Model):
     _inherit = "hr.employee"
-
-    def _get_company_currency(self):
-        self.currency_id = self.env.user.company_id.currency_id
 
     employee_number = fields.Char('Employee number', tracking=1)
     history_ids = fields.One2many('employee.history', 'employee_id', string='Employee History')
@@ -86,9 +431,15 @@ class Employee(models.Model):
     wage_variable = fields.Float('Variable Wage', help="Employee's annually gross wage variable.", tracking=1)
     resource_calendar_id = fields.Many2one('resource.calendar', string="Agreement",
                                            domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
-    job_title = fields.Char()
-    currency_id = fields.Many2one('res.currency', compute='_get_company_currency', readonly=True, string="Currency",
+    job_title = fields.Char('Job')
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id', readonly=True, string="Currency",
                                   help='Utility field to express amount currency')
+    change_ids = fields.One2many('employee.change.planning', 'employee_id', string='Employee Change')
+    count_changes = fields.Integer('Changes', compute='_calc_count_changes')
+
+    def _calc_count_changes(self):
+        for obj_employee in self:
+            obj_employee.count_changes = len(obj_employee.change_ids) if obj_employee.change_ids else 0
 
     def write(self, vals):
         history_env = self.env['employee.history']
@@ -196,12 +547,20 @@ class Employee(models.Model):
             'domain': [('employee_id', '=', self.id)]
         }
 
+    def action_view_changes(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Changes',
+            'res_model': 'employee.change.planning',
+            'view_mode': 'tree,form',
+            'view_type': 'form',
+            'domain': [('employee_id', '=', self.id)],
+            'context': {'default_employee_id': self.id},
+        }
+
 
 class Contract(models.Model):
     _inherit = 'hr.contract'
-
-    def _get_company_currency(self):
-        self.currency_id = self.env.user.company_id.currency_id
 
     hub_id = fields.Many2one('planning.role', 'Hub', tracking=1)
     location_id = fields.Many2one('hr.work.location', 'Location ref.', tracking=1)
@@ -224,7 +583,7 @@ class Contract(models.Model):
         ('cancel', 'Cancelled')
     ], string='Status', group_expand='_expand_states', copy=False,
         tracking=True, help='Status of the contract', default='open')
-    currency_id = fields.Many2one('res.currency', compute='_get_company_currency', readonly=True, string="Currency",
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id', readonly=True, string="Currency",
                                   help='Utility field to express amount currency')
 
     @api.onchange('company_id', 'department_id', 'hub_id', 'job_id', 'quotation_code', 'structure_type_id',
@@ -308,16 +667,13 @@ class Contract(models.Model):
 class ContractHistory(models.Model):
     _inherit = 'hr.contract.history'
 
-    def _get_company_currency(self):
-        self.currency_id = self.env.user.company_id.currency_id
-
     structure_type_id = fields.Many2one('hr.payroll.structure.type', string="Contratation Type", readonly=True)
     date_finish_ctt = fields.Date('Proximo vencimiento', related='contract_id.date_finish_ctt', help='Fecha proximo vencimiento contrato/beca')
     hub_id = fields.Many2one('planning.role', 'Hub', related='contract_id.hub_id')
     type_scholarship = fields.Many2one('type.scholarship', string='Type scholarship',  related='contract_id.type_scholarship')
     wage = fields.Float('Fixed wage', related='contract_id.wage', help="Employee's annually gross wage fixed.")
     wage_variable = fields.Float('Variable wage', related='contract_id.wage_variable', help="Employee's annually gross wage variable.")
-    currency_id = fields.Many2one('res.currency', compute='_get_company_currency', readonly=True, string="Currency",
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id', readonly=True, string="Currency",
                                   help='Utility field to express amount currency')
 
     def init(self):

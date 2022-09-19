@@ -1,3 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 elogia_hr.access_employee_history,access_employee_history,elogia_hr.model_employee_history,base.group_user,1,1,1,1
 elogia_hr.access_type_scholarship,access_type_scholarship,elogia_hr.model_type_scholarship,base.group_user,1,1,1,1
+elogia_hr.access_employee_change_planning,access_employee_change_planning,elogia_hr.model_employee_change_planning,base.group_user,1,1,1,1
+elogia_hr.access_apply_change_wizard,access_apply_change_wizard,elogia_hr.model_apply_change_wizard,base.group_user,1,1,1,1
+elogia_hr.access_list_action_change,access_list_action_change,elogia_hr.model_list_action_change,base.group_user,1,1,1,1
