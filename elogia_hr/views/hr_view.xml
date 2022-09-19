@@ -52,7 +52,7 @@
                         <field name="employee_number" placeholder="Employee´s number" required="True"/>
                     </h2>
                     <h2>
-                        <field name="job_title" placeholder="Job Position"/>
+                        <field name="job_title" placeholder="Job Position" readonly="True"/>
                     </h2>
                 </xpath>
                 <xpath expr="//field[@name='coach_id']" position="after">

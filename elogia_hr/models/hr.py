@@ -411,9 +411,6 @@ class TypeScholarship(models.Model):
 class Employee(models.Model):
     _inherit = "hr.employee"
 
-    def _get_company_currency(self):
-        self.currency_id = self.env.user.company_id.currency_id
-
     employee_number = fields.Char('Employee number', tracking=1)
     history_ids = fields.One2many('employee.history', 'employee_id', string='Employee History')
     date_init = fields.Date('Fecha ingreso grupo', help='Fecha ingreso en el grupo',
@@ -432,8 +429,8 @@ class Employee(models.Model):
     wage_variable = fields.Float('Variable Wage', help="Employee's annually gross wage variable.", tracking=1)
     resource_calendar_id = fields.Many2one('resource.calendar', string="Agreement",
                                            domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
-    job_title = fields.Char()
-    currency_id = fields.Many2one('res.currency', compute='_get_company_currency', readonly=True, string="Currency",
+    job_title = fields.Char('Job')
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id', readonly=True, string="Currency",
                                   help='Utility field to express amount currency')
     change_ids = fields.One2many('employee.change.planning', 'employee_id', string='Employee Change')
     count_changes = fields.Integer('Changes', compute='_calc_count_changes')
@@ -563,9 +560,6 @@ class Employee(models.Model):
 class Contract(models.Model):
     _inherit = 'hr.contract'
 
-    def _get_company_currency(self):
-        self.currency_id = self.env.user.company_id.currency_id
-
     hub_id = fields.Many2one('planning.role', 'Hub', tracking=1)
     location_id = fields.Many2one('hr.work.location', 'Location ref.', tracking=1)
     quotation_code = fields.Char('Code quot.', help='Account code quotation', tracking=1)
@@ -587,7 +581,7 @@ class Contract(models.Model):
         ('cancel', 'Cancelled')
     ], string='Status', group_expand='_expand_states', copy=False,
         tracking=True, help='Status of the contract', default='open')
-    currency_id = fields.Many2one('res.currency', compute='_get_company_currency', readonly=True, string="Currency",
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id', readonly=True, string="Currency",
                                   help='Utility field to express amount currency')
 
     @api.onchange('company_id', 'department_id', 'hub_id', 'job_id', 'quotation_code', 'structure_type_id',
@@ -671,16 +665,13 @@ class Contract(models.Model):
 class ContractHistory(models.Model):
     _inherit = 'hr.contract.history'
 
-    def _get_company_currency(self):
-        self.currency_id = self.env.user.company_id.currency_id
-
     structure_type_id = fields.Many2one('hr.payroll.structure.type', string="Contratation Type", readonly=True)
     date_finish_ctt = fields.Date('Proximo vencimiento', related='contract_id.date_finish_ctt', help='Fecha proximo vencimiento contrato/beca')
     hub_id = fields.Many2one('planning.role', 'Hub', related='contract_id.hub_id')
     type_scholarship = fields.Many2one('type.scholarship', string='Type scholarship',  related='contract_id.type_scholarship')
     wage = fields.Float('Fixed wage', related='contract_id.wage', help="Employee's annually gross wage fixed.")
     wage_variable = fields.Float('Variable wage', related='contract_id.wage_variable', help="Employee's annually gross wage variable.")
-    currency_id = fields.Many2one('res.currency', compute='_get_company_currency', readonly=True, string="Currency",
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id', readonly=True, string="Currency",
                                   help='Utility field to express amount currency')
 
     def init(self):
