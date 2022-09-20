@@ -62,6 +62,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='allocated_hours']" position="before">
                     <field name="hours_available" type="measure"/>
+                    <field name="total_hours" type="measure"/>
                 </xpath>
             </field>
         </record>
