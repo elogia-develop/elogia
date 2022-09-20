@@ -90,6 +90,9 @@
                 <xpath expr="//field[@name='default_planning_role_id']" position="attributes">
                     <attribute name="required">True</attribute>
                 </xpath>
+                <xpath expr="//field[@name='bank_account_id']" position="attributes">
+                    <attribute name="attrs">{'required':[('address_home_id','!=',False)]}</attribute>
+                </xpath>
             </field>
         </record>
 
