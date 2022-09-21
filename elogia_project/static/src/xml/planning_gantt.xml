@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
-    <t t-name="MonthPlanningGanttView.buttons" t-extend="PlanningGanttView.buttons">
-        <t t-jquery="> :last-child" t-operation="before">
-<!--            <button t-if="activeActions.create &amp;&amp; activateScale == 'month'" class="o_gantt_button_copy_month btn btn-primary" title="Copy Month">-->
-            <button class="o_gantt_button_copy_month btn btn-primary" title="Copy Month">
+    <t t-name="MonthPlanningGanttView.buttons" t-extend="SalePlanningGanttView.buttons">
+        <t t-jquery="button.o_gantt_button_plan_so" t-operation="before">
+            <button t-if="activeActions.edit &amp;&amp; activateScale == 'month'"
+                    class="o_gantt_button_copy_month btn btn-primary" title="Copy Month">
                 Copy Preview Month
             </button>
         </t>

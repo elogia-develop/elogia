@@ -49,6 +49,9 @@ class Planning(models.Model):
                 if record.employee_id.contract_id.state in ['close', 'cancel']:
                     raise UserError(_('It is required that the contract associated with the employee {} is not '
                                       'Expired or Cancelled.'.format(record.employee_id.name)))
+                if record.employee_id.contract_id.date_start > record.start_datetime.date():
+                    raise UserError(_('The employee/resource should not be working in this period. \n Check the '
+                                      'start date/end date of the Contract or contact an Administrator.'))
             if record.overlap_slot_count:
                 raise UserError(_('There are {} planning for this resource at the same time.'
                                   .format(record.overlap_slot_count)))

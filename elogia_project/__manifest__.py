@@ -8,14 +8,14 @@
     'website': "https://www.rapsodoo.com/es/",
     'category': 'Project/Project',
     'license': 'LGPL-3',
-    'version': '15.0.1.0.9',
+    'version': '15.0.1.0.10',
     'depends': [
         'base',
         'project',
         'calendar',
         'elogia_base',
         'elogia_hr',
-        'project_forecast'
+        'sale_planning'
     ],
     'data': [
         'views/elogia_view.xml',
@@ -24,10 +24,10 @@
     'application': False,
     'assets': {
         'web.assets_backend': [
-            'elogia_project/static/src/js/backend/**/*',
+            'elogia_project/static/src/js/backend/planning_gantt_controller.js',
         ],
         'web.assets_qweb': [
-            'elogia_project/static/src/xml/**/*',
+            'elogia_project/static/src/xml/planning_gantt.xml',
         ],
     }
 }
