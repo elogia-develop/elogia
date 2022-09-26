@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e-20220616\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-05 10:08+0000\n"
-"PO-Revision-Date: 2022-09-05 10:08+0000\n"
+"POT-Creation-Date: 2022-09-26 07:47+0000\n"
+"PO-Revision-Date: 2022-09-26 07:47+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -41,9 +41,34 @@ msgid "Analytic Line"
 msgstr "Línea analítica"
 
 #. module: elogia_project
+#. openerp-web
+#: code:addons/elogia_project/static/src/xml/planning_gantt.xml:0
+#, python-format
+msgid "Copy Month"
+msgstr "Copiar Mes"
+
+#. module: elogia_project
+#. openerp-web
+#: code:addons/elogia_project/static/src/xml/planning_gantt.xml:0
+#, python-format
+msgid "Copy Preview Month"
+msgstr "Copiar mes anterior"
+
+#. module: elogia_project
 #: model_terms:ir.actions.act_window,help:elogia_project.planning_action_my_roles
 msgid "Define the different hubs by your employees."
 msgstr "Defina los diferentes hubs por sus empleados"
+
+#. module: elogia_project
+#: code:addons/elogia_project/models/project_task.py:0
+#, python-format
+msgid "Employee {} does not have an associated contract."
+msgstr "El empleado {} no tiene un contrato asociado"
+
+#. module: elogia_project
+#: model:ir.model.fields,field_description:elogia_project.field_planning_slot__hours_available
+msgid "Hours available"
+msgstr "Horas disponibles"
 
 #. module: elogia_project
 #: model:ir.model.fields,field_description:elogia_project.field_planning_slot__role_id
@@ -73,14 +98,51 @@ msgstr "Tarea"
 #. module: elogia_project
 #: code:addons/elogia_project/models/project_task.py:0
 #, python-format
-msgid "The maximum limit for this planning must not exceed 100%."
-msgstr "El límite máximo para esta planificación no debe superar el 100%."
+msgid ""
+"The employee/resource should not be working in this period. \n"
+" Check the start date/end date of the Contract or contact an Administrator."
+msgstr ""
+"El empleado/recurso no debería estar trabajando en este período. \n"
+" Verifique la fecha de inicio/fecha de finalización del Contrato o comuníquese con un Administrador."
 
 #. module: elogia_project
 #: code:addons/elogia_project/models/project_task.py:0
 #, python-format
 msgid "The maximum limit for this timesheet must not exceed %s hours per day."
 msgstr "El límite máximo para este timesheet no debe exceder %s horas por día."
+
+#. module: elogia_project
+#: code:addons/elogia_project/models/project_task.py:0
+#, python-format
+msgid "The planning for this resource exceed in {} hours."
+msgstr "La planificación de este recurso supera las {} horas."
+
+#. module: elogia_project
+#. openerp-web
+#: code:addons/elogia_project/static/src/js/backend/planning_gantt_controller.js:0
+#, python-format
+msgid "The shifts from the previous week have successfully been copied."
+msgstr "Se han copiado correctamente los turnos de la semana anterior."
+
+#. module: elogia_project
+#. openerp-web
+#: code:addons/elogia_project/static/src/js/backend/planning_gantt_controller.js:0
+#, python-format
+msgid ""
+"There are no shifts to copy or the previous shifts were already copied."
+msgstr ""
+"No hay turnos para copiar o los turnos anteriores ya fueron copiados".
+
+#. module: elogia_project
+#: code:addons/elogia_project/models/project_task.py:0
+#, python-format
+msgid "There are {} planning for this resource at the same time."
+msgstr "Hay {} planificadas para este recurso al mismo tiempo."
+
+#. module: elogia_project
+#: model:ir.model.fields,field_description:elogia_project.field_planning_slot__total_hours
+msgid "Total Hours"
+msgstr "Horas totales"
 
 #. module: elogia_project
 #: code:addons/elogia_project/models/project_task.py:0
@@ -96,4 +158,10 @@ msgstr "No se pueden cargar horas porque el Empleado no tiene Costo. Contacta"
 #, python-format
 msgid ""
 "You cannot charge hours into a child task. Contact with an Administrator."
-msgstr "No puede cargar horas en una tarea secundaria. Contacta con un Administrador."
+msgstr "No puede cargar horas en una subtarea. Contacta con un Administrador."
+
+#. module: elogia_project
+#: code:addons/elogia_project/models/project_task.py:0
+#, python-format
+msgid "{} has requested time off in this period."
+msgstr "{} ha solicitado tiempo libre/vacaciones en este período."
