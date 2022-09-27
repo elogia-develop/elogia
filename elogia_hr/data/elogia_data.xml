@@ -68,19 +68,16 @@
 
     <record id="hr_leave_accrual_seniority_plan00" model="hr.leave.accrual.seniority.plan">
         <field name="name">Entre 0 y 2 anos de antiguedad</field>
-        <field name="max_years">2</field>
         <field name="normal_days">10</field>
         <field name="discretionary_days">2</field>
     </record>
     <record id="hr_leave_accrual_seniority_plan01" model="hr.leave.accrual.seniority.plan">
         <field name="name">Entre 3 y 10 anos de antiguedad</field>
-        <field name="max_years">10</field>
         <field name="normal_days">15</field>
         <field name="discretionary_days">2</field>
     </record>
     <record id="hr_leave_accrual_seniority_plan02" model="hr.leave.accrual.seniority.plan">
         <field name="name">Mas 10 anos de antiguedad</field>
-        <field name="max_years">0</field>
         <field name="normal_days">20</field>
         <field name="discretionary_days">2</field>
     </record>
