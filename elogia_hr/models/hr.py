@@ -436,7 +436,7 @@ class Employee(models.Model):
                                   help='Utility field to express amount currency')
     change_ids = fields.One2many('employee.change.planning', 'employee_id', string='Employee Change')
     count_changes = fields.Integer('Changes', compute='_calc_count_changes')
-    seniority_plan_id = fields.Many2one(comodel_name='hr.leave.accrual.seniority.plan')
+    seniority_plan_id = fields.Many2one(comodel_name='hr.leave.accrual.seniority.plan', string='Seniority Plan')
 
     def _calc_count_changes(self):
         for obj_employee in self:
@@ -576,7 +576,7 @@ class Employee(models.Model):
                         value_senior = env_seniority_plan.search([('normal_days', '=', 20)], limit=1)
             if value_senior:
                 record.seniority_plan_id = value_senior.id
-                record.message_post(body=_("Accrual seniority plan: %s") % value_senior.name)
+                record.message_post(body=_("Accrual seniority plan: {}") .format(value_senior.name))
 
 
 class Contract(models.Model):
