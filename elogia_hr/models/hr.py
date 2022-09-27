@@ -436,6 +436,7 @@ class Employee(models.Model):
                                   help='Utility field to express amount currency')
     change_ids = fields.One2many('employee.change.planning', 'employee_id', string='Employee Change')
     count_changes = fields.Integer('Changes', compute='_calc_count_changes')
+    seniority_plan_id = fields.Many2one(comodel_name='hr.leave.accrual.seniority.plan', string='Seniority Plan')
 
     def _calc_count_changes(self):
         for obj_employee in self:
@@ -557,6 +558,25 @@ class Employee(models.Model):
             'domain': [('employee_id', '=', self.id)],
             'context': {'default_employee_id': self.id},
         }
+
+    @api.constrains('date_init', 'category_ids')
+    def check_date_init(self):
+        env_seniority_plan = self.env['hr.leave.accrual.seniority.plan']
+        value_senior = 0
+        for record in self:
+            if record.date_init and record.category_ids:
+                if any(item for item in record.category_ids if item.name.count('MX')
+                        or item.name.count('Mex') or item.name.count('Méx')):
+                    val_year = float(date.today().year - record.date_init.year)
+                    if val_year in range(0, 3):
+                        value_senior = env_seniority_plan.search([('normal_days', '=', 10)], limit=1)
+                    elif val_year in range(3, 10):
+                        value_senior = env_seniority_plan.search([('normal_days', '=', 15)], limit=1)
+                    else:
+                        value_senior = env_seniority_plan.search([('normal_days', '=', 20)], limit=1)
+            if value_senior:
+                record.seniority_plan_id = value_senior.id
+                record.message_post(body=_("Accrual seniority plan: {}") .format(value_senior.name))
 
 
 class Contract(models.Model):

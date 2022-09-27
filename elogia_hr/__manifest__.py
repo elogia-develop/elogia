@@ -8,7 +8,7 @@
     'website': "https://www.rapsodoo.com/es/",
     'category': 'Project/Project',
     'license': 'LGPL-3',
-    'version': '15.0.1.0.11',
+    'version': '15.0.1.0.13',
     'depends': [
         'base',
         'elogia_base',
@@ -23,7 +23,8 @@
     'data': [
         'security/ir.model.access.csv',
         'views/hr_view.xml',
-        'data/elogia_data.xml'
+        'data/elogia_data.xml',
+        'report/hr_leave_attendance_report_calendar.xml'
     ],
     'application': False,
 }
