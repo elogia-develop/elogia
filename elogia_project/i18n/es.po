@@ -131,7 +131,7 @@ msgstr "Se han copiado correctamente los turnos de la semana anterior."
 msgid ""
 "There are no shifts to copy or the previous shifts were already copied."
 msgstr ""
-"No hay turnos para copiar o los turnos anteriores ya fueron copiados".
+"No hay turnos para copiar o los turnos anteriores ya fueron copiados."
 
 #. module: elogia_project
 #: code:addons/elogia_project/models/project_task.py:0
@@ -151,7 +151,7 @@ msgid ""
 "You cannot charge hours because the Employee does not have a Cost. Contact "
 "with an Administrator."
 msgstr "No se pueden cargar horas porque el Empleado no tiene Costo. Contacta"
-"con un administrador.""
+"con un administrador."
 
 #. module: elogia_project
 #: code:addons/elogia_project/models/project_task.py:0
