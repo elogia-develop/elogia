@@ -44,9 +44,10 @@ class LeaveAttendanceReport(models.Model):
         attendances = self.search([('actual_year', '=', date.today().year)])
         list_attendance = [employee for employee in obj_employee_ids if employee.id in
                            attendances.mapped('employee_id').ids and attendances]
-        employee_filters = obj_employee_ids.filtered(lambda e: e not in list_attendance) if list_attendance else False
-        if date_list and employee_filters:
-            for employee in employee_filters:
+        obj_employee_ids = obj_employee_ids.filtered(lambda e: e not in list_attendance) if list_attendance \
+            else obj_employee_ids
+        if date_list and obj_employee_ids:
+            for employee in obj_employee_ids:
                 list_create = [{'name': MONTHS[day.month - 1] + ' ' + str(day.day), 'employee_id': employee.id,
                                 'start_datetime': day, 'stop_datetime': day, 'on_holiday': False,
                                 'on_attendance': True, 'actual_year': date.today().year,
