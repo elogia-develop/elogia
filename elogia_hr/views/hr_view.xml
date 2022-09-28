@@ -352,10 +352,14 @@
                         </h2>
                         <group>
                             <group name="first_group00">
-                                <field name="check_company" attrs="{'readonly': [('process_company', '=', True)]}"/>
-                                <field name="check_department" attrs="{'readonly': [('process_department', '=', True)]}"/>
-                                <field name="check_parent" attrs="{'readonly': [('process_parent', '=', True)]}"/>
-                                <field name="check_hub" attrs="{'readonly': [('process_hub', '=', True)]}"/>
+                                <field name="check_company" attrs="{'readonly': ['|', ('process_company', '=', True),
+                                ('state', '=', 'processed')]}"/>
+                                <field name="check_department" attrs="{'readonly': ['|', ('process_department', '=', True),
+                                ('state', '=', 'processed')]}"/>
+                                <field name="check_parent" attrs="{'readonly': ['|', ('process_parent', '=', True),
+                                ('state', '=', 'processed')]}"/>
+                                <field name="check_hub" attrs="{'readonly': ['|', ('process_hub', '=', True),
+                                ('state', '=', 'processed')]}"/>
                             </group>
                             <group name="second_group00">
                                 <field name="company_id" options="{'no_create': True, 'no_open': True}"
@@ -376,10 +380,14 @@
                                        [('process_hub', '=', True)]}"/>
                             </group>
                             <group name="first_group01">
-                                <field name="check_job" attrs="{'readonly': [('process_job', '=', True)]}"/>
-                                <field name="check_structure" attrs="{'readonly': [('process_structure', '=', True)]}"/>
-                                <field name="check_contract"  attrs="{'readonly': [('process_contract', '=', True)]}"/>
-                                <field name="check_scholarship" attrs="{'readonly': [('process_scholarship', '=', True)]}"/>
+                                <field name="check_job" attrs="{'readonly': ['|', ('process_job', '=', True),
+                                ('state', '=', 'processed')]}"/>
+                                <field name="check_structure" attrs="{'readonly': ['|', ('process_structure', '=', True),
+                                ('state', '=', 'processed')]}"/>
+                                <field name="check_contract"  attrs="{'readonly': ['|', ('process_contract', '=', True),
+                                ('state', '=', 'processed')]}"/>
+                                <field name="check_scholarship" attrs="{'readonly': ['|', ('process_scholarship', '=', True),
+                                ('state', '=', 'processed')]}"/>
                             </group>
                             <group name="second_group01">
                                 <field name="job_id" options="{'no_create': True, 'no_open': True}"
@@ -396,10 +404,14 @@
                                        'required': [('check_scholarship', '=', True)], 'readonly': [('process_scholarship', '=', True)]}"/>
                             </group>
                             <group name="first_group02">
-                                <field name="check_departure" attrs="{'readonly': [('process_departure', '=', True)]}"/>
-                                <field name="check_departure_date" attrs="{'readonly': [('process_departure_date', '=', True)]}"/>
-                                <field name="check_wage" attrs="{'readonly': [('process_wage', '=', True)]}"/>
-                                <field name="check_wage_variable" attrs="{'readonly': [('process_wage_v', '=', True)]}"/>
+                                <field name="check_departure" attrs="{'readonly': ['|', ('process_departure', '=', True),
+                                ('state', '=', 'processed')]}"/>
+                                <field name="check_departure_date" attrs="{'readonly': ['|', ('process_departure_date', '=', True),
+                                ('state', '=', 'processed')]}"/>
+                                <field name="check_wage" attrs="{'readonly': ['|', ('process_wage', '=', True),
+                                ('state', '=', 'processed')]}"/>
+                                <field name="check_wage_variable" attrs="{'readonly': ['|', ('process_wage_v', '=', True),
+                                ('state', '=', 'processed')]}"/>
                             </group>
                             <group name="second_group02">
                                 <field name="departure_id" options="{'no_create': True, 'no_open': True}"

@@ -146,10 +146,10 @@ class EmployeeChangePlanning(models.Model):
     departure_date = fields.Date('Departure Date')
     check_departure_date = fields.Boolean('Departure Date?')
     process_departure_date = fields.Boolean('Process Departure Date')
-    wage = fields.Float('Fixed wage', tracking=True, help="Employee's annually gross wage fixed.")
+    wage = fields.Float('Fixed wage', help="Employee's annually gross wage fixed.")
     check_wage = fields.Boolean('Wage?')
     process_wage = fields.Boolean('Process Wage')
-    wage_variable = fields.Float('Variable Wage', tracking=True, help="Employee's annually gross wage variable.")
+    wage_variable = fields.Float('Variable Wage', help="Employee's annually gross wage variable.")
     check_wage_variable = fields.Boolean('Wage V.?')
     process_wage_v = fields.Boolean('Process Wage V')
     currency_id = fields.Many2one('res.currency', compute='_compute_get_company_currency', readonly=True, string="Currency",

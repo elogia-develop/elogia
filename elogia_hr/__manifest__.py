@@ -8,7 +8,7 @@
     'website': "https://www.rapsodoo.com/es/",
     'category': 'Project/Project',
     'license': 'LGPL-3',
-    'version': '15.0.1.0.13',
+    'version': '15.0.1.0.14',
     'depends': [
         'base',
         'elogia_base',
