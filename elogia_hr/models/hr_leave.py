@@ -39,3 +39,21 @@ class HolidaysAllocation(models.Model):
                     if item.seniority_plan_id:
                         record.number_of_days = record.number_of_days + record.employee_id.seniority_plan_id.normal_days\
                                                 + record.employee_id.seniority_plan_id.discretionary_days
+
+
+class HolidaysRequest(models.Model):
+    _inherit = "hr.leave"
+
+    @api.constrains('state', 'employee_ids', 'date_from', 'date_to')
+    def check_leave_by_employee(self):
+        env_report = self.env['hr.leave.attendance.report']
+        for record in self:
+            if record.state in ['validate', 'validate1'] and record.employee_ids:
+                for employee in record.employee_ids:
+                    obj_report_ids = env_report.search([('employee_id', '=', employee.id),
+                                                        ('start_datetime', '>=', record.date_from),
+                                                        ('start_datetime', '<=', record.date_to)])
+                    if obj_report_ids:
+                        for report in obj_report_ids:
+                            report.write({'on_holiday': True, 'on_attendance': False})
+

@@ -146,10 +146,10 @@ class EmployeeChangePlanning(models.Model):
     departure_date = fields.Date('Departure Date')
     check_departure_date = fields.Boolean('Departure Date?')
     process_departure_date = fields.Boolean('Process Departure Date')
-    wage = fields.Float('Fixed wage', tracking=True, help="Employee's annually gross wage fixed.")
+    wage = fields.Float('Fixed wage', help="Employee's annually gross wage fixed.")
     check_wage = fields.Boolean('Wage?')
     process_wage = fields.Boolean('Process Wage')
-    wage_variable = fields.Float('Variable Wage', tracking=True, help="Employee's annually gross wage variable.")
+    wage_variable = fields.Float('Variable Wage', help="Employee's annually gross wage variable.")
     check_wage_variable = fields.Boolean('Wage V.?')
     process_wage_v = fields.Boolean('Process Wage V')
     currency_id = fields.Many2one('res.currency', compute='_compute_get_company_currency', readonly=True, string="Currency",
@@ -536,6 +536,12 @@ class Employee(models.Model):
                 for item in list_field:
                     history_env.create(item)
         return super(Employee, self).write(vals)
+
+    def unlink(self):
+        obj_report_ids = self.env['hr.leave.attendance.report'].search([('employee_id', 'in', self.ids)])
+        obj_report_ids.unlink()
+        res = super(Employee, self).unlink()
+        return res
 
     def action_view_history(self):
         return {
