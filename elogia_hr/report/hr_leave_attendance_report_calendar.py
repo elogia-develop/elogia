@@ -36,26 +36,23 @@ class LeaveAttendanceReport(models.Model):
 
     @api.model
     def update_calendar_by_year(self):
+        env_report = self.env['hr.leave.attendance.report']
         init_date = date.today()
-        finish_date = datetime.strptime('31-12-' + str(date.today().year), '%d-%m-%Y').date()
+        finish_date = init_date.replace(month=12, day=31)
         date_list = [init_date + relativedelta(days=d) for d in range((finish_date - init_date).days + 1)]
-        obj_employee_ids = self.env['hr.employee'].search([('active', '=', True)])
-        list_employee = [employee for employee in obj_employee_ids]
+        obj_employee_ids = self.env['hr.employee'].search([])
         attendances = self.search([('actual_year', '=', date.today().year)])
         list_attendance = [employee for employee in obj_employee_ids if employee.id in
                            attendances.mapped('employee_id').ids and attendances]
-        if list_attendance:
-            for item in list_attendance:
-                list_employee.remove(item)
-        if date_list and list_employee:
-            for employee in list_employee:
+        employee_filters = obj_employee_ids.filtered(lambda e: e not in list_attendance) if list_attendance else False
+        if date_list and employee_filters:
+            for employee in employee_filters:
                 list_create = [{'name': MONTHS[day.month - 1] + ' ' + str(day.day), 'employee_id': employee.id,
                                 'start_datetime': day, 'stop_datetime': day, 'on_holiday': False,
                                 'on_attendance': True, 'actual_year': date.today().year,
                                 'actual_month': day.month, 'actual_day': day.day} for day in date_list
                                if day.weekday() < 5]
-                if list_create:
-                    self.env['hr.leave.attendance.report'].create(list_create)
+                env_report.create(list_create)
 
 
 class LeaveAttendanceReportCalendar(models.Model):
@@ -97,3 +94,13 @@ class LeaveAttendanceReportCalendar(models.Model):
     @api.model
     def get_unusual_days(self, date_from, date_to=None):
         return self.env.user.employee_id._get_unusual_days(date_from, date_to)
+
+
+class HrDepartureWizard(models.TransientModel):
+    _inherit = 'hr.departure.wizard'
+
+    def action_register_departure(self):
+        res = super(HrDepartureWizard, self).action_register_departure()
+        obj_report_ids = self.env['hr.leave.attendance.report'].search([('employee_id', '=', self.employee_id.id)])
+        obj_report_ids.unlink()
+        return res

@@ -537,6 +537,12 @@ class Employee(models.Model):
                     history_env.create(item)
         return super(Employee, self).write(vals)
 
+    def unlink(self):
+        obj_report_ids = self.env['hr.leave.attendance.report'].search([('employee_id', 'in', self.ids)])
+        obj_report_ids.unlink()
+        res = super(Employee, self).unlink()
+        return res
+
     def action_view_history(self):
         return {
             'type': 'ir.actions.act_window',
