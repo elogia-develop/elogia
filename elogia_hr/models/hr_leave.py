@@ -48,12 +48,15 @@ class HolidaysRequest(models.Model):
     def check_leave_by_employee(self):
         env_report = self.env['hr.leave.attendance.report']
         for record in self:
-            if record.state in ['validate', 'validate1'] and record.employee_ids:
+            if record.employee_ids and record.state in ['validate', 'validate1', 'refuse']:
                 for employee in record.employee_ids:
                     obj_report_ids = env_report.search([('employee_id', '=', employee.id),
                                                         ('start_datetime', '>=', record.date_from),
                                                         ('start_datetime', '<=', record.date_to)])
                     if obj_report_ids:
                         for report in obj_report_ids:
-                            report.write({'on_holiday': True, 'on_attendance': False})
+                            if record.state in ['validate', 'validate1']:
+                                report.write({'on_holiday': True, 'on_attendance': False})
+                            if record.state == 'refuse':
+                                report.write({'on_holiday': False, 'on_attendance': True})
 
