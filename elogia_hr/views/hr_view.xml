@@ -96,6 +96,20 @@
             </field>
         </record>
 
+        <!-- View form inherit hr.leave.allocation-->
+        <record model="ir.ui.view" id="hr_leave_allocation_view_form_manager_inherited_elogia">
+            <field name="name">hr.leave.allocation.view.form.manager.inherited.elogia</field>
+            <field name="inherit_id" ref="hr_holidays.hr_leave_allocation_view_form_manager"/>
+            <field name="model">hr.leave.allocation</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='allocation_type']" position="before">
+                    <field name="discretional_days"/>
+                </xpath>
+            </field>
+        </record>
+
+
+
         <!-- View form inherit hr.contract-->
         <record model="ir.ui.view" id="hr_contract_view_form_inherited_elogia">
             <field name="name">hr.contract.view.form.inherited.elogia</field>
@@ -515,7 +529,6 @@
                                 <field name="normal_days" required="True"/>
                             </group>
                             <group name="second_group">
-                                <field name="discretionary_days"/>
                                 <field name="company_id" required="True"/>
                             </group>
                         </group>
@@ -532,7 +545,6 @@
                 <tree string="Accrual seniority plan" sample="1">
                     <field name="name"/>
                     <field name="normal_days"/>
-                    <field name="discretionary_days"/>
                     <field name="company_id"/>
                 </tree>
             </field>

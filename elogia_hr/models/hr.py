@@ -154,6 +154,7 @@ class EmployeeChangePlanning(models.Model):
     process_wage_v = fields.Boolean('Process Wage V')
     currency_id = fields.Many2one('res.currency', compute='_compute_get_company_currency', readonly=True, string="Currency",
                                   help='Utility field to express amount currency')
+    list_data = fields.Text('Data')
 
     def _compute_get_company_currency(self):
         for record in self:
@@ -285,6 +286,18 @@ class EmployeeChangePlanning(models.Model):
             else:
                 list_field.append({'planning_id': self.id, 'effective_date': fields.Date.today(),
                                    'type_action': 'wage_variable'})
+        if 'state' in vals and vals.get('state') == 'processed':
+            if self.check_company:
+                self.list_data = "Compania: " + self.company_id.name + '.'
+            if self.check_department:
+                self.list_data += " Departamento: " + self.department_id.name + '.'
+            if self.check_departure_date:
+                self.list_data += " Fecha despido: " + str(self.departure_date) + '.'
+            if self.check_wage:
+                self.list_data += " Salario: " + str(self.wage) + str(self.currency_id.symbol) + '.'
+            if self.check_wage_variable:
+                self.list_data += " Salario variable: " + str(self.wage_variable) + str(self.currency_id.symbol) + '.'
+            self.prepare_email()
         if list_action:
             action_ids = self.env['list.action.change'].search([('type_action', 'in', list_action),
                                                                 ('planning_id', '=', self.id)])
@@ -400,6 +413,38 @@ class EmployeeChangePlanning(models.Model):
                             planning.process_wage_v = True
                             dict_write = dict_init
         return False
+
+    def prepare_email(self):
+        mail_template = self.env['ir.model.data']._xmlid_to_res_id('elogia_hr.notification_email_change_employee')
+        self._create_mail_begin(mail_template)
+
+    def compose_email_message(self):
+        obj_partner_id = self.env['res.partner'].search([('name', 'like', 'Admin')], limit=1)
+        email_from = obj_partner_id.email if obj_partner_id else 'admin@email.com'
+        parent = self.employee_id.parent_id
+        email_to = parent.user_id.email_formatted if parent.user_id else 'user@email.com'
+        mail_data = {
+            'email_from': email_from,
+            'email_to': email_to,
+            'res_id': self.id,
+        }
+        return mail_data
+
+    def _create_mail_begin(self, template):
+        template_browse = self.env['mail.template'].browse(template)
+        data_compose = self.compose_email_message()
+        if template_browse and data_compose:
+            values = template_browse.generate_email(self.id,
+                                                    ['subject', 'body_html', 'email_from', 'email_to',
+                                                     'partner_to', 'reply_to'])
+            values['email_to'] = data_compose['email_to']
+            values['email_from'] = data_compose['email_from']
+            values['reply_to'] = data_compose['email_from']
+            values['res_id'] = data_compose['res_id']
+            values['res_id'] = data_compose['res_id']
+            msg_id = self.env['mail.mail'].sudo().create(values)
+            if msg_id:
+                msg_id.send()
 
 
 class TypeScholarship(models.Model):

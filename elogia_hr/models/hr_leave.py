@@ -23,22 +23,22 @@ class AccrualSeniorityPlan(models.Model):
 
     name = fields.Char('Name', index=True, required=True)
     normal_days = fields.Float('Work days', help='Holiday working days')
-    discretionary_days = fields.Float('Discretionary days', help='Discretionary days by the manager based on '
-                                                                 'individual performance')
     company_id = fields.Many2one(comodel_name='res.company', default=lambda self: self.env.company)
 
 
 class HolidaysAllocation(models.Model):
     _inherit = "hr.leave.allocation"
 
+    discretional_days = fields.Boolean('Discretional day')
+
     @api.constrains('employee_ids')
     def check_employee_ids(self):
         for record in self:
-            if record.employee_ids:
-                for item in record.employee_ids:
-                    if item.seniority_plan_id:
-                        record.number_of_days = record.number_of_days + record.employee_id.seniority_plan_id.normal_days\
-                                                + record.employee_id.seniority_plan_id.discretionary_days
+            if not record.discretional_days:
+                if record.employee_ids:
+                    for item in record.employee_ids:
+                        if item.seniority_plan_id:
+                            record.number_of_days = record.employee_id.seniority_plan_id.normal_days
 
 
 class HolidaysRequest(models.Model):
