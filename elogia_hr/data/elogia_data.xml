@@ -137,4 +137,21 @@
         <field name="lang">{{ object.employee_id.user_id.lang or user.lang }}</field>
         <field name="auto_delete" eval="True"/>
     </record>
+
+    <record id="notification_email_change_employee" model="mail.template">
+        <field name="name">HR Contract: Change in Employee</field>
+        <field name="model_id" ref="elogia_hr.model_employee_change_planning"/>
+        <field name="subject">Change in employee {{object.employee_id.name}}</field>
+        <field name="body_html" type="xml">
+            <div>
+                Hola <t t-out="object.employee_id.parent_id.name or ''">Gerente</t>.<br/>
+                Se han aplicado los siguientes cambios sobre el empleado <t t-out="object.employee_id.name or ''">Employee</t>:<br/>
+                <t t-out="object.list_data or ''">Data</t><br/>
+                Saludos,<br/><br/>
+                <t t-out="object.department_id.name or 'Department'"> Team</t>.
+            </div>
+        </field>
+        <field name="lang">{{ object.employee_id.user_id.lang or user.lang }}</field>
+        <field name="auto_delete" eval="True"/>
+    </record>
 </odoo>
