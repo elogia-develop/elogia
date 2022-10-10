@@ -6,7 +6,8 @@ import {Markup} from 'web.utils';
 
 PlanningGanttController.include({
     events: Object.assign({}, PlanningGanttController.prototype.events, {
-        'click .o_gantt_button_copy_month': '_onCopyMonthClicked',
+        // 'click .o_gantt_button_copy_month': '_onCopyMonthClicked',
+        'click .o_gantt_button_copy_month': '_onCopyMonthWzdClicked',
     }),
     buttonTemplateName: 'MonthPlanningGanttView.buttons',
 
@@ -39,5 +40,22 @@ PlanningGanttController.include({
         }
         this.reload();
 
-    }
+    },
+    _onCopyMonthWzdClicked: function (ev) {
+        ev.preventDefault();
+        var self = this;
+        var state = this.model.get();
+        let additional_context = _.extend({}, this.context, {
+            'default_start_datetime': this.model.convertToServerTime(state.startDate),
+            'default_end_datetime': this.model.convertToServerTime(state.stopDate),
+            'scale': state.scale,
+            'active_domain': this.model.domain,
+        });
+        return this.do_action('elogia_project.planning_copy_month_action', {
+            additional_context: additional_context,
+            on_close: function () {
+                self.reload();
+            }
+        });
+    },
 });
