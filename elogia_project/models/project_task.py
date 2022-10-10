@@ -89,56 +89,55 @@ class CopyMonthWizard(models.TransientModel):
                     self.remove_slot(slot, list_ok)
         if list_ok:
             slot_filters = view_slot.filtered(lambda e: e.id in list_ok)
-        if list_error:
-            for item in list_error:
-                if item['error'] == 'not_contract':
-                    for i in item['item']:
-                        val_errors += '[{}:{}] - {} does not have an associated contract. \n' \
-                            .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name)
-                if item['error'] == 'contract_valid':
-                    for i in item['item']:
-                        val_errors += '[{}:{}] - Its required that the contract associated with ' \
-                                      'the employee {} is not Expired or Cancelled.\n' \
-                            .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name)
-                if item['error'] == 'date_init':
-                    for i in item['item']:
-                        val_errors += '[{}:{}] - The employee/resource {} should not be working in this period. ' \
-                                      'Check the start date of the Contract.\n' \
-                            .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name)
-                if item['error'] == 'date_end':
-                    for i in item['item']:
-                        val_errors += '[{}:{}] - The employee/resource {} should not be working in this period. ' \
-                                      'Check end date of the Contract.\n' \
-                            .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name)
-                if item['error'] == 'duplicity':
-                    for i in item['item']:
-                        val_errors += '[{}:{}] - There are planning for {} at the same time.\n' \
-                            .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name)
-                if item['error'] == 'duplicity':
-                    for i in item['item']:
-                        val_errors += '[{}:{}] - {} has requested time off in this period.\n' \
-                            .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name)
-                if item['error'] == 'not_project':
-                    for i in item['item']:
-                        val_errors += '[{}:{}] - {} cannot have planning on project {}.\n' \
-                            .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name,
-                                    i.project_id.name)
-                if item['error'] == 'not_task':
-                    for i in item['item']:
-                        val_errors += '[{}:{}] - {} cannot have planning on this task {}.\n' \
-                            .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name,
-                                    i.task_id.name)
-                if item['error'] == 'not_project_date':
-                    for i in item['item']:
-                        val_errors += '[{}:{}] - Expiration date of the project {} is {}.\n' \
-                            .format(i.start_datetime.date(), i.end_datetime.date(), i.project_id.name,
-                                    i.project_id.date)
-                if item['error'] == 'not_task_date':
-                    for i in item['item']:
-                        val_errors += '[{}:{}] - Expiration date of the task {} is {}.\n' \
-                            .format(i.start_datetime.date(), i.end_datetime.date(), i.task_id.name,
-                                    i.task_id.date_deadline)
-            slot_errors = val_errors
+        for item in list_error:
+            if item['error'] == 'not_contract':
+                for i in item['item']:
+                    val_errors += '[{}:{}] - {} does not have an associated contract. \n' \
+                        .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name)
+            if item['error'] == 'contract_valid':
+                for i in item['item']:
+                    val_errors += '[{}:{}] - Its required that the contract associated with ' \
+                                  'the employee {} is not Expired or Cancelled.\n' \
+                        .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name)
+            if item['error'] == 'date_init':
+                for i in item['item']:
+                    val_errors += '[{}:{}] - The employee/resource {} should not be working in this period. ' \
+                                  'Check the start date of the Contract.\n' \
+                        .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name)
+            if item['error'] == 'date_end':
+                for i in item['item']:
+                    val_errors += '[{}:{}] - The employee/resource {} should not be working in this period. ' \
+                                  'Check end date of the Contract.\n' \
+                        .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name)
+            if item['error'] == 'duplicity':
+                for i in item['item']:
+                    val_errors += '[{}:{}] - There are planning for {} at the same time.\n' \
+                        .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name)
+            if item['error'] == 'duplicity':
+                for i in item['item']:
+                    val_errors += '[{}:{}] - {} has requested time off in this period.\n' \
+                        .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name)
+            if item['error'] == 'not_project':
+                for i in item['item']:
+                    val_errors += '[{}:{}] - {} cannot have planning on project {}.\n' \
+                        .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name,
+                                i.project_id.name)
+            if item['error'] == 'not_task':
+                for i in item['item']:
+                    val_errors += '[{}:{}] - {} cannot have planning on this task {}.\n' \
+                        .format(i.start_datetime.date(), i.end_datetime.date(), i.employee_id.name,
+                                i.task_id.name)
+            if item['error'] == 'not_project_date':
+                for i in item['item']:
+                    val_errors += '[{}:{}] - Expiration date of the project {} is {}.\n' \
+                        .format(i.start_datetime.date(), i.end_datetime.date(), i.project_id.name,
+                                i.project_id.date)
+            if item['error'] == 'not_task_date':
+                for i in item['item']:
+                    val_errors += '[{}:{}] - Expiration date of the task {} is {}.\n' \
+                        .format(i.start_datetime.date(), i.end_datetime.date(), i.task_id.name,
+                                i.task_id.date_deadline)
+        slot_errors = val_errors
         return slot_filters, slot_errors
 
     @api.onchange('start_datetime', 'end_datetime', 'slot_ids')
@@ -222,25 +221,21 @@ class Planning(models.Model):
     @api.constrains('employee_id', 'employee_id.contract_id', 'overlap_slot_count', 'allocated_hours', 'start_datetime',
                     'end_datetime', 'project_id', 'project_id.date', 'task_id', 'task_id.date_end')
     def _check_employee_amount(self):
-        env_planning = self.env['planning.slot']
-        val_total = 0
         for record in self:
             calendar_combine = record.employee_id.resource_calendar_id or record.company_id.resource_calendar_id
-            hours_by_combine = calendar_combine.get_work_hours_count(record.start_datetime, record.end_datetime,
-                                                                     compute_leaves=True) if calendar_combine else \
-                record._get_slot_duration()
+            if calendar_combine:
+                hours_by_combine = calendar_combine.get_work_hours_count(record.start_datetime, record.end_datetime,
+                                                                         compute_leaves=True)
+            else:
+                hours_by_combine = record._get_slot_duration()
             first_day = record.start_datetime.replace(day=1)
             daysInMonth = monthrange(first_day.year, first_day.month)[1]
             last_day = record.start_datetime.replace(day=daysInMonth)
-            total_hours_by_combine = calendar_combine.get_work_hours_count(first_day, last_day,
-                                                                     compute_leaves=True) if calendar_combine else \
-                record._get_slot_duration()
-
-            obj_planning = env_planning.search([('employee_id', '=', record.employee_id.id),
-                                                ('start_datetime', '>=', first_day), ('end_datetime', '<=', last_day)])
-            if obj_planning:
-                val_total = total_hours_by_combine - sum(obj_planning.mapped('allocated_hours'))
-            record.total_hours = val_total
+            if calendar_combine:
+                total_hours_by_combine = calendar_combine.get_work_hours_count(first_day, last_day, compute_leaves=True)
+            else:
+                hours_by_combine = record._get_slot_duration()
+            record.total_hours = total_hours_by_combine
             record.hours_available = record.total_hours - record.allocated_hours
             if 'wizard_origin' not in self._context:
                 if record.employee_id:
