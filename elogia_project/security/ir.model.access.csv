@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+elogia_project.access_copy_month_wizard,access_copy_month_wizard,elogia_project.model_copy_month_wizard,base.group_user,1,1,1,1
