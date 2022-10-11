@@ -1,5 +1,49 @@
 <odoo>
     <data>
+        <!-- Wizard View Form copy.month.wizard -->
+        <record model="ir.ui.view" id="copy_month_wizard_form">
+            <field name="name">Copy month wizard</field>
+            <field name="model">copy.month.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Copy previously month">
+                    <h5>Planning</h5>
+                    <field name="start_datetime" invisible="True"/>
+                    <field name="end_datetime" invisible="True"/>
+                    <field name="slot_ids">
+                        <tree edit="false" create="false" delete="false">
+                            <field name="resource_id"/>
+                            <field name="role_id"/>
+                            <field name="project_id"/>
+                            <field name="task_id"/>
+                            <field name="start_datetime"/>
+                            <field name="end_datetime"/>
+                            <field name="company_id" optional="hide"/>
+                            <field name="allocated_hours" optional="hide"/>
+                            <field name="allocated_percentage" optional="hide"/>
+                            <field name="name" optional="hide"/>
+                            <field name="state" optional="hide"/>
+                        </tree>
+                    </field>
+                    <h5>Warnings</h5>
+                        <field name="more_info" readonly="True"/>
+                    <footer>
+                        <button type="object" name="action_copy_previous_month" string="Copy Month" class="oe_highlight"/>
+                        <button special="cancel" string="Cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="planning_copy_month_action" model="ir.actions.act_window">
+            <field name="name">Copy Previously Month</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">copy.month.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+
         <!-- View form inherit project.task-->
         <record model="ir.ui.view" id="project_view_task_form2_inherited_elogia">
             <field name="name">project.view.task.form2.inherited.elogia</field>
@@ -73,6 +117,9 @@
             <field name="inherit_id" ref="planning.planning_view_form"/>
             <field name="model">planning.slot</field>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='resource_id']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
                 <xpath expr="//field[@name='project_id']" position="attributes">
                     <attribute name="required">True</attribute>
                 </xpath>

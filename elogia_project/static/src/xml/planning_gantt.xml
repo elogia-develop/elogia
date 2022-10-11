@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
     <t t-name="MonthPlanningGanttView.buttons" t-extend="SalePlanningGanttView.buttons">
-        <t t-jquery="button.o_gantt_button_plan_so" t-operation="before">
+         <t t-jquery="button.o_gantt_button_plan_so" t-operation="before">
             <button t-if="activeActions.edit &amp;&amp; activateScale == 'month'"
                     class="o_gantt_button_copy_month btn btn-primary" title="Copy Month">
                 Copy Preview Month
             </button>
+        </t>
+        <t t-jquery="button.o_gantt_button_copy_previous_week" t-operation="replace">
+             <t></t>
         </t>
     </t>
 </templates>
