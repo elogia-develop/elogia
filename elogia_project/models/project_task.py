@@ -50,7 +50,7 @@ class CopyMonthWizard(models.TransientModel):
                     if slot.id not in self.check_any_value(list_error):
                         list_error.append({'error': 'date_init', 'item': slot})
                     self.remove_slot(slot, list_ok)
-                if contract.date_end < end_date.date() and next_month > contract.date_end:
+                if contract.date_end and (contract.date_end < end_date.date() and next_month > contract.date_end):
                     if slot.id not in self.check_any_value(list_error):
                         list_error.append({'error': 'date_end', 'item': slot})
                     self.remove_slot(slot, list_ok)
@@ -73,7 +73,7 @@ class CopyMonthWizard(models.TransientModel):
                     if slot.id not in self.check_any_value(list_error):
                         list_error.append({'error': 'not_project', 'item': slot})
                     self.remove_slot(slot, list_ok)
-                if slot.project_id.date < next_month:
+                if slot.project_id.date and slot.project_id.date < next_month:
                     if slot.id not in self.check_any_value(list_error):
                         list_error.append({'error': 'not_project_date', 'item': slot})
                     self.remove_slot(slot, list_ok)
@@ -83,7 +83,7 @@ class CopyMonthWizard(models.TransientModel):
                     if slot.id not in self.check_any_value(list_error):
                         list_error.append({'error': 'not_task', 'item': slot})
                     self.remove_slot(slot, list_ok)
-                if slot.task_id.date_deadline < next_month:
+                if slot.task_id.date_deadline and slot.task_id.date_deadline < next_month:
                     if slot.id not in self.check_any_value(list_error):
                         list_error.append({'error': 'not_task_date', 'item': slot})
                     self.remove_slot(slot, list_ok)
