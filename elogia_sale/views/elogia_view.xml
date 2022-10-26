@@ -1,0 +1,1018 @@
+<odoo>
+    <data>
+       <!-- Wizard View Form invoice.supplier.wizard -->
+        <record model="ir.ui.view" id="invoice_supplier_wizard_form">
+            <field name="name">Invoice Supplier</field>
+            <field name="model">invoice.supplier.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+					<h4>Do you want to process the following lines of invoices?</h4>
+                    <group>
+                        <field nolabel="1" name="invoice_line_ids">
+                            <tree editable="bottom" decoration-info="state == 'no_process'"
+                                  decoration-muted="state == 'process'">
+                                <field name="campaign_id" invisible="True"/>
+                                <field name="invoice_date" attrs="{'readonly':[('state','=', 'process')]}"
+                                       readonly="True"/>
+                                <field name="invoice_date_due" attrs="{'readonly':[('state','=', 'process')]}"
+                                       readonly="True"/>
+                                <field name="order_id" options="{'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':[('state','=', 'process')]}" readonly="True"/>
+                                <field name="description" readonly="True"
+                                       attrs="{'readonly':[('state','=', 'process')]}"/>
+                                <field name="amount" attrs="{'readonly':[('state','=', 'process')]}"
+                                       readonly="True" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                <field name="invoice_id" options="{'no_create': True, 'no_create_edit': True}"
+                                       readonly="True"/>
+                                <field name="move_id" readonly="True"
+                                       options="{'no_create': True, 'no_create_edit': True}"/>
+                                <field name="currency_id" invisible="True"/>
+                                <field name="state" invisible="True"/>
+                            </tree>
+                        </field>
+					</group>
+                    <footer>
+                        <button type="object" name="action_create_invoice" string="Create" class="oe_highlight"/>
+                        <button special="cancel" string="Cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- View inherit Form sale.order-->
+        <record id="sale_order_form_inherit_elogia" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.elogia</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="campaign_elogia_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                           domain="[('client_id','=', partner_id)]" invisible="True"/>
+                    <field name="control_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                           domain="[('campaign_id','=', campaign_elogia_id)]" invisible="True"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- View inherit tree sale.order-->
+        <record id="sale_order_tree_inherit_elogia" model="ir.ui.view">
+            <field name="name">sale.order.tree.inherit.elogia</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="before">
+                    <field name="campaign_elogia_id"/>
+                    <field name="control_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- View inherit Form account.move-->
+        <record id="view_move_form_inherit_elogia" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.elogia</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='journal_div']" position="after">
+                    <field name="campaign_elogia_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                           domain="[('client_id','=', partner_id)]" invisible="True"/>
+                    <field name="control_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                           domain="[('campaign_id','=', campaign_elogia_id)]" invisible="True"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- View inherit Tree account.move-->
+        <record id="view_move_tree_inherit_elogia" model="ir.ui.view">
+            <field name="name">account.move.tree.inherit.elogia</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="before">
+                    <field name="campaign_elogia_id"/>
+                    <field name="control_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_invoice_tree_inherit_elogia" model="ir.ui.view">
+            <field name="name">account.move.tree.invoice.inherit.elogia</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_invoice_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="before">
+                    <field name="campaign_elogia_id"/>
+                    <field name="control_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- View inherit form purchase.order-->
+        <record id="view_purchase_order_form_inherit_elogia" model="ir.ui.view">
+            <field name="name">purchase.order.form.inherit.elogia</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='reminder']" position="after">
+                    <field name="campaign_elogia_id" invisible="True"/>
+                    <field name="control_id" invisible="True"/>
+                </xpath>
+            </field>
+        </record>
+
+         <!-- View inherit tree purchase.order-->
+        <record id="view_purchase_order_tree_inherit_elogia" model="ir.ui.view">
+            <field name="name">purchase.order.tree.inherit.elogia</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='origin']" position="before">
+                    <field name="campaign_elogia_id" invisible="True"/>
+                    <field name="control_id" invisible="True"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_purchase_order_kpis_tree_inherit_elogia" model="ir.ui.view">
+            <field name="name">purchase.order.kpis.tree.inherit.elogia</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='origin']" position="before">
+                    <field name="campaign_elogia_id" invisible="True"/>
+                    <field name="control_id" invisible="True"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_purchase_order_view_tree_inherit_elogia" model="ir.ui.view">
+            <field name="name">purchase.order.view.tree.inherit.elogia</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_view_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='origin']" position="before">
+                    <field name="campaign_elogia_id" invisible="True"/>
+                    <field name="control_id" invisible="True"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- View Form campaign.marketing.elogia -->
+        <record model="ir.ui.view" id="campaign_marketing_elogia_form">
+            <field name="name">campaign.marketing.elogia.form</field>
+            <field name="model">campaign.marketing.elogia</field>
+            <field name="arch" type="xml">
+                <form string="Campaign marketing">
+                    <header>
+                        <button name="set_generated" string="Generate objectives" type="object" class="btn-primary"
+                                attrs="{'invisible':[('state','!=', 'open')]}"/>
+                        <button name="create_invoice" string="Create move" type="object" class="btn-primary"
+                                attrs="{'invisible':['|', ('state','!=', 'open'), ('type_invoice', '!=', 'account')]}"/>
+                        <button name="set_closed" string="To close" type="object"
+                                attrs="{'invisible':[('state','=', 'closed')]}"/>
+                        <button name="set_open" string="To open" type="object" class="btn-primary"
+                                attrs="{'invisible':[('state','=', 'open')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="open,closed" required="True"/>
+                    </header>
+                    <field name="check_deleted" invisible="1"/>
+                    <field name="list_deleted" invisible="1"/>
+                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('check_deleted', '=', False)]}">
+                        <strong>This campaign has objectives in the period(s) <field name="list_deleted"/> that should be deleted.</strong><br/>
+                        View this information by accessing the Campaigns/Objectives menu.
+                    </div>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" name="action_view_sales" type="object" icon="fa-dollar">
+                                <field string="Sales" name="count_sale" widget="statinfo"/>
+                            </button>
+<!--                            <button class="oe_stat_button" name="action_view_picking" type="object" icon="fa-truck"-->
+<!--                                    attrs="{'invisible':[('type_invoice','!=','sale')]}">-->
+<!--                                <field string="Pickings" name="count_picking" widget="statinfo"/>-->
+<!--                            </button>-->
+                            <button class="oe_stat_button" name="action_view_invoice_sale" type="object" icon="fa-pencil-square-o">
+                                <field string="Invoices" name="count_invoice_sale" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" name="action_view_purchases" type="object" icon="fa-credit-card">
+                                <field string="Purchases" name="count_purchase" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" name="action_view_invoice_purchase" type="object" icon="fa-pencil-square-o">
+                                <field string="Invoices vendor" name="count_invoice_purchase" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" name="action_view_moves" type="object" icon="fa-copy">
+                                <field string="Moves" name="count_move" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" name="action_view_objectives" type="object" icon="fa-file-text-o">
+                                <field string="Objectives" name="count_objectives" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" name="action_view_control" type="object" icon="fa-list-ul">
+                                <field string="Control" name="count_control" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1><field name="name" required="True" attrs="{'readonly':[('state','!=', 'open')]}"/></h1>
+                        </div>
+                        <field name="check_change" invisible="True"/>
+                        <group>
+                            <group name="firs_group">
+                                <field name="project_id" required="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':[('state','!=', 'open')]}"/>
+                                <field name="client_id" required="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':[('state','!=', 'open')]}"/>
+                                <field name="analytic_account_id" required="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':[('state','!=', 'open')]}"/>
+                            </group>
+                            <group name="second_group">
+                                <label for="date_start" string="Dates"/>
+                                <div name="dates" class="o_row">
+                                    <field name="date_start" required="True" widget="daterange"
+                                           options='{"related_end_date": "date"}'
+                                           attrs="{'readonly':[('state','!=', 'open')]}"/>
+                                    <i class="fa fa-long-arrow-right mx-2 oe_edit_only" aria-label="Arrow icon" title="Arrow"/>
+                                    <i class="fa fa-long-arrow-right mx-2 oe_read_only" aria-label="Arrow icon" title="Arrow"
+                                       attrs="{'invisible': [('date_start', '=', False), ('date', '=', False)]}"/>
+                                    <field name="date" required="True" widget="daterange"
+                                           options='{"related_start_date": "date_start"}'
+                                           attrs="{'readonly':[('state','!=', 'open')]}"/>
+                                </div>
+                                <field name="company_id"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':[('state','!=', 'open')]}"/>
+                                <field name="currency_id" readonly="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                                <field name="percentage_fee" attrs="{'readonly':[('state','!=', 'open')]}"/>
+                                <field name="amount_total" widget='monetary' options="{'currency_field': 'currency_id'}"
+                                       attrs="{'readonly':[('state','!=', 'open')]}" />
+                                <field name="amount_diff" widget='monetary' options="{'currency_field': 'currency_id'}"
+                                       attrs="{'readonly':[('state','!=', 'open')]}"/>
+                                <field name="amount_fee" widget='monetary' options="{'currency_field': 'currency_id'}"
+                                       attrs="{'readonly':[('state','!=', 'open')]}"/>
+                            </group>
+                            <group name="thirty_group">
+                                <field name="product_id" attrs="{'readonly':[('state','!=', 'open')]}"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                                <field name="type_invoice" required="True" attrs="{'readonly':[('state','!=', 'open')]}"/>
+                                <field name="type_payment" required="True" attrs="{'readonly':[('state','!=', 'open')]}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="lines" string="Line products">
+                                <field name="campaign_line_ids" attrs="{'readonly':[('state','!=', 'open')]}">
+                                    <tree nolabel="1" editable="bottom" decoration-info="state == 'open'"
+                                          decoration-muted="state == 'closed'">
+                                        <field name="product_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                                        <field name="name"/>
+                                        <field name="percentage_fee"/>
+                                        <field name="amount_total" widget='monetary' optional="hide"
+                                               options="{'currency_field': 'currency_id'}"/>
+                                        <field name="campaign_id" invisible="True"/>
+                                        <field name="company_id" invisible="True"/>
+                                        <field name="currency_id" invisible="True"/>
+                                        <field name="state" optional="hide"  widget="badge" decoration-info="state == 'open'"
+                                          decoration-muted="state == 'closed'"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page name="optimizers" string="Optimizers">
+                                <field name="user_ids" attrs="{'readonly':[('state','!=', 'open')]}">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="login"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page name="invoice" string="Line invoices"
+                                  attrs="{'invisible':[('type_invoice','!=','account')]}">
+                                <field name="invoice_line_ids" attrs="{'readonly':[('state','!=', 'open')]}">
+                                    <tree editable="bottom" decoration-info="state == 'no_process'"
+                                          decoration-muted="state == 'process'">
+                                        <field name="campaign_id" invisible="True"/>
+                                        <field name="invoice_date" attrs="{'readonly':[('state','=', 'process')]}"
+                                               required="True"/>
+                                        <field name="invoice_date_due" attrs="{'readonly':[('state','=', 'process')]}"
+                                               required="True"/>
+                                        <field name="order_id" options="{'no_create': True, 'no_create_edit': True}"
+                                               attrs="{'readonly':[('state','=', 'process')]}"/>
+                                        <field name="description" attrs="{'readonly':[('state','=', 'process')]}"
+                                               required="True"/>
+                                        <field name="amount" attrs="{'readonly':[('state','=', 'process')]}"
+                                               required="True" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                        <field name="invoice_id" attrs="{'readonly':[('state','=', 'process')]}"
+                                               options="{'no_create': True, 'no_create_edit': True}" required="True"
+                                               domain="[('move_type','!=', 'entry')]"/>
+                                        <field name="move_id" readonly="True"
+                                               options="{'no_create': True, 'no_create_edit': True}"/>
+                                        <field name="currency_id" invisible="True"/>
+                                        <field name="state" optional="hide" widget="badge"
+                                               decoration-info="state == 'no_process'" decoration-muted="state == 'process'"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree campaign.marketing.elogia -->
+        <record model="ir.ui.view" id="campaign_marketing_elogia_tree">
+            <field name="name">campaign.marketing.elogia.tree</field>
+            <field name="model">campaign.marketing.elogia</field>
+            <field name="arch" type="xml">
+                <tree string="Campaign marketing" decoration-info="state == 'open'"
+                      decoration-muted="state == 'closed'" sample="1">
+                    <field name="name"/>
+                    <field name="project_id"/>
+                    <field name="client_id"/>
+                    <field name="analytic_account_id"/>
+                    <field name="date_start"/>
+                    <field name="date"/>
+                    <field name="type_invoice"/>
+                    <field name="type_payment" optional="hide"/>
+                    <field name="create_uid" string="User"/>
+                    <field name="currency_id" optional="hide"/>
+                    <field name="amount_total" sum="total" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                    <field name="amount_diff" sum="diff" widget='monetary' options="{'currency_field': 'currency_id'}"
+                           optional="hide"/>
+                    <field name="company_id"/>
+                    <field name="state" decoration-info="state == 'open'" decoration-muted="state == 'closed'"
+                           widget="badge"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- View search campaign.marketing.elogia -->
+        <record model="ir.ui.view" id="campaign_marketing_elogia_search">
+            <field name="name">campaign.marketing.elogia.search</field>
+            <field name="model">campaign.marketing.elogia</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="project_id"/>
+                    <field name="client_id"/>
+                    <field name="company_id"/>
+                    <field name="date_start"/>
+                    <field name="date"/>
+                    <field name="type_invoice"/>
+                    <field name="type_payment"/>
+                    <field name="campaign_line_ids"/>
+                    <field name="order_ids"/>
+                    <field name="state"/>
+                    <filter string="My campaigns" name="campaign" domain="[('create_uid','=', uid)]"/>
+                    <separator/>
+                    <filter string="Sales" name="sales" domain="[('type_invoice','=','sale')]"/>
+                    <filter string="Accounting" name="accounting" domain="[('type_invoice', '=', 'account')]"/>
+                    <separator/>
+                    <filter string="Spain" name="spain" domain="[('type_payment','=','spain')]"/>
+                    <filter string="Client" name="client" domain="[('type_payment', '=', 'client')]"/>
+                    <filter string="Mexico" name="mexico" domain="[('type_payment', '=', 'mexico')]"/>
+                    <separator/>
+                    <filter string="Open" name="draft" domain="[('state','=','open')]"/>
+                    <filter string="Closed" name="closed" domain="[('state', '=', 'closed')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Project" name="group_project" domain="[]" context="{'group_by':'project_id'}"/>
+                        <filter string="Client" name="group_client" domain="[]" context="{'group_by':'client_id'}"/>
+                        <filter string="Company" name="group_company" domain="[]" context="{'group_by':'company_id'}"/>
+                        <filter string="Status" name="group_state" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="Start date" name="group_date_start" domain="[]" context="{'group_by':'date_start'}"/>
+                        <filter string="Finish date" name="group_date" domain="[]" context="{'group_by':'date'}"/>
+                        <filter string="Type invoice" name="group_type_invoice" domain="[]" context="{'group_by':'type_invoice'}"/>
+                        <filter string="Type payment" name="group_type_payment" domain="[]" context="{'group_by':'type_payment'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_campaign_marketing_elogia" model="ir.actions.act_window">
+            <field name="name">Campaign marketing</field>
+            <field name="res_model">campaign.marketing.elogia</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('campaign_marketing_elogia_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('campaign_marketing_elogia_form')})]"/>
+            <field name="search_view_id" ref="campaign_marketing_elogia_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new campaigns!
+                </p>
+            </field>
+            <field name="context">{'default_check_change': 'True'}</field>
+        </record>
+
+        <!-- View Form control.campaign.marketing -->
+        <record model="ir.ui.view" id="control_campaign_marketing_form">
+            <field name="name">control.campaign.marketing.form</field>
+            <field name="model">control.campaign.marketing</field>
+            <field name="arch" type="xml">
+                <form string="Control campaign">
+                    <header>
+                        <button name="set_pending" string="Pending" type="object" class="btn-primary"
+                                attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                        <button name="generate_sale" string="Generate Sale" type="object" class="btn-primary"
+                                attrs="{'invisible':[('state','!=', 'pending')]}"/>
+                        <button name="set_cancel" string="Generate Invoice" type="object" class="btn-primary"
+                                attrs="{'invisible':[('state','!=', 'pending')]}"/>
+                        <button name="set_cancel" string="set to cancel" type="object"
+                                attrs="{'invisible':[('state','not in', ['sale', 'purchase', 'both'])]}"/>
+                        <button name="set_cancel" string="set to cancel" type="object"
+                                attrs="{'invisible':[('state','not in', ['sale', 'purchase', 'both'])]}"/>
+                        <button name="set_draft" string="set to draft" type="object"
+                                attrs="{'invisible':[('state','not in', ['pending', 'cancel'])]}"/>
+                        <button name="set_cancel" string="set to cancel" type="object"
+                                attrs="{'invisible':[('state','not in', ['sale', 'purchase', 'both'])]}"/>
+                        <field name="state" widget="statusbar" required="True"
+                               statusbar_visible="draft,pending,sale,purchase,both"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" name="action_view_sales" type="object" icon="fa-dollar"
+                                    attrs="{'invisible':[('type_invoice','!=','sale')]}">
+                                <field string="Sales" name="count_sale" widget="statinfo"/>
+                            </button>
+<!--                            <button class="oe_stat_button" name="action_view_picking" type="object" icon="fa-truck"-->
+<!--                                    attrs="{'invisible':[('type_invoice','!=','sale')]}">-->
+<!--                                <field string="Pickings" name="count_picking" widget="statinfo"/>-->
+<!--                            </button>-->
+                            <button class="oe_stat_button" name="action_view_invoice_sale" type="object" icon="fa-pencil-square-o"
+                                    attrs="{'invisible':[('type_invoice','!=','sale')]}">
+                                <field string="Invoices" name="count_invoice_sale" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" name="action_view_purchases" type="object" icon="fa-credit-card">
+                                <field string="Purchases" name="count_purchase" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" name="action_view_invoice_purchase" type="object" icon="fa-pencil-square-o">
+                                <field string="Invoices vendor" name="count_invoice_purchase" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" name="action_view_moves" type="object" icon="fa-copy">
+                                <field string="Moves" name="count_move" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <group>
+                            <group name="firs_group">
+                                <field name="campaign_id" required="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="type_invoice" required="True" attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="company_id" required="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="project_id" required="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="campaign_line_id" required="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':[('state','!=', 'draft')]}"
+                                       domain="[('campaign_id', '=', campaign_id)]"/>
+                            </group>
+                            <group name="second_group">
+                                <field name="period" required="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="name" attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="amount_unit" attrs="{'readonly':['|', ('state','!=', 'draft'),
+                                ('type_invoice', '!=',  'sale')]}"/>
+                                <field name="clicks" attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="percentage_fee" attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                            </group>
+                            <group name="thirty_group" string="Sales">
+                                <field name="client_id" required="True" attrs="{'readonly':[('state','!=', 'draft')]}"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                                <field name="currency_id" required="True" attrs="{'readonly':[('state','!=', 'draft')]}"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                                <field name="team_id" required="True" attrs="{'readonly':[('state','!=', 'draft')]}"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                            </group>
+                            <group name="thirty_group" string="Others">
+                                <field name="amount_currency" attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="consume" attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="consume_currency" attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="check_change" invisible="True"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="supplier" string="Suppliers">
+                                <field name="control_line_ids" attrs="{'readonly':[('state','!=', 'draft')]}">
+                                    <tree nolabel="1" editable="bottom" decoration-info="state == 'no_process'"
+                                               decoration-muted="state == 'process'">
+                                        <field name="control_id" invisible="True"/>
+                                        <field name="partner_id" options="{'no_create': True, 'no_create_edit': True}"
+                                               required="True"/>
+                                        <field name="invoice_provision" widget='monetary' required="True"
+                                               options="{'currency_field': 'currency_id'}"/>
+                                        <field name="currency_id" required="True"/>
+                                        <field name="type_payment" required="True"/>
+                                        <field name="company_id" optional="hide"/>
+                                        <field name="state" widget="badge" decoration-info="state == 'no_process'"
+                                               decoration-muted="state == 'process'"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page name="products" string="Products">
+                            </page>
+                            <page name="kpis" string="KPIS">
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree control.campaign.marketing -->
+        <record model="ir.ui.view" id="control_campaign_marketing_tree">
+            <field name="name">control.campaign.marketing.tree</field>
+            <field name="model">control.campaign.marketing</field>
+            <field name="arch" type="xml">
+                <tree string="Control campaign" sample="1" decoration-info="state == 'pending'" decoration-muted="state == 'cancel'"
+                           decoration-success="state == 'both'" decoration-danger="state in ['sale', 'purchase']" >
+                    <field name="name" optional="hide"/>
+                    <field name="campaign_id"/>
+                    <field name="type_invoice" optional="hide"/>
+                    <field name="company_id"/>
+                    <field name="project_id"/>
+                    <field name="client_id"/>
+                    <field name="team_id" optional="hide"/>
+                    <field name="campaign_line_id"/>
+                    <field name="period"/>
+                    <field name="currency_id" optional="hide"/>
+                    <field name="percentage_fee" optional="hide" sum="fee"/>
+                    <field name="amount_unit" sum="total" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                    <field name="amount_currency" sum="amount_currency"/>
+                    <field name="consume" sum="consume" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                    <field name="consume_currency" sum="consume_currency"/>
+                    <field name="state" decoration-info="state == 'pending'" decoration-muted="state == 'cancel'"
+                           decoration-success="state == 'both'" decoration-danger="state in ['sale', 'purchase']"
+                           widget="badge"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- View search control.campaign.marketing -->
+        <record model="ir.ui.view" id="control_campaign_marketing_search">
+            <field name="name">control.campaign.marketing.search</field>
+            <field name="model">control.campaign.marketing</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="campaign_id"/>
+                    <field name="type_invoice"/>
+                    <field name="company_id"/>
+                    <field name="project_id"/>
+                    <field name="client_id"/>
+                    <field name="team_id"/>
+                    <field name="campaign_line_id"/>
+                    <field name="order_ids"/>
+                    <field name="period"/>
+                    <field name="state"/>
+                    <filter string="My campaigns" name="campaign" domain="[('campaign_id.create_uid','=', uid)]"/>
+                    <separator/>
+                    <filter string="Sale" name="sale" domain="[('type_invoice','=','sale')]"/>
+                    <filter string="Account" name="account" domain="[('type_invoice', '=', 'account')]"/>
+                    <separator/>
+                    <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                    <filter string="Pending processing" name="pending" domain="[('state', '=', 'pending')]"/>
+                    <filter string="Processed sale" name="sale" domain="[('state', '=', 'sale')]"/>
+                    <filter string="Processed purchase" name="purchase" domain="[('state', '=', 'purchase')]"/>
+                    <filter string="Processed" name="both" domain="[('state', '=', 'both')]"/>
+                    <filter string="Cancelled" name="cancel" domain="[('state', '=', 'cancel')]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Campaign" name="group_campaign_id" domain="[]" context="{'group_by':'campaign_id'}"/>
+                        <filter string="Type invoice" name="group_type_invoice" domain="[]" context="{'group_by':'type_invoice'}"/>
+                        <filter string="Company" name="group_company" domain="[]" context="{'group_by':'company_id'}"/>
+                        <filter string="Project" name="group_project" domain="[]" context="{'group_by':'project_id'}"/>
+                        <filter string="Client" name="group_client" domain="[]" context="{'group_by':'client_id'}"/>
+                        <filter string="Team" name="group_team" domain="[]" context="{'group_by':'team_id'}"/>
+                        <filter string="Product" name="group_product" domain="[]" context="{'group_by':'campaign_line_id'}"/>
+                        <filter string="Period" name="group_period" domain="[]" context="{'group_by':'period'}"/>
+                        <filter string="Status" name="group_state" domain="[]" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_control_campaign_marketing" model="ir.actions.act_window">
+            <field name="name">Control campaign</field>
+            <field name="res_model">control.campaign.marketing</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new control campaign!
+                </p>
+            </field>
+            <field name="context">{'default_check_change': 'True'}</field>
+        </record>
+
+        <!-- View Form objective.campaign.marketing -->
+        <record model="ir.ui.view" id="objective_campaign_marketing_form">
+            <field name="name">objective.campaign.marketing.form</field>
+            <field name="model">objective.campaign.marketing</field>
+            <field name="arch" type="xml">
+                <form string="Objectives">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" required="True" readonly="True"/></h1>
+                        </div>
+                        <group>
+                            <group name="first_group">
+                                <field name="project_id" readonly="True"/>
+                                <field name="campaign_id" readonly="True"/>
+                                <field name="client_id" readonly="True"/>
+                                <field name="product_id" readonly="True"/>
+                            </group>
+                            <group name="second_group">
+                                <field name="period" readonly="True"/>
+                                <field name="amount_period" options="{'currency_field': 'currency_id'}"
+                                       widget='monetary'/>
+                                <field name="percentage_fee"/>
+                                <field name="percentage_margin"/>
+                                <field name="margin" options="{'currency_field': 'currency_id'}"
+                                       widget='monetary' readonly="True"/>
+                            </group>
+                            <group name="thirty_group">
+                                <field name="type_payment" readonly="True"/>
+                                <field name="company_id" readonly="True"/>
+                                <field name="currency_id" invisible="True"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree objective.campaign.marketing-->
+        <record model="ir.ui.view" id="objective_campaign_marketing_tree">
+            <field name="name">objective.campaign.marketing.tree</field>
+            <field name="model">objective.campaign.marketing</field>
+            <field name="arch" type="xml">
+                <tree string="Objectives" editable="bottom" sample="1" decoration-danger="check_deleted == True">
+                    <field name="name" readonly="True"/>
+                    <field name="project_id" readonly="True"/>
+                    <field name="campaign_id" readonly="True"/>
+                    <field name="client_id" readonly="True"/>
+                    <field name="product_id" readonly="True"/>
+                    <field name="period" readonly="True"/>
+                    <field name="amount_period" options="{'currency_field': 'currency_id'}" widget='monetary' sum="Total"/>
+                    <field name="percentage_fee" sum="Fee"/>
+                    <field name="percentage_margin" sum="FeeMargin"/>
+                    <field name="margin" options="{'currency_field': 'currency_id'}" widget='monetary' sum="Margin"
+                           readonly="True"/>
+                    <field name="type_payment" readonly="True" optional="hide"/>
+                    <field name="company_id" optional="hide"/>
+                    <field name="create_uid" string="User" optional="hide"/>
+                    <field name="check_deleted" invisible="True"/>
+                    <field name="currency_id" invisible="True"/>
+                    <button name="action_read_objective" type="object" string="View" class="float-right btn-secondary"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- View search objective.campaign.marketing -->
+        <record model="ir.ui.view" id="objective_campaign_marketing_search">
+            <field name="name">objective.campaign.marketing.search</field>
+            <field name="model">objective.campaign.marketing</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="project_id"/>
+                    <field name="campaign_id"/>
+                    <field name="campaign_line_id"/>
+                    <field name="client_id"/>
+                    <field name="product_id"/>
+                    <field name="period"/>
+                    <field name="company_id"/>
+                    <field name="type_payment"/>
+                    <filter string="My campaigns" name="campaign" domain="[('campaign_id.create_uid','=', uid)]"/>
+                    <separator/>
+                    <filter string="Spain" name="spain" domain="[('type_payment','=','spain')]"/>
+                    <filter string="Client" name="client" domain="[('type_payment', '=', 'client')]"/>
+                    <filter string="Mexico" name="mexico" domain="[('type_payment', '=', 'mexico')]"/>
+                    <separator/>
+                    <filter string="To delete" name="mexico" domain="[('check_deleted', '=', 'True')]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Project" name="group_project" domain="[]" context="{'group_by':'project_id'}"/>
+                        <filter string="Campaign" name="group_campaign" domain="[]" context="{'group_by':'campaign_id'}"/>
+                        <filter string="Product" name="group_product" domain="[]" context="{'group_by':'product_id'}"/>
+                        <filter string="Period" name="group_period" domain="[]" context="{'group_by':'period'}"/>
+                        <filter string="Client" name="group_client" domain="[]" context="{'group_by':'client_id'}"/>
+                        <filter string="Type payment" name="group_type_payment" domain="[]" context="{'group_by':'type_payment'}"/>
+                        <filter string="Company" name="group_company" domain="[]" context="{'group_by':'company_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_objective_campaign_marketing" model="ir.actions.act_window">
+            <field name="name">Objectives</field>
+            <field name="res_model">objective.campaign.marketing</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    There are no objectives to display!
+                </p>
+            </field>
+        </record>
+
+        <!-- View Form period.campaign -->
+        <record model="ir.ui.view" id="period_campaign_form">
+            <field name="name">period.campaign.form</field>
+            <field name="model">period.campaign</field>
+            <field name="arch" type="xml">
+                <form string="Period">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="True"/></h1>
+                        </div>
+                        <group>
+                            <group name="first_group">
+                                <field name="name_month"/>
+                            </group>
+                            <group name="second_group">
+                                <field name="name_year"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group name="third_group">
+                                <field name="state"/>
+                            </group>
+                            <group name="four_group">
+                                <field name="state_objective"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group name="five_group">
+                                <field name="company_id" required="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree period.campaign -->
+        <record model="ir.ui.view" id="period_campaign_tree">
+            <field name="name">period.campaign.tree</field>
+            <field name="model">period.campaign</field>
+            <field name="arch" type="xml">
+                <tree string="Period" editable="bottom" sample="1" decoration-info="state == 'open' or state_objective == 'open'"
+                      decoration-muted="state == 'closed' or state_objective == 'closed'">
+                    <field name="name"/>
+                    <field name="name_month"/>
+                    <field name="name_year"/>
+                    <field name="company_id"/>
+                    <field name="create_date"/>
+                    <field name="create_uid" string="User"/>
+                    <field name="state" decoration-info="state == 'open'" decoration-muted="state == 'closed'"/>
+                    <field name="state_objective" decoration-info="state_objective == 'open'" decoration-muted="state_objective == 'closed'"/>
+                    <button name="action_read_period" type="object" string="View" class="float-right btn-secondary"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- View search period.campaign -->
+        <record model="ir.ui.view" id="period_campaign_search">
+            <field name="name">period.campaign.search</field>
+            <field name="model">period.campaign</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="name_month"/>
+                    <field name="name_year"/>
+                    <field name="company_id"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Year" name="group_year" domain="[]" context="{'group_by':'name_year'}"/>
+                        <filter string="Company" name="group_company" domain="[]" context="{'group_by':'company_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_period_campaign" model="ir.actions.act_window">
+            <field name="name">Period</field>
+            <field name="res_model">period.campaign</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new period!
+                </p>
+            </field>
+        </record>
+
+        <!-- View Form control.line.supplier -->
+        <record model="ir.ui.view" id="control_line_supplier_form">
+            <field name="name">control.line.supplier.form</field>
+            <field name="model">control.line.supplier</field>
+            <field name="arch" type="xml">
+                <form string="Line supplier">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="no_process,process" required="True"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group name="first_group">
+                                <field name="partner_id" readonly="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                                <field name="type_payment" readonly="True"/>
+                            </group>
+                            <group name="second_group">
+                                <field name="invoice_provision" readonly="True"/>
+                                <field name="currency_id" readonly="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group name="third_group">
+                                <field name="control_id" invisible="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                                <field name="company_id" readonly="True"
+                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree control.line.supplier -->
+        <record model="ir.ui.view" id="control_line_supplier_tree">
+            <field name="name">control.line.supplier.tree</field>
+            <field name="model">control.line.supplier</field>
+            <field name="arch" type="xml">
+                <tree string="Line supplier" editable="bottom" create="false" delete="false" sample="1"
+                      decoration-info="state == 'no_process'" decoration-muted="state == 'process'">
+                    <field name="control_id" readonly="True" optional="hide"/>
+                    <field name="name_campaign" readonly="True"/>
+                    <field name="partner_id" readonly="True" options="{'no_create': True, 'no_create_edit': True}"/>
+                    <field name="invoice_provision" widget='monetary' options="{'currency_field': 'currency_id'}"
+                           readonly="True"/>
+                    <field name="currency_id" readonly="True"/>
+                    <field name="type_payment" readonly="True"/>
+                    <field name="company_id" readonly="True"/>
+                    <field name="state" widget="badge" decoration-info="state == 'no_process'"
+                           decoration-muted="state == 'process'"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- View search control.line.supplier -->
+        <record model="ir.ui.view" id="control_line_supplier_search">
+            <field name="name">control.line.supplier.search</field>
+            <field name="model">control.line.supplier</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="partner_id"/>
+                    <field name="name_campaign"/>
+                    <field name="type_payment"/>
+                    <field name="company_id"/>
+                    <field name="state"/>
+                    <separator/>
+                    <filter string="Spain" name="spain" domain="[('type_payment','=','spain')]"/>
+                    <filter string="Client" name="client" domain="[('type_payment', '=', 'client')]"/>
+                    <filter string="Mexico" name="mexico" domain="[('type_payment', '=', 'mexico')]"/>
+                    <separator/>
+                    <filter string="No process" name="no_process" domain="[('state', '=', 'no_process')]"/>
+                    <filter string="Process" name="process" domain="[('state', '=', 'process')]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Supplier" name="group_partner_id" domain="[]" context="{'group_by':'partner_id'}"/>
+                        <filter string="Campaign" name="group_name_campaign" domain="[]" context="{'group_by':'name_campaign'}"/>
+                        <filter string="Type payment" name="group_type_payment" domain="[]" context="{'group_by':'type_payment'}"/>
+                        <filter string="Company" name="group_company" domain="[]" context="{'group_by':'company_id'}"/>
+                        <filter string="Status" name="group_state" domain="[]" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_control_line_supplier" model="ir.actions.act_window">
+            <field name="name">Line supplier</field>
+            <field name="res_model">control.line.supplier</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    There are no Line supplier to display!
+                </p>
+            </field>
+        </record>
+
+        <!-- View Form campaign.accounting.setting -->
+        <record model="ir.ui.view" id="campaign_accounting_setting_form">
+            <field name="name">campaign.accounting.setting.form</field>
+            <field name="model">campaign.accounting.setting</field>
+            <field name="arch" type="xml">
+                <form string="Accounting setting">
+                    <sheet>
+                        <group>
+                            <group name="first_group">
+                                <field name="company_id"/>
+                            </group>
+                            <group name="second_group">
+                                <field name="journal_id" required="True"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group name="first" string="Accounts for invoice">
+                                <field name="account_debit_first"/>
+                                <field name="account_credit_first"/>
+                            </group>
+                            <group name="second" string="Accounts for campaign control">
+                                <field name="account_debit_second" readonly="True"/>
+                                <field name="account_credit_second" readonly="True"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree campaign.accounting.setting -->
+        <record model="ir.ui.view" id="campaign_accounting_setting_tree">
+            <field name="name">campaign.accounting.setting.tree</field>
+            <field name="model">campaign.accounting.setting</field>
+            <field name="arch" type="xml">
+                <tree string="Accounting setting" sample="1">
+                    <field name="company_id"/>
+                    <field name="journal_id"/>
+                    <field name="account_debit_first"/>
+                    <field name="account_credit_first"/>
+                    <field name="account_debit_second"/>
+                    <field name="account_credit_second"/>
+                    <field name="create_date"/>
+                    <field name="create_uid" string="User"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- View search campaign.accounting.setting -->
+        <record model="ir.ui.view" id="campaign_accounting_setting_search">
+            <field name="name">campaign.accounting.setting.search</field>
+            <field name="model">campaign.accounting.setting</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="company_id"/>
+                    <field name="journal_id"/>
+                    <field name="account_debit_first"/>
+                    <field name="account_credit_first"/>
+                    <field name="account_debit_second"/>
+                    <field name="account_credit_second"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Company" name="group_company" domain="[]" context="{'group_by':'company_id'}"/>
+                        <filter string="Journal" name="group_journal" domain="[]" context="{'group_by':'journal_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_campaign_accounting_setting" model="ir.actions.act_window">
+            <field name="name">Accounting setting</field>
+            <field name="res_model">campaign.accounting.setting</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Accounting setting!
+                </p>
+            </field>
+        </record>
+
+        <menuitem id='campaign_marketing_menu_principal' name='Vertical' web_icon="elogia_sale,static/description/icon.png" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
+            <menuitem name="Campaigns" id="campaign_marketing_menu_item_first" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
+                <menuitem name="Campaigns" id="campaign_marketing_menu_item0" action="action_campaign_marketing_elogia" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
+                <menuitem name="Objectives" id="campaign_marketing_menu_item1" action="action_objective_campaign_marketing" sequence="2" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group"/>
+            </menuitem>
+            <menuitem name="Control Campaigns" id="campaign_marketing_menu_item_second" sequence="2" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
+                <menuitem name="Control Campaigns" id="campaign_marketing_menu_second0" action="action_control_campaign_marketing" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
+                <menuitem name="Line suppliers" id="campaign_marketing_menu_second1" action="action_control_line_supplier" sequence="2" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
+            </menuitem>
+            <menuitem name="Settings" id="campaign_marketing_menu_item_last" sequence="999" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group">
+                <menuitem name="Periods" id="campaign_marketing_menu_last0" action="action_period_campaign" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group"/>
+                <menuitem name="Accounting setting" id="campaign_marketing_menu_last1" action="action_campaign_accounting_setting" sequence="99" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group"/>
+            </menuitem>
+        </menuitem>
+    </data>
+</odoo>
