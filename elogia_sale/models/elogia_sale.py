@@ -23,39 +23,13 @@ MONTHS = ("Enero",
           "Diciembre")
 
 
-class InvoiceSupplierWizard(models.Model):
-    _name = 'invoice.supplier.wizard'
-    _description = 'Invoice Supplier Wizard'
+class ProductFeeSetting(models.Model):
+    _name = 'product.fee.setting'
+    _description = 'Product Fee Setting'
+    _rec_name = 'product_id'
 
-    name = fields.Char('Name', required=True, index=True, default='/')
-    invoice_line_ids = fields.Many2many('campaign.line.invoice', 'rel_wizard_line_invoice', 'wizard_id', 'line_id')
-
-    def generated_account_move(self, record, env_mov, obj_setting):
-        list_setting = [{'key': 'debit', 'value_d': obj_setting.account_debit_first},
-                        {'key': 'credit', 'value_c': obj_setting.account_credit_first}]
-        vals = {
-            'ref': record.description,
-            'date': record.invoice_date,
-            'line_ids': []
-        }
-        for item in list_setting:
-            vals['line_ids'].append(((0, 0, {
-                'account_id': item['value_d'].id if item['key'] == 'debit' else item['value_c'].id,
-                'name': record.description,
-                'debit': record.amount if item['key'] == 'debit' else 0,
-                'credit': record.amount if item['key'] == 'credit' else 0,
-            })))
-        obj_move = env_mov.with_context(check_move_validity=False).create(vals)
-        if obj_move:
-            return True
-
-    def action_create_invoice(self):
-        env_mov = self.env['account.move']
-        env_setting = self.env['campaign.accounting.setting']
-        for record in self.invoice_line_ids:
-            obj_setting = env_setting.search([('company_id', '=', record.company_id.id)], limit=1)
-            if obj_setting:
-                self.generated_account_move(record, env_mov, obj_setting)
+    product_id = fields.Many2one('product.product', 'Product', required=True, index=True)
+    other_product_id = fields.Many2one('product.product', 'Product fee', required=True)
 
 
 class CampaignAccountingSetting(models.Model):
@@ -235,6 +209,8 @@ class ControlCampaign(models.Model):
     client_id = fields.Many2one('res.partner', 'Client', tracking=1)
     percentage_fee = fields.Float('% Fee', tracking=1)
     check_change = fields.Boolean('Change?')
+    count_invoice_sale = fields.Integer('Invoice sale', compute='get_count_models')
+    count_invoice_purchase = fields.Integer('Invoice vendor', compute='get_count_models')
     count_sale = fields.Integer('Sales', compute='get_count_models')
     count_purchase = fields.Integer('Purchase', compute='get_count_models')
     count_move = fields.Integer('Move', compute='get_count_models')
@@ -272,6 +248,10 @@ class ControlCampaign(models.Model):
         for record in self:
             pass
 
+    def generate_purchase(self):
+        for record in self:
+            pass
+
     @api.onchange('campaign_id')
     def onchange_campaign_id(self):
         if self.campaign_id:
@@ -295,6 +275,10 @@ class ControlCampaign(models.Model):
 
     def get_count_models(self):
         for record in self:
+            record.count_invoice_sale = len(record.invoice_ids.filtered(
+                lambda e: e.move_type in ['out_invoice', 'out_refund'])) if record.invoice_ids else 0
+            record.count_invoice_purchase = len(record.invoice_ids.filtered(
+                lambda e: e.move_type in ['in_invoice', 'in_refund'])) if record.invoice_ids else 0
             record.count_sale = len(record.order_ids) if record.order_ids else 0
             record.count_purchase = len(record.purchase_ids) if record.purchase_ids else 0
             record.count_move = len(record.invoice_ids.filtered(lambda l: l.move_type == 'entry')) \
@@ -332,6 +316,46 @@ class ControlCampaign(models.Model):
             }
         }
         if self.purchase_ids:
+            dic_return['view_mode'] = 'tree,form'
+        else:
+            dic_return['view_mode'] = 'form'
+        return dic_return
+
+    def action_view_invoice_sale(self):
+        dic_return = {
+            'name': 'Invoices',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'account.move',
+            'domain': [('campaign_elogia_id', '=', self.id), ('move_type', 'in', ['out_invoice', 'out_refund'])],
+            'context': {
+                'default_partner_id': self.client_id.id,
+                'default_control_id': self.id,
+                'default_campaign_elogia_id': self.campaign_id.id,
+                'default_move_type': 'out_invoice'
+            }
+        }
+        if self.invoice_ids.filtered(lambda l: l.move_type in ['out_invoice', 'out_refund']):
+            dic_return['view_mode'] = 'tree,form'
+        else:
+            dic_return['view_mode'] = 'form'
+        return dic_return
+
+    def action_view_invoice_purchase(self):
+        dic_return = {
+            'name': 'Invoices',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'account.move',
+            'domain': [('campaign_elogia_id', '=', self.id), ('move_type', 'in', ['in_invoice', 'in_refund'])],
+            'context': {
+                'default_partner_id': self.client_id.id,
+               'default_control_id': self.id,
+                'default_campaign_elogia_id': self.campaign_id.id,
+                'default_move_type': 'in_invoice'
+            }
+        }
+        if self.invoice_ids.filtered(lambda l: l.move_type in ['in_invoice', 'in_refund']):
             dic_return['view_mode'] = 'tree,form'
         else:
             dic_return['view_mode'] = 'form'
@@ -763,7 +787,7 @@ class CampaignMarketingElogia(models.Model):
         if len(list_process) == len(self.invoice_line_ids):
             raise UserError(_('Line invoices have been processed in this Campaign!'))
         else:
-            invoice_filters = self.invoice_line_ids.filtered(lambda e: e.id not in list_process and e.order_id)
+            invoice_filters = self.invoice_line_ids.filtered(lambda e: e.id not in list_process)
             for record in invoice_filters:
                 obj_setting = env_setting.search([('company_id', '=', record.company_id.id)], limit=1)
                 if obj_setting:

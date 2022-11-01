@@ -1,44 +1,5 @@
 <odoo>
     <data>
-       <!-- Wizard View Form invoice.supplier.wizard -->
-        <record model="ir.ui.view" id="invoice_supplier_wizard_form">
-            <field name="name">Invoice Supplier</field>
-            <field name="model">invoice.supplier.wizard</field>
-            <field name="arch" type="xml">
-                <form>
-					<h4>Do you want to process the following lines of invoices?</h4>
-                    <group>
-                        <field nolabel="1" name="invoice_line_ids">
-                            <tree editable="bottom" decoration-info="state == 'no_process'"
-                                  decoration-muted="state == 'process'">
-                                <field name="campaign_id" invisible="True"/>
-                                <field name="invoice_date" attrs="{'readonly':[('state','=', 'process')]}"
-                                       readonly="True"/>
-                                <field name="invoice_date_due" attrs="{'readonly':[('state','=', 'process')]}"
-                                       readonly="True"/>
-                                <field name="order_id" options="{'no_create': True, 'no_create_edit': True}"
-                                       attrs="{'readonly':[('state','=', 'process')]}" readonly="True"/>
-                                <field name="description" readonly="True"
-                                       attrs="{'readonly':[('state','=', 'process')]}"/>
-                                <field name="amount" attrs="{'readonly':[('state','=', 'process')]}"
-                                       readonly="True" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                                <field name="invoice_id" options="{'no_create': True, 'no_create_edit': True}"
-                                       readonly="True"/>
-                                <field name="move_id" readonly="True"
-                                       options="{'no_create': True, 'no_create_edit': True}"/>
-                                <field name="currency_id" invisible="True"/>
-                                <field name="state" invisible="True"/>
-                            </tree>
-                        </field>
-					</group>
-                    <footer>
-                        <button type="object" name="action_create_invoice" string="Create" class="oe_highlight"/>
-                        <button special="cancel" string="Cancel"/>
-                    </footer>
-                </form>
-            </field>
-        </record>
-
         <!-- View inherit Form sale.order-->
         <record id="sale_order_form_inherit_elogia" model="ir.ui.view">
             <field name="name">sale.order.form.inherit.elogia</field>
@@ -412,19 +373,15 @@
                         <button name="set_pending" string="Pending" type="object" class="btn-primary"
                                 attrs="{'invisible':[('state','!=', 'draft')]}"/>
                         <button name="generate_sale" string="Generate Sale" type="object" class="btn-primary"
+                                attrs="{'invisible':['|', ('state','not in', ['pending', 'purchase']), ('type_invoice', '!=', 'sale')]}"/>
+                        <button name="generate_purchase" string="Generate Purchase" type="object" class="btn-primary"
                                 attrs="{'invisible':[('state','!=', 'pending')]}"/>
-                        <button name="set_cancel" string="Generate Invoice" type="object" class="btn-primary"
-                                attrs="{'invisible':[('state','!=', 'pending')]}"/>
-                        <button name="set_cancel" string="set to cancel" type="object"
-                                attrs="{'invisible':[('state','not in', ['sale', 'purchase', 'both'])]}"/>
-                        <button name="set_cancel" string="set to cancel" type="object"
-                                attrs="{'invisible':[('state','not in', ['sale', 'purchase', 'both'])]}"/>
                         <button name="set_draft" string="set to draft" type="object"
                                 attrs="{'invisible':[('state','not in', ['pending', 'cancel'])]}"/>
                         <button name="set_cancel" string="set to cancel" type="object"
                                 attrs="{'invisible':[('state','not in', ['sale', 'purchase', 'both'])]}"/>
                         <field name="state" widget="statusbar" required="True"
-                               statusbar_visible="draft,pending,sale,purchase,both"/>
+                               statusbar_visible="draft,pending,both,cancel"/>
                     </header>
                     <field name="check_diff" invisible="True"/>
                     <div class="alert alert-warning" role="alert" attrs="{'invisible': [('check_diff', '=', False)]}">
@@ -436,10 +393,18 @@
                                     attrs="{'invisible':[('type_invoice','!=','sale')]}">
                                 <field string="Sales" name="count_sale" widget="statinfo"/>
                             </button>
+                            <button class="oe_stat_button" name="action_view_invoice_sale" type="object"
+                                    attrs="{'invisible':[('type_invoice','!=','sale')]}" icon="fa-pencil-square-o">
+                                <field string="Invoices" name="count_invoice_sale" widget="statinfo"/>
+                            </button>
                             <button class="oe_stat_button" name="action_view_purchases" type="object" icon="fa-credit-card">
                                 <field string="Purchases" name="count_purchase" widget="statinfo"/>
                             </button>
-                            <button class="oe_stat_button" name="action_view_moves" type="object" icon="fa-copy">
+                            <button class="oe_stat_button" name="action_view_invoice_purchase" type="object" icon="fa-pencil-square-o">
+                                <field string="Invoices vendor" name="count_invoice_purchase" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" name="action_view_moves" type="object" icon="fa-copy"
+                                    attrs="{'invisible':[('type_invoice','=','sale')]}">
                                 <field string="Moves" name="count_move" widget="statinfo"/>
                             </button>
                         </div>
@@ -1058,6 +1023,67 @@
             </field>
         </record>
 
+        <!-- View Form product.fee.setting -->
+        <record model="ir.ui.view" id="product_fee_setting_form">
+            <field name="name">product.fee.setting.form</field>
+            <field name="model">product.fee.setting</field>
+            <field name="arch" type="xml">
+                <form string="Product fee">
+                    <sheet>
+                        <group>
+                            <group name="first_group">
+                                <field name="product_id"/>
+                            </group>
+                            <group name="second_group">
+                                <field name="other_product_id"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree product.fee.setting -->
+        <record model="ir.ui.view" id="product_fee_setting_tree">
+            <field name="name">product.fee.setting.tree</field>
+            <field name="model">product.fee.setting</field>
+            <field name="arch" type="xml">
+                <tree string="Product fee" editable="bottom" sample="1">
+                    <field name="product_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                    <field name="other_product_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                    <field name="create_uid" string="User"/>
+                    <field name="create_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- View search product.fee.setting -->
+        <record model="ir.ui.view" id="product_fee_setting_search">
+            <field name="name">product.fee.setting.search</field>
+            <field name="model">product.fee.setting</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="product_id"/>
+                    <field name="other_product_id"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Product" name="group_product" domain="[]" context="{'group_by':'product_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_product_fee_setting" model="ir.actions.act_window">
+            <field name="name">Product setting</field>
+            <field name="res_model">product.fee.setting</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new product setting!
+                </p>
+            </field>
+        </record>
+
         <menuitem id='campaign_marketing_menu_principal' name='Vertical' web_icon="elogia_sale,static/description/icon.png" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
             <menuitem name="Campaigns" id="campaign_marketing_menu_item_first" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
                 <menuitem name="Campaigns" id="campaign_marketing_menu_item0" action="action_campaign_marketing_elogia" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
@@ -1072,7 +1098,8 @@
             </menuitem>
             <menuitem name="Settings" id="campaign_marketing_menu_item_last" sequence="999" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group">
                 <menuitem name="Periods" id="campaign_marketing_menu_last0" action="action_period_campaign" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group"/>
-                <menuitem name="Accounting setting" id="campaign_marketing_menu_last1" action="action_campaign_accounting_setting" sequence="99" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group"/>
+                <menuitem name="Product setting" id="campaign_marketing_menu_last1" action="action_product_fee_setting" sequence="98" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group"/>
+                <menuitem name="Accounting setting" id="campaign_marketing_menu_last2" action="action_campaign_accounting_setting" sequence="99" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group"/>
             </menuitem>
         </menuitem>
     </data>
