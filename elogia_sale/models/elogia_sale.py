@@ -23,6 +23,101 @@ MONTHS = ("Enero",
           "Diciembre")
 
 
+class SaleOrderWizard(models.Model):
+    _name = 'sale.order.wizard'
+    _description = 'Sale Order Wizard'
+    _rec_name = 'date_order'
+
+    date_order = fields.Date('Order date', required=True, index=True)
+    check_fee = fields.Boolean('Management Fee')
+    description = fields.Char('Description')
+    reference = fields.Char('No. reference')
+    check_change = fields.Boolean('Change?')
+    check_error = fields.Boolean('Error')
+    list_error = fields.Char('List errors')
+
+    @api.onchange('check_change')
+    def onchange_change_wizard(self):
+        env_control = self.env['control.campaign.marketing']
+        if self.check_change:
+            obj_control = env_control.search([('id', 'in', self._context.get('active_ids'))])
+            control_filter = obj_control.filtered(lambda e: e.state == 'sale' or e.type_invoice != 'sale') \
+                if obj_control else False
+            if control_filter:
+                self.check_error = True
+            self.list_error = '{}' .format(control_filter.mapped('campaign_id.name'))
+
+    def action_create_order(self):
+        _logger.info('Begin: action_quotation_sale')
+        env_product_setting = self.env['product.fee.setting'].search([])
+        env_control = self.env['control.campaign.marketing']
+        if not env_product_setting:
+            raise UserError(_('There are no "Product Settings" configured.\n Check in Settings/Product Settings menu.'))
+        else:
+            obj_control_ids = env_control.search([('id', 'in', self._context.get('active_ids'))])
+            if obj_control_ids:
+                list_not_setting = [product.name for product in obj_control_ids.mapped('campaign_line_id.product_id')
+                                    if product not in env_product_setting.mapped('product_id')]
+                if list_not_setting:
+                    raise UserError(_('Products {} are not configured.\n Check in Settings/Product Settings menu.'
+                                      .format(list_not_setting)))
+                else:
+                    if self.check_error:
+                        raise UserError(_('There are campaign controls that cannot be processed.'))
+                    else:
+                        for obj_control in obj_control_ids:
+                            self.action_quotation_sale(obj_control, env_product_setting)
+
+    def action_quotation_sale(self, control, setting):
+        order_lines = []
+        order_obj = self.env['sale.order']
+        list_line = [control.campaign_line_id.product_id]
+        other_product = setting.filtered(lambda e: e.product_id == control.campaign_line_id.product_id)
+        if other_product and self.check_fee:
+            list_line.append(other_product.other_product_id)
+        for line in list_line:
+            line_vals = {}
+            taxes = line.taxes_id if line.taxes_id else False
+            if line.check_fee:
+                price_unit = control.fee_revenue
+            else:
+                if self.check_fee:
+                    price_unit = control.billed_revenue - control.fee_revenue
+                else:
+                    price_unit = control.billed_revenue
+            line_vals = {
+                'price_unit': price_unit,
+                'product_id': line.id,
+                'product_uom': line.uom_id.id,
+                'product_uom_qty': 1,
+                'name': line.name,
+                'tax_id': [(6, 0, taxes.ids)] if taxes else False,
+                'currency_id': control.currency_id.id,
+            }
+            order_lines.append((0, 0, line_vals))
+        order_vals = {
+            'partner_id': control.client_id.id,
+            'date_order': self.date_order,
+            'order_line': order_lines,
+            'pricelist_id': control.pricelist_id.id,
+            'fiscal_position_id': control.client_id.property_account_position_id.id
+            if control.client_id.property_account_position_id else False,
+            'currency_id': control.currency_id.id,
+            'user_id': self.env.user.id,
+            'analytic_account_id': control.campaign_id.analytic_account_id.id,
+            'client_order_ref': self.description,
+            'origin': self.reference,
+            'control_id': control.id,
+            'campaign_elogia_id': control.campaign_id.id
+        }
+        sale_order = order_obj.create(order_vals)
+        if sale_order:
+            _logger.info('Order Created')
+            _logger.info(sale_order.name)
+            control.state = 'sale'
+            control.message_post(body=_("Created sale order: {}").format(sale_order.name))
+
+
 class ProductFeeSetting(models.Model):
     _name = 'product.fee.setting'
     _description = 'Product Fee Setting'
@@ -99,7 +194,7 @@ class ControlLineSupplier(models.Model):
 
     control_id = fields.Many2one('control.campaign.marketing', 'Control', tracking=1)
     company_id = fields.Many2one(related='control_id.company_id', string='Company', tracking=1)
-    name_campaign = fields.Char(related='control_id.campaign_id.name', store=True, string='Campaign', tracking=1)
+    name_campaign = fields.Char(related='control_id.campaign_id.name', store=True, string='Campaigns', tracking=1)
     partner_id = fields.Many2one('res.partner', 'Supplier', required=True, index=True, tracking=1)
     invoice_provision = fields.Float('Provision', tracking=1)
     invoice_provision_ml = fields.Float('Provision (mt)', tracking=1, compute='calc_amount_total')
@@ -209,11 +304,11 @@ class ControlCampaign(models.Model):
     client_id = fields.Many2one('res.partner', 'Client', tracking=1)
     percentage_fee = fields.Float('% Fee', tracking=1)
     check_change = fields.Boolean('Change?')
-    count_invoice_sale = fields.Integer('Invoice sale', compute='get_count_models')
-    count_invoice_purchase = fields.Integer('Invoice vendor', compute='get_count_models')
-    count_sale = fields.Integer('Sales', compute='get_count_models')
-    count_purchase = fields.Integer('Purchase', compute='get_count_models')
-    count_move = fields.Integer('Move', compute='get_count_models')
+    count_invoice_sale = fields.Integer('Count Invoice sale', compute='get_count_models')
+    count_invoice_purchase = fields.Integer('Count Invoice vendor', compute='get_count_models')
+    count_sale = fields.Integer('Count Sales', compute='get_count_models')
+    count_purchase = fields.Integer('Count Purchase', compute='get_count_models')
+    count_move = fields.Integer('Count Move', compute='get_count_models')
     control_line_ids = fields.One2many('control.line.supplier', 'control_id', 'Control lines')
     type_invoice = fields.Selection(selection=[
         ('sale', 'Sales'),
@@ -231,6 +326,10 @@ class ControlCampaign(models.Model):
     margin_ml = fields.Float('Margin(ml)', tracking=1, compute='calc_kpi', store=True)
     margin_factor_ml = fields.Float('Margin factor(ml)', tracking=1, compute='calc_kpi', store=True)
     check_diff = fields.Boolean('Diff', compute='get_name_campaign')
+    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', check_company=True, tracking=1,
+                                   states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
+                                   domain="[('currency_id', '=', currency_id), '|', ('company_id', '=', company_id), "
+                                          "('company_id', '=', False)]")
 
     def set_pending(self):
         for record in self:
@@ -245,8 +344,45 @@ class ControlCampaign(models.Model):
             record.state = 'cancel'
 
     def generate_sale(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Create sale order',
+            'res_model': 'sale.order.wizard',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'target': 'new',
+            'context': {'origin_view': 'wizard_into'}
+        }
+
+    def generate_move(self):
+        env_mov = self.env['account.move']
+        env_setting = self.env['campaign.accounting.setting']
         for record in self:
-            pass
+            obj_setting = env_setting.search([('company_id', '=', record.company_id.id)], limit=1)
+            if obj_setting:
+                self.generated_account_move(record, env_mov, obj_setting)
+
+    def generated_account_move(self, record, env_mov, obj_setting):
+        list_setting = [{'key': 'debit', 'value_d': obj_setting.account_debit_second},
+                        {'key': 'credit', 'value_c': obj_setting.account_credit_second}]
+        vals = {
+            'ref': record.campaign_id.name,
+            'campaign_elogia_id': record.campaign_id.id,
+            'control_id': record.id,
+            'move_type': 'entry',
+            'line_ids': []
+        }
+        for item in list_setting:
+            vals['line_ids'].append(((0, 0, {
+                'account_id': item['value_d'].id if item['key'] == 'debit' else item['value_c'].id,
+                'name': record.name,
+                'partner_id': record.client_id.id,
+                'debit': record.billed_revenue_ml if item['key'] == 'debit' else 0,
+                'credit': record.billed_revenue_ml if item['key'] == 'credit' else 0,
+            })))
+        obj_move = env_mov.with_context(check_move_validity=False).create(vals)
+        if obj_move:
+            record.message_post(body=_("Created move: {}") .format(obj_move.ref))
 
     def generate_purchase(self):
         for record in self:
@@ -534,11 +670,11 @@ class CampaignMarketingElogia(models.Model):
     invoice_line_ids = fields.One2many('campaign.line.invoice', 'campaign_id', 'Line invoices')
     count_objectives = fields.Integer('Count objectives', compute='get_count_objectives')
     count_control = fields.Integer('Count control', compute='get_count_control')
-    count_invoice_sale = fields.Integer('Invoice sale', compute='get_count_models')
-    count_invoice_purchase = fields.Integer('Invoice vendor', compute='get_count_models')
-    count_sale = fields.Integer('Sales', compute='get_count_models')
-    count_purchase = fields.Integer('Purchase', compute='get_count_models')
-    count_move = fields.Integer('Move', compute='get_count_models')
+    count_invoice_sale = fields.Integer('Count Invoice sale', compute='get_count_models')
+    count_invoice_purchase = fields.Integer('Count Invoice vendor', compute='get_count_models')
+    count_sale = fields.Integer('Count Sales', compute='get_count_models')
+    count_purchase = fields.Integer('Count Purchase', compute='get_count_models')
+    count_move = fields.Integer('Count Move', compute='get_count_models')
     user_ids = fields.Many2many('res.users', 'campaign_user_rel', 'campaign_id', 'user_id', string='Optimizers')
     product_id = fields.Many2one('product.product', string='Product', domain="[('sale_ok', '=', True)]", tracking=1)
     amount_total = fields.Float('Amount', tracking=1)
