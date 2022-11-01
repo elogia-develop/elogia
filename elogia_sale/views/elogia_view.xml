@@ -185,10 +185,6 @@
                             <button class="oe_stat_button" name="action_view_sales" type="object" icon="fa-dollar">
                                 <field string="Sales" name="count_sale" widget="statinfo"/>
                             </button>
-<!--                            <button class="oe_stat_button" name="action_view_picking" type="object" icon="fa-truck"-->
-<!--                                    attrs="{'invisible':[('type_invoice','!=','sale')]}">-->
-<!--                                <field string="Pickings" name="count_picking" widget="statinfo"/>-->
-<!--                            </button>-->
                             <button class="oe_stat_button" name="action_view_invoice_sale" type="object" icon="fa-pencil-square-o">
                                 <field string="Invoices" name="count_invoice_sale" widget="statinfo"/>
                             </button>
@@ -240,21 +236,20 @@
                                 <field name="company_id"
                                        options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
                                        attrs="{'readonly':[('state','!=', 'open')]}"/>
-                                <field name="currency_id" readonly="True"
+                                <field name="currency_id" attrs="{'readonly':[('state','!=', 'open')]}"
                                        options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                                 <field name="percentage_fee" attrs="{'readonly':[('state','!=', 'open')]}"/>
                                 <field name="amount_total" widget='monetary' options="{'currency_field': 'currency_id'}"
                                        attrs="{'readonly':[('state','!=', 'open')]}" />
-                                <field name="amount_diff" widget='monetary' options="{'currency_field': 'currency_id'}"
-                                       attrs="{'readonly':[('state','!=', 'open')]}"/>
-                                <field name="amount_fee" widget='monetary' options="{'currency_field': 'currency_id'}"
-                                       attrs="{'readonly':[('state','!=', 'open')]}"/>
+                                <field name="amount_diff" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                <field name="amount_fee" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                             </group>
                             <group name="thirty_group">
                                 <field name="product_id" attrs="{'readonly':[('state','!=', 'open')]}"
                                        options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                                 <field name="type_invoice" required="True" attrs="{'readonly':[('state','!=', 'open')]}"/>
                                 <field name="type_payment" required="True" attrs="{'readonly':[('state','!=', 'open')]}"/>
+                                <field name="type_purchase" required="True" attrs="{'readonly':[('state','!=', 'open')]}"/>
                             </group>
                         </group>
                         <notebook>
@@ -431,25 +426,18 @@
                         <field name="state" widget="statusbar" required="True"
                                statusbar_visible="draft,pending,sale,purchase,both"/>
                     </header>
+                    <field name="check_diff" invisible="True"/>
+                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('check_diff', '=', False)]}">
+                        <strong>Campaign control currency and campaign (<field name="campaign_id" readonly="True"/>) do not match.</strong>
+                    </div>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button class="oe_stat_button" name="action_view_sales" type="object" icon="fa-dollar"
                                     attrs="{'invisible':[('type_invoice','!=','sale')]}">
                                 <field string="Sales" name="count_sale" widget="statinfo"/>
                             </button>
-<!--                            <button class="oe_stat_button" name="action_view_picking" type="object" icon="fa-truck"-->
-<!--                                    attrs="{'invisible':[('type_invoice','!=','sale')]}">-->
-<!--                                <field string="Pickings" name="count_picking" widget="statinfo"/>-->
-<!--                            </button>-->
-                            <button class="oe_stat_button" name="action_view_invoice_sale" type="object" icon="fa-pencil-square-o"
-                                    attrs="{'invisible':[('type_invoice','!=','sale')]}">
-                                <field string="Invoices" name="count_invoice_sale" widget="statinfo"/>
-                            </button>
                             <button class="oe_stat_button" name="action_view_purchases" type="object" icon="fa-credit-card">
                                 <field string="Purchases" name="count_purchase" widget="statinfo"/>
-                            </button>
-                            <button class="oe_stat_button" name="action_view_invoice_purchase" type="object" icon="fa-pencil-square-o">
-                                <field string="Invoices vendor" name="count_invoice_purchase" widget="statinfo"/>
                             </button>
                             <button class="oe_stat_button" name="action_view_moves" type="object" icon="fa-copy">
                                 <field string="Moves" name="count_move" widget="statinfo"/>
@@ -477,8 +465,11 @@
                                        options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
                                        attrs="{'readonly':[('state','!=', 'draft')]}"/>
                                 <field name="name" attrs="{'readonly':[('state','!=', 'draft')]}"/>
-                                <field name="amount_unit" attrs="{'readonly':['|', ('state','!=', 'draft'),
-                                ('type_invoice', '!=',  'sale')]}"/>
+                                <field name="amount_unit" widget='monetary' required="True"
+                                               options="{'currency_field': 'currency_id'}"
+                                       attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="amount_currency" widget='monetary' required="True"
+                                               options="{'currency_field': 'currency_company_id'}"/>
                                 <field name="clicks" attrs="{'readonly':[('state','!=', 'draft')]}"/>
                                 <field name="percentage_fee" attrs="{'readonly':[('state','!=', 'draft')]}"/>
                             </group>
@@ -489,11 +480,12 @@
                                        options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                                 <field name="team_id" required="True" attrs="{'readonly':[('state','!=', 'draft')]}"
                                        options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                                <field name="currency_company_id" invisible="True"/>
                             </group>
                             <group name="thirty_group" string="Others">
-                                <field name="amount_currency" attrs="{'readonly':[('state','!=', 'draft')]}"/>
-                                <field name="consume" attrs="{'readonly':[('state','!=', 'draft')]}"/>
-                                <field name="consume_currency" attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="consume" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                <field name="consume_currency" widget='monetary'
+                                       options="{'currency_field': 'currency_company_id'}"/>
                                 <field name="check_change" invisible="True"/>
                             </group>
                         </group>
@@ -505,19 +497,42 @@
                                         <field name="control_id" invisible="True"/>
                                         <field name="partner_id" options="{'no_create': True, 'no_create_edit': True}"
                                                required="True"/>
+                                        <field name="invoice_provision_ml" optional="hide" widget='monetary' required="True"
+                                               options="{'currency_field': 'currency_control_id'}"/>
                                         <field name="invoice_provision" widget='monetary' required="True"
                                                options="{'currency_field': 'currency_id'}"/>
-                                        <field name="currency_id" required="True"/>
+                                        <field name="currency_id" required="True"
+                                               options="{'no_create': True, 'no_create_edit': True}"/>
                                         <field name="type_payment" required="True"/>
                                         <field name="company_id" optional="hide"/>
+                                        <field name="currency_control_id" invisible="True"/>
                                         <field name="state" widget="badge" decoration-info="state == 'no_process'"
                                                decoration-muted="state == 'process'"/>
                                     </tree>
                                 </field>
                             </page>
-                            <page name="products" string="Products">
-                            </page>
                             <page name="kpis" string="KPIS">
+                                <group>
+                                    <group>
+                                        <field name="fee_revenue" widget='monetary'
+                                               options="{'currency_field': 'currency_id'}"/>
+                                        <field name="fee_revenue_ml" widget='monetary'
+                                               options="{'currency_field': 'currency_company_id'}"/>
+                                        <field name="billed_revenue" widget='monetary'
+                                               options="{'currency_field': 'currency_id'}"/>
+                                        <field name="billed_revenue_ml" widget='monetary'
+                                               options="{'currency_field': 'currency_company_id'}"/>
+                                    </group>
+                                    <group>
+                                        <field name="purchase_ml" widget='monetary'
+                                               options="{'currency_field': 'currency_company_id'}"/>
+                                        <field name="margin_ml" widget='monetary'
+                                               options="{'currency_field': 'currency_company_id'}"/>
+                                        <field name="margin_factor_ml" widget='monetary'
+                                               options="{'currency_field': 'currency_company_id'}"/>
+                                    </group>
+                                </group>
+
                             </page>
                         </notebook>
                     </sheet>
@@ -547,11 +562,14 @@
                     <field name="campaign_line_id"/>
                     <field name="period"/>
                     <field name="currency_id" optional="hide"/>
+                    <field name="currency_company_id" invisible="True"/>
                     <field name="percentage_fee" optional="hide" sum="fee"/>
                     <field name="amount_unit" sum="total" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                    <field name="amount_currency" sum="amount_currency"/>
+                    <field name="amount_currency" sum="amount_currency"
+                           widget='monetary' options="{'currency_field': 'currency_company_id'}"/>
                     <field name="consume" sum="consume" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                    <field name="consume_currency" sum="consume_currency"/>
+                    <field name="consume_currency" sum="consume_currency" widget='monetary'
+                           options="{'currency_field': 'currency_company_id'}"/>
                     <field name="state" decoration-info="state == 'pending'" decoration-muted="state == 'cancel'"
                            decoration-success="state == 'both'" decoration-danger="state in ['sale', 'purchase']"
                            widget="badge"/>
@@ -603,6 +621,28 @@
             </field>
         </record>
 
+        <!-- View pivot control.campaign.marketing -->
+        <record model="ir.ui.view" id="control_campaign_marketing_pivot">
+            <field name="name">control.campaign.marketing.pivot</field>
+            <field name="model">control.campaign.marketing</field>
+            <field name="arch" type="xml">
+                <pivot string="Report Analysis" disable_linking="True" sample="1">
+                    <field name="campaign_id" type="row"/>
+                    <field name="client_id" type="row"/>
+                    <field name="campaign_line_id" type="row"/>
+                    <field name="period" type="col"/>
+                    <field name="state" type="col"/>
+                    <field name="fee_revenue" type="measure"/>
+                    <field name="fee_revenue_ml" type="measure"/>
+                    <field name="billed_revenue" type="measure"/>
+                    <field name="billed_revenue_ml" type="measure"/>
+                    <field name="purchase_ml" type="measure"/>
+                    <field name="margin_ml" type="measure"/>
+                    <field name="margin_factor_ml" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
         <record id="action_control_campaign_marketing" model="ir.actions.act_window">
             <field name="name">Control campaign</field>
             <field name="res_model">control.campaign.marketing</field>
@@ -613,6 +653,17 @@
                 </p>
             </field>
             <field name="context">{'default_check_change': 'True'}</field>
+        </record>
+
+        <record id="action_kpi_control_campaign_marketing" model="ir.actions.act_window">
+            <field name="name">Control KPIs</field>
+            <field name="res_model">control.campaign.marketing</field>
+            <field name="view_mode">pivot</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new control KPIs!
+                </p>
+            </field>
         </record>
 
         <!-- View Form objective.campaign.marketing -->
@@ -835,9 +886,13 @@
                                 <field name="type_payment" readonly="True"/>
                             </group>
                             <group name="second_group">
-                                <field name="invoice_provision" readonly="True"/>
+                                <field name="invoice_provision" readonly="True" widget='monetary'
+                                       options="{'currency_field': 'currency_id'}"/>
                                 <field name="currency_id" readonly="True"
                                        options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                                <field name="currency_control_id" invisible="True"/>
+                                <field name="invoice_provision_ml" widget='monetary' readonly="True"
+                                               options="{'currency_field': 'currency_control_id'}"/>
                             </group>
                         </group>
                         <group>
@@ -868,8 +923,11 @@
                     <field name="control_id" readonly="True" optional="hide"/>
                     <field name="name_campaign" readonly="True"/>
                     <field name="partner_id" readonly="True" options="{'no_create': True, 'no_create_edit': True}"/>
-                    <field name="invoice_provision" widget='monetary' options="{'currency_field': 'currency_id'}"
-                           readonly="True"/>
+                    <field name="currency_control_id" invisible="True"/>
+                    <field name="invoice_provision_ml" widget='monetary' readonly="True"
+                           options="{'currency_field': 'currency_control_id'}"/>
+                    <field name="invoice_provision" widget='monetary' readonly="True"
+                           options="{'currency_field': 'currency_id'}"/>
                     <field name="currency_id" readonly="True"/>
                     <field name="type_payment" readonly="True"/>
                     <field name="company_id" readonly="True"/>
@@ -1008,6 +1066,9 @@
             <menuitem name="Control Campaigns" id="campaign_marketing_menu_item_second" sequence="2" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
                 <menuitem name="Control Campaigns" id="campaign_marketing_menu_second0" action="action_control_campaign_marketing" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
                 <menuitem name="Line suppliers" id="campaign_marketing_menu_second1" action="action_control_line_supplier" sequence="2" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
+            </menuitem>
+            <menuitem name="Report KPIs" id="campaign_marketing_menu_item_thirty" sequence="3" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
+                <menuitem name="Control KPIs" id="campaign_marketing_menu_thirty0" action="action_kpi_control_campaign_marketing" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
             </menuitem>
             <menuitem name="Settings" id="campaign_marketing_menu_item_last" sequence="999" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group">
                 <menuitem name="Periods" id="campaign_marketing_menu_last0" action="action_period_campaign" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group"/>
