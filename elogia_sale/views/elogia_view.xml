@@ -43,6 +43,17 @@
             }"/>
         </record>
 
+        <record id="action_control_line_supplier_campaign" model="ir.actions.server" >
+            <field name="name">Create purchase order</field>
+            <field name="model_id" ref="model_control_line_supplier"/>
+            <field name="binding_model_id" ref="elogia_sale.model_control_line_supplier"/>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    records.create_purchase_order()
+            </field>
+        </record>
+
         <!-- View inherit Form product.template-->
         <record id="product_template_elogia_form_view" model="ir.ui.view">
             <field name="name">product.template.product.elogia.form</field>
@@ -273,12 +284,13 @@
                         </group>
                         <notebook>
                             <page name="lines" string="Line products">
-                                <field name="campaign_line_ids" attrs="{'readonly':[('state','!=', 'open')]}">
+                                <field name="campaign_line_ids" attrs="{'readonly':[('state','!=', 'open')]}"
+                                       context="{'default_campaign_id': id}">
                                     <tree nolabel="1" editable="bottom" decoration-info="state == 'open'"
                                           decoration-muted="state == 'closed'">
                                         <field name="product_id" options="{'no_create': True, 'no_create_edit': True}"/>
                                         <field name="name"/>
-                                        <field name="percentage_fee"/>
+                                        <field name="percentage_fee" invisible="True"/>
                                         <field name="amount_total" widget='monetary' optional="hide"
                                                options="{'currency_field': 'currency_id'}"/>
                                         <field name="campaign_id" invisible="True"/>
@@ -529,7 +541,7 @@
                                         <field name="invoice_provision" widget='monetary' required="True"
                                                options="{'currency_field': 'currency_id'}"/>
                                         <field name="currency_id" required="True"
-                                               options="{'no_create': True, 'no_create_edit': True}"/>
+                                               options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                                         <field name="type_payment" required="True"/>
                                         <field name="company_id" optional="hide"/>
                                         <field name="currency_control_id" invisible="True"/>
@@ -670,6 +682,19 @@
             </field>
         </record>
 
+        <!-- View graph control.campaign.marketing -->
+        <record model="ir.ui.view" id="control_campaign_marketing_graph">
+            <field name="name">control.campaign.marketing.graph</field>
+            <field name="model">control.campaign.marketing</field>
+            <field name="arch" type="xml">
+                <graph string="Report Analysis" sample="1">
+                    <field name="campaign_id" type="measure"/>
+                    <field name="period"/>
+                    <field name="state"/>
+                </graph>
+            </field>
+        </record>
+
         <record id="action_control_campaign_marketing" model="ir.actions.act_window">
             <field name="name">Control campaign</field>
             <field name="res_model">control.campaign.marketing</field>
@@ -685,7 +710,7 @@
         <record id="action_kpi_control_campaign_marketing" model="ir.actions.act_window">
             <field name="name">Control KPIs</field>
             <field name="res_model">control.campaign.marketing</field>
-            <field name="view_mode">pivot</field>
+            <field name="view_mode">pivot,graph</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Create a new control KPIs!
@@ -714,7 +739,8 @@
                                 <field name="period" readonly="True"/>
                                 <field name="amount_period" options="{'currency_field': 'currency_id'}"
                                        widget='monetary'/>
-                                <field name="percentage_fee"/>
+                                <field name="percentage_fee" options="{'currency_field': 'currency_id'}"
+                                       widget='monetary'/>
                                 <field name="percentage_margin"/>
                                 <field name="margin" options="{'currency_field': 'currency_id'}"
                                        widget='monetary' readonly="True"/>
@@ -748,7 +774,7 @@
                     <field name="product_id" readonly="True"/>
                     <field name="period" readonly="True"/>
                     <field name="amount_period" options="{'currency_field': 'currency_id'}" widget='monetary' sum="Total"/>
-                    <field name="percentage_fee" sum="Fee"/>
+                    <field name="percentage_fee" sum="Fee" options="{'currency_field': 'currency_id'}" widget='monetary'/>
                     <field name="percentage_margin" sum="FeeMargin"/>
                     <field name="margin" options="{'currency_field': 'currency_id'}" widget='monetary' sum="Margin"
                            readonly="True"/>
@@ -1111,8 +1137,8 @@
             <field name="model">product.fee.setting</field>
             <field name="arch" type="xml">
                 <tree string="Product fee" editable="bottom" sample="1">
-                    <field name="product_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
-                    <field name="other_product_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                    <field name="product_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                    <field name="other_product_id" options="{'no_create': True, 'no_create_edit': True}"
                            domain="[('check_fee','=', True)]"/>
                     <field name="create_uid" string="User"/>
                     <field name="create_date"/>

@@ -228,6 +228,11 @@ class ControlLineSupplier(models.Model):
                     val_tmp = (record.invoice_provision / record.currency_id.rate) * record.control_id.currency_id.rate
             record.invoice_provision_ml = val_tmp
 
+    @api.model
+    def create_purchase_order(self):
+        for record in self:
+            pass
+
 
 class PeriodCampaign(models.Model):
     _name = 'period.campaign'
@@ -561,7 +566,7 @@ class ObjectiveCampaignMarketing(models.Model):
     product_id = fields.Many2one('product.product', string='Product', domain="[('sale_ok', '=', True)]", tracking=1)
     period = fields.Many2one('period.campaign', 'Period', tracking=1, ondelete='restrict')
     amount_period = fields.Float('Amount', tracking=1)
-    percentage_fee = fields.Float('% Fee', tracking=1)
+    percentage_fee = fields.Float('Fee revenue', tracking=1)
     percentage_margin = fields.Float('% Margin', tracking=1)
     margin = fields.Float('Margin', tracking=1, compute="calc_amount_margin")
     type_payment = fields.Selection(selection=[
@@ -779,9 +784,8 @@ class CampaignMarketingElogia(models.Model):
                                           'campaign_line_id': item.id, 'project_id': record.project_id.id,
                                           'campaign_id': record.id, 'client_id': record.client_id.id,
                                           'product_id': item.product_id.id, 'period': self.generate_period(month),
-                                          'amount_period': item.amount_total, 'percentage_fee': record.percentage_fee,
-                                          'percentage_margin': 0, 'margin': 0, 'month_actual': month.month,
-                                          'type_payment': record.type_payment}
+                                          'amount_period': item.amount_total, 'percentage_margin': 0, 'margin': 0,
+                                          'month_actual': month.month, 'type_payment': record.type_payment}
                                          for item in record.campaign_line_ids]
                         env_objective.create(list_add_item)
                     list_filter = [month.month for month in list_months]
@@ -940,12 +944,15 @@ class CampaignMarketingElogia(models.Model):
             'line_ids': []
         }
         for item in list_setting:
+            amount_currency = record.amount
+            if record.currency_id != record.company_id.currency_id:
+                amount_currency = record.amount / record.currency_id.rate
             vals['line_ids'].append(((0, 0, {
                 'account_id': item['value_d'].id if item['key'] == 'debit' else item['value_c'].id,
                 'name': record.description,
                 'partner_id': record.campaign_id.client_id.id,
-                'debit': record.amount if item['key'] == 'debit' else 0,
-                'credit': record.amount if item['key'] == 'credit' else 0,
+                'debit': amount_currency if item['key'] == 'debit' else 0,
+                'credit': amount_currency if item['key'] == 'credit' else 0,
             })))
         obj_move = env_mov.with_context(check_move_validity=False).create(vals)
         if obj_move:
