@@ -195,7 +195,7 @@
                 <form string="Campaign marketing">
                     <header>
                         <button name="set_generated" string="Generate objectives" type="object" class="btn-primary"
-                                attrs="{'invisible':[('state','!=', 'open')]}"/>
+                                attrs="{'invisible':['|', ('state','!=', 'open'), ('check_generated', '=', True)]}"/>
                         <button name="create_invoice" string="Create move" type="object" class="btn-primary"
                                 attrs="{'invisible':['|', ('state','!=', 'open'), ('type_invoice', '!=', 'account')]}"/>
                         <button name="set_closed" string="To close" type="object"
@@ -205,6 +205,7 @@
                         <field name="state" widget="statusbar" statusbar_visible="open,closed" required="True"/>
                     </header>
                     <field name="check_deleted" invisible="1"/>
+                    <field name="check_generated" invisible="1"/>
                     <field name="list_deleted" invisible="1"/>
                     <div class="alert alert-warning" role="alert" attrs="{'invisible': [('check_deleted', '=', False)]}">
                         <strong>This campaign has objectives in the period(s) <field name="list_deleted"/> that should be deleted.</strong><br/>
@@ -744,6 +745,8 @@
                                 <field name="percentage_margin"/>
                                 <field name="margin" options="{'currency_field': 'currency_id'}"
                                        widget='monetary' readonly="True"/>
+                                <field name="margin_total" options="{'currency_field': 'currency_id'}"
+                                       widget='monetary' readonly="True"/>
                             </group>
                             <group name="thirty_group">
                                 <field name="type_payment" readonly="True"/>
@@ -778,6 +781,8 @@
                     <field name="percentage_margin" sum="FeeMargin"/>
                     <field name="margin" options="{'currency_field': 'currency_id'}" widget='monetary' sum="Margin"
                            readonly="True"/>
+                    <field name="margin_total" options="{'currency_field': 'currency_id'}" widget='monetary'
+                           sum="MarginTotal" readonly="True"/>
                     <field name="type_payment" readonly="True" optional="hide"/>
                     <field name="company_id" optional="hide"/>
                     <field name="create_uid" string="User" optional="hide"/>
