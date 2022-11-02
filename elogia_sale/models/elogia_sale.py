@@ -139,9 +139,14 @@ class CampaignAccountingSetting(models.Model):
     account_debit_second = fields.Many2one('account.account', 'Debit (Control)')
     account_credit_second = fields.Many2one('account.account', 'Credit (Control)')
 
-    @api.constrains('account_debit_first', 'account_credit_first')
+    @api.constrains('account_debit_first', 'account_credit_first', 'company_id')
     def check_control_account(self):
+        env_accounting = self.env['campaign.accounting.setting']
         for record in self:
+            if record.company_id:
+                obj_accounting = env_accounting.search([('company_id', '=', record.company_id.id), ('id', '!=', record.id)])
+                if obj_accounting:
+                    raise UserError(_('Company {} already has a related Accounting Setting.' .format(record.company_id.name)))
             if record.account_debit_first and record.account_credit_first:
                 record.account_debit_second = record.account_credit_first.id
                 record.account_credit_second = record.account_debit_first.id
