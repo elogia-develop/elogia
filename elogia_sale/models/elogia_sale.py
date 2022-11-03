@@ -419,6 +419,10 @@ class ControlCampaign(models.Model):
         for record in self:
             record.state = 'pending'
 
+    def set_process(self):
+        for record in self:
+            record.state = 'both'
+
     def set_draft(self):
         for record in self:
             record.state = 'draft'
@@ -447,6 +451,9 @@ class ControlCampaign(models.Model):
                 self.generated_account_move(record, env_mov, obj_setting)
             if record.state == 'purchase':
                 record.state = 'both'
+            else:
+                if record.count_purchase >= 1:
+                    record.state = 'both'
 
     def generated_account_move(self, record, env_mov, obj_setting):
         list_setting = [{'key': 'debit', 'value_d': obj_setting.account_debit_second},
@@ -458,13 +465,16 @@ class ControlCampaign(models.Model):
             'move_type': 'entry',
             'line_ids': []
         }
+        billed_currency = record.billed_revenue_ml
+        if record.currency_id != record.company_id.currency_id:
+            billed_currency = record.billed_revenue_ml / record.currency_id.rate
         for item in list_setting:
             vals['line_ids'].append(((0, 0, {
                 'account_id': item['value_d'].id if item['key'] == 'debit' else item['value_c'].id,
                 'name': record.name,
                 'partner_id': record.client_id.id,
-                'debit': record.billed_revenue_ml if item['key'] == 'debit' else 0,
-                'credit': record.billed_revenue_ml if item['key'] == 'credit' else 0,
+                'debit': billed_currency if item['key'] == 'debit' else 0,
+                'credit': billed_currency if item['key'] == 'credit' else 0,
             })))
         obj_move = env_mov.with_context(check_move_validity=False).create(vals)
         if obj_move:
