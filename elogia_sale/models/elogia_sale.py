@@ -228,16 +228,18 @@ class ControlLineSupplier(models.Model):
                 val_tmp = record.invoice_provision
             if record.currency_id != record.control_id.currency_id:
                 if record.control_id.currency_id == record.control_id.company_id.currency_id:
-                    val_tmp = record.invoice_provision / record.currency_id.rate
+                    if record.currency_id.rate > 0:
+                        val_tmp = record.invoice_provision / record.currency_id.rate
                 else:
-                    val_tmp = (record.invoice_provision / record.currency_id.rate) * record.control_id.currency_id.rate
+                    if record.currency_id.rate > 0:
+                        val_tmp = (record.invoice_provision / record.currency_id.rate) * record.control_id.currency_id.rate
                     if record.currency_id == record.control_id.company_id.currency_id:
                         val_tmp = record.invoice_provision * record.control_id.currency_id.rate
             record.invoice_provision_ml = val_tmp
 
     def create_purchase_order(self):
-        list_supplier = [line for line in self if line.state == 'no_process' and line.type_payment != 'client'
-                         and line.control_id.state in ['pending', 'sale']]
+        list_supplier = self.filtered(
+            lambda a: a.state == 'no_process' and a.type_payment != 'client' and a.control_id.state in ['pending', 'sale'])
         if list_supplier:
             line_by_supplier = self._group_line_by_supplier(list_supplier)
             if line_by_supplier:
@@ -248,7 +250,7 @@ class ControlLineSupplier(models.Model):
                             self.create_purchase(currency_value, supplier_key)
                             for item in currency_value:
                                 item.state = 'process'
-        for control in set([item.control_id for item in list_supplier]):
+        for control in list_supplier.mapped('control_id'):
             if control.state == 'sale':
                 control.state = 'both'
             else:
@@ -467,7 +469,8 @@ class ControlCampaign(models.Model):
         }
         billed_currency = record.billed_revenue_ml
         if record.currency_id != record.company_id.currency_id:
-            billed_currency = record.billed_revenue_ml / record.currency_id.rate
+            if record.currency_id.rate > 0:
+                billed_currency = record.billed_revenue_ml / record.currency_id.rate
         for item in list_setting:
             vals['line_ids'].append(((0, 0, {
                 'account_id': item['value_d'].id if item['key'] == 'debit' else item['value_c'].id,
@@ -604,7 +607,8 @@ class ControlCampaign(models.Model):
             record.consume = record.amount_unit * record.clicks
             record.amount_currency = record.amount_unit
             if record.currency_id != record.company_id.currency_id:
-                record.amount_currency = record.amount_unit / record.currency_id.rate
+                if record.currency_id.rate > 0:
+                    record.amount_currency = record.amount_unit / record.currency_id.rate
             record.consume_currency = record.amount_currency * record.clicks
             record.fee_revenue = record.consume * record.percentage_fee / 100
 
@@ -621,9 +625,10 @@ class ControlCampaign(models.Model):
             record.billed_revenue_ml = record.billed_revenue
             record.margin_ml = record.billed_revenue - sum_not_client
             if record.currency_id != record.company_id.currency_id:
-                record.fee_revenue_ml = record.fee_revenue / record.currency_id.rate
-                record.billed_revenue_ml = record.billed_revenue / record.currency_id.rate
-                record.margin_ml = (record.billed_revenue - sum_not_client) / record.currency_id.rate
+                if record.currency_id.rate > 0:
+                    record.fee_revenue_ml = record.fee_revenue / record.currency_id.rate
+                    record.billed_revenue_ml = record.billed_revenue / record.currency_id.rate
+                    record.margin_ml = (record.billed_revenue - sum_not_client) / record.currency_id.rate
             record.purchase_ml = - (sum_not_client / record.currency_id.rate) if record.currency_id else 0
             record.margin_factor_ml = record.margin_ml - record.fee_revenue_ml
 
@@ -736,11 +741,13 @@ class CampaignMarketingElogia(models.Model):
                     val_fee_currency = item.fee_revenue
                 else:
                     if record.currency_id == record.company_id.currency_id:
-                        val_consume_currency = item.consume / item.currency_id.rate
-                        val_fee_currency = item.fee_revenue / item.currency_id.rate
+                        if item.currency_id.rate > 0:
+                            val_consume_currency = item.consume / item.currency_id.rate
+                            val_fee_currency = item.fee_revenue / item.currency_id.rate
                     else:
-                        val_consume_currency = item.consume / item.currency_id.rate * record.currency_id.rate
-                        val_fee_currency = item.fee_revenue / item.currency_id.rate * record.currency_id.rate
+                        if item.currency_id.rate > 0:
+                            val_consume_currency = item.consume / item.currency_id.rate * record.currency_id.rate
+                            val_fee_currency = item.fee_revenue / item.currency_id.rate * record.currency_id.rate
                         if item.currency_id == record.company_id.currency_id:
                             val_consume_currency = item.consume * record.currency_id.rate
                             val_fee_currency = item.fee_revenue * record.currency_id.rate
@@ -1057,7 +1064,8 @@ class CampaignMarketingElogia(models.Model):
         for item in list_setting:
             amount_currency = record.amount
             if record.currency_id != record.company_id.currency_id:
-                amount_currency = record.amount / record.currency_id.rate
+                if record.currency_id.rate > 0:
+                    amount_currency = record.amount / record.currency_id.rate
             vals['line_ids'].append(((0, 0, {
                 'account_id': item['value_d'].id if item['key'] == 'debit' else item['value_c'].id,
                 'name': record.description,
