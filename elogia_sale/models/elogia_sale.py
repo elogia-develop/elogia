@@ -139,9 +139,14 @@ class CampaignAccountingSetting(models.Model):
     account_debit_second = fields.Many2one('account.account', 'Debit (Control)')
     account_credit_second = fields.Many2one('account.account', 'Credit (Control)')
 
-    @api.constrains('account_debit_first', 'account_credit_first')
+    @api.constrains('account_debit_first', 'account_credit_first', 'company_id')
     def check_control_account(self):
+        env_accounting = self.env['campaign.accounting.setting']
         for record in self:
+            if record.company_id:
+                obj_accounting = env_accounting.search([('company_id', '=', record.company_id.id), ('id', '!=', record.id)])
+                if obj_accounting:
+                    raise UserError(_('Company {} already has a related Accounting Setting.' .format(record.company_id.name)))
             if record.account_debit_first and record.account_credit_first:
                 record.account_debit_second = record.account_credit_first.id
                 record.account_credit_second = record.account_debit_first.id
@@ -223,15 +228,91 @@ class ControlLineSupplier(models.Model):
                 val_tmp = record.invoice_provision
             if record.currency_id != record.control_id.currency_id:
                 if record.control_id.currency_id == record.control_id.company_id.currency_id:
-                    val_tmp = record.invoice_provision / record.currency_id.rate
+                    if record.currency_id.rate > 0:
+                        val_tmp = record.invoice_provision / record.currency_id.rate
                 else:
-                    val_tmp = (record.invoice_provision / record.currency_id.rate) * record.control_id.currency_id.rate
+                    if record.currency_id.rate > 0:
+                        val_tmp = (record.invoice_provision / record.currency_id.rate) * record.control_id.currency_id.rate
+                    if record.currency_id == record.control_id.company_id.currency_id:
+                        val_tmp = record.invoice_provision * record.control_id.currency_id.rate
             record.invoice_provision_ml = val_tmp
 
-    @api.model
     def create_purchase_order(self):
-        for record in self:
-            pass
+        list_supplier = self.filtered(
+            lambda a: a.state == 'no_process' and a.type_payment != 'client' and a.control_id.state in ['pending', 'sale'])
+        if list_supplier:
+            line_by_supplier = self._group_line_by_supplier(list_supplier)
+            if line_by_supplier:
+                for supplier_key, supplier_value in line_by_supplier.items():
+                    line_by_currency = self._group_line_by_currency(supplier_value)
+                    if line_by_currency:
+                        for currency_key, currency_value in line_by_currency.items():
+                            self.create_purchase(currency_value, supplier_key)
+                            for item in currency_value:
+                                item.state = 'process'
+        for control in list_supplier.mapped('control_id'):
+            if control.state == 'sale':
+                control.state = 'both'
+            else:
+                control.state = 'purchase'
+
+    def _group_line_by_supplier(self, list_supplier):
+        """"
+        Function to group the line by supplier
+        """
+        line_by_suppl = {}
+        for record in list_supplier:
+            supplier = record.partner_id
+            if supplier not in line_by_suppl:
+                line_by_suppl[supplier] = [record]
+            else:
+                line_by_suppl[supplier].append(record)
+        return line_by_suppl
+
+    def _group_line_by_currency(self, supplier_value):
+        """"
+        Function to group the line by currency
+        """
+        line_by_currency = {}
+        for record in supplier_value:
+            currency = record.currency_id
+            if currency not in line_by_currency:
+                line_by_currency[currency] = [record]
+            else:
+                line_by_currency[currency].append(record)
+        return line_by_currency
+
+    def create_purchase(self, line, supplier):
+        purchase_obj = self.env['purchase.order']
+        vals_purchase = self._prepare_vals_purchase_order(line, supplier)
+        purchase = purchase_obj.create(vals_purchase)
+        self._create_lines_purchase_order(purchase, line)
+
+    def _prepare_vals_purchase_order(self, line, supplier):
+        vals = {
+            'partner_id': supplier.id,
+            'origin': 'Control Campaign',
+            'currency_id': line[0].currency_id.id,
+            'date_planned': fields.datetime.now(),
+            'control_id': line[0].control_id.id,
+            'campaign_elogia_id': line[0].control_id.campaign_id.id
+        }
+        return vals
+
+    def _create_lines_purchase_order(self, purchase, line):
+        purchase_line_obj = self.env['purchase.order.line']
+        vals = {
+            'order_id': purchase.id,
+            'product_id': line[0].control_id.campaign_line_id.product_id.id,
+            'name': line[0].control_id.campaign_line_id.product_id.name,
+            'product_uom': line[0].control_id.campaign_line_id.product_id.uom_po_id.id,
+            'date_planned': fields.datetime.now(),
+            'product_qty': 1,
+            'price_unit': sum([item.invoice_provision for item in line]),
+            'taxes_id': [(6, 0, line[0].control_id.campaign_line_id.product_id.supplier_taxes_id.ids)]
+        }
+        purchase_line_obj.create(vals)
+        return True
 
 
 class PeriodCampaign(models.Model):
@@ -340,6 +421,10 @@ class ControlCampaign(models.Model):
         for record in self:
             record.state = 'pending'
 
+    def set_process(self):
+        for record in self:
+            record.state = 'both'
+
     def set_draft(self):
         for record in self:
             record.state = 'draft'
@@ -366,6 +451,11 @@ class ControlCampaign(models.Model):
             obj_setting = env_setting.search([('company_id', '=', record.company_id.id)], limit=1)
             if obj_setting:
                 self.generated_account_move(record, env_mov, obj_setting)
+            if record.state == 'purchase':
+                record.state = 'both'
+            else:
+                if record.count_purchase >= 1:
+                    record.state = 'both'
 
     def generated_account_move(self, record, env_mov, obj_setting):
         list_setting = [{'key': 'debit', 'value_d': obj_setting.account_debit_second},
@@ -377,13 +467,17 @@ class ControlCampaign(models.Model):
             'move_type': 'entry',
             'line_ids': []
         }
+        billed_currency = record.billed_revenue_ml
+        if record.currency_id != record.company_id.currency_id:
+            if record.currency_id.rate > 0:
+                billed_currency = record.billed_revenue_ml / record.currency_id.rate
         for item in list_setting:
             vals['line_ids'].append(((0, 0, {
                 'account_id': item['value_d'].id if item['key'] == 'debit' else item['value_c'].id,
                 'name': record.name,
                 'partner_id': record.client_id.id,
-                'debit': record.billed_revenue_ml if item['key'] == 'debit' else 0,
-                'credit': record.billed_revenue_ml if item['key'] == 'credit' else 0,
+                'debit': billed_currency if item['key'] == 'debit' else 0,
+                'credit': billed_currency if item['key'] == 'credit' else 0,
             })))
         obj_move = env_mov.with_context(check_move_validity=False).create(vals)
         if obj_move:
@@ -391,7 +485,8 @@ class ControlCampaign(models.Model):
 
     def generate_purchase(self):
         for record in self:
-            pass
+            if record.control_line_ids:
+                record.control_line_ids.create_purchase_order()
 
     @api.onchange('campaign_id')
     def onchange_campaign_id(self):
@@ -408,11 +503,6 @@ class ControlCampaign(models.Model):
     def onchange_client_id(self):
         if self.client_id.team_id:
             self.team_id = self.client_id.team_id
-
-    @api.onchange('campaign_line_id')
-    def onchange_campaign_line_id(self):
-        if self.campaign_line_id:
-            self.percentage_fee = self.campaign_line_id.percentage_fee
 
     def get_count_models(self):
         for record in self:
@@ -468,7 +558,7 @@ class ControlCampaign(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'account.move',
-            'domain': [('campaign_elogia_id', '=', self.id), ('move_type', 'in', ['out_invoice', 'out_refund'])],
+            'domain': [('control_id', '=', self.id), ('move_type', 'in', ['out_invoice', 'out_refund'])],
             'context': {
                 'default_partner_id': self.client_id.id,
                 'default_control_id': self.id,
@@ -517,7 +607,8 @@ class ControlCampaign(models.Model):
             record.consume = record.amount_unit * record.clicks
             record.amount_currency = record.amount_unit
             if record.currency_id != record.company_id.currency_id:
-                record.amount_currency = record.amount_unit / record.currency_id.rate
+                if record.currency_id.rate > 0:
+                    record.amount_currency = record.amount_unit / record.currency_id.rate
             record.consume_currency = record.amount_currency * record.clicks
             record.fee_revenue = record.consume * record.percentage_fee / 100
 
@@ -534,9 +625,10 @@ class ControlCampaign(models.Model):
             record.billed_revenue_ml = record.billed_revenue
             record.margin_ml = record.billed_revenue - sum_not_client
             if record.currency_id != record.company_id.currency_id:
-                record.fee_revenue_ml = record.fee_revenue / record.currency_id.rate
-                record.billed_revenue_ml = record.billed_revenue / record.currency_id.rate
-                record.margin_ml = (record.billed_revenue - sum_not_client) / record.currency_id.rate
+                if record.currency_id.rate > 0:
+                    record.fee_revenue_ml = record.fee_revenue / record.currency_id.rate
+                    record.billed_revenue_ml = record.billed_revenue / record.currency_id.rate
+                    record.margin_ml = (record.billed_revenue - sum_not_client) / record.currency_id.rate
             record.purchase_ml = - (sum_not_client / record.currency_id.rate) if record.currency_id else 0
             record.margin_factor_ml = record.margin_ml - record.fee_revenue_ml
 
@@ -569,6 +661,7 @@ class ObjectiveCampaignMarketing(models.Model):
     percentage_fee = fields.Float('Fee revenue', tracking=1)
     percentage_margin = fields.Float('% Margin', tracking=1)
     margin = fields.Float('Margin', tracking=1, compute="calc_amount_margin")
+    margin_total = fields.Float('Margin total', tracking=1, compute="calc_amount_margin")
     type_payment = fields.Selection(selection=[
         ('spain', 'Spain'),
         ('client', 'Client'),
@@ -588,13 +681,11 @@ class ObjectiveCampaignMarketing(models.Model):
             'res_id': self.id,
         }
 
-    @api.depends('amount_period', 'percentage_margin')
+    @api.depends('amount_period', 'percentage_margin', 'percentage_fee', 'margin')
     def calc_amount_margin(self):
         for record in self:
-            margin = 0
-            if record.amount_period and record.percentage_margin:
-                margin = record.amount_period * record.percentage_margin / 100
-            record.margin = margin
+            record.margin = record.amount_period * record.percentage_margin / 100
+            record.margin_total = record.margin + record.percentage_fee
 
 
 class CampaignMarketingLine(models.Model):
@@ -640,10 +731,30 @@ class CampaignMarketingElogia(models.Model):
 
     def _calc_revenue_control(self):
         env_control = self.env['control.campaign.marketing']
+        list_consume = []
+        list_fee = []
         for record in self:
             obj_control = env_control.search([('campaign_id', '=', record.id)])
-            record.amount_diff = sum(obj_control.mapped('consume'))
-            record.amount_fee = sum(obj_control.mapped('fee_revenue'))
+            for item in obj_control:
+                if item.currency_id == record.currency_id:
+                    val_consume_currency = item.consume
+                    val_fee_currency = item.fee_revenue
+                else:
+                    if record.currency_id == record.company_id.currency_id:
+                        if item.currency_id.rate > 0:
+                            val_consume_currency = item.consume / item.currency_id.rate
+                            val_fee_currency = item.fee_revenue / item.currency_id.rate
+                    else:
+                        if item.currency_id.rate > 0:
+                            val_consume_currency = item.consume / item.currency_id.rate * record.currency_id.rate
+                            val_fee_currency = item.fee_revenue / item.currency_id.rate * record.currency_id.rate
+                        if item.currency_id == record.company_id.currency_id:
+                            val_consume_currency = item.consume * record.currency_id.rate
+                            val_fee_currency = item.fee_revenue * record.currency_id.rate
+                list_consume.append(val_consume_currency)
+                list_fee.append(val_fee_currency)
+            record.amount_diff = sum(list_consume) if list_consume else 0
+            record.amount_fee = sum(list_fee) if list_fee else 0
 
     name = fields.Char('Name', index=True, required=True)
     project_id = fields.Many2one('project.project', 'Project',
@@ -691,6 +802,7 @@ class CampaignMarketingElogia(models.Model):
     order_ids = fields.One2many('sale.order', 'campaign_elogia_id', 'Sales')
     invoice_ids = fields.One2many('account.move', 'campaign_elogia_id', 'Invoices')
     purchase_ids = fields.One2many('purchase.order', 'campaign_elogia_id', 'Purchase')
+    check_generated = fields.Boolean('Generated objectives')
 
     def set_closed(self):
         self.state = 'closed'
@@ -733,6 +845,11 @@ class CampaignMarketingElogia(models.Model):
             if list_followers:
                 obj_user_ids = env_users.search([('groups_id', 'in', group_ids), ('partner_id', 'in', list_followers.ids)])
                 self.user_ids = obj_user_ids
+
+    @api.onchange('date_start', 'date')
+    def onchange_dates_campaign(self):
+        if self.date_start or self.date:
+            self.check_generated = False
 
     @api.onchange('check_change')
     def onchange_user_ids(self):
@@ -788,6 +905,7 @@ class CampaignMarketingElogia(models.Model):
                                           'month_actual': month.month, 'type_payment': record.type_payment}
                                          for item in record.campaign_line_ids]
                         env_objective.create(list_add_item)
+                        record.check_generated = True
                     list_filter = [month.month for month in list_months]
                     obj_objective.filtered(lambda e: e.month_actual not in list_filter).write({'check_deleted': True})
 
@@ -946,7 +1064,8 @@ class CampaignMarketingElogia(models.Model):
         for item in list_setting:
             amount_currency = record.amount
             if record.currency_id != record.company_id.currency_id:
-                amount_currency = record.amount / record.currency_id.rate
+                if record.currency_id.rate > 0:
+                    amount_currency = record.amount / record.currency_id.rate
             vals['line_ids'].append(((0, 0, {
                 'account_id': item['value_d'].id if item['key'] == 'debit' else item['value_c'].id,
                 'name': record.description,
