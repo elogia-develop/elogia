@@ -1182,13 +1182,19 @@
             <menuitem name="Campaigns" id="campaign_marketing_menu_item_first" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
                 <menuitem name="Campaigns" id="campaign_marketing_menu_item0" action="action_campaign_marketing_elogia" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
                 <menuitem name="Objectives" id="campaign_marketing_menu_item1" action="action_objective_campaign_marketing" sequence="2" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group"/>
+                <menuitem name="Customers" id="campaign_marketing_menu_item2" action="account.res_partner_action_customer" sequence="3" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
             </menuitem>
             <menuitem name="Control Campaigns" id="campaign_marketing_menu_item_second" sequence="2" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
                 <menuitem name="Control Campaigns" id="campaign_marketing_menu_second0" action="action_control_campaign_marketing" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
                 <menuitem name="Line suppliers" id="campaign_marketing_menu_second1" action="action_control_line_supplier" sequence="2" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
+                <menuitem name="Vendors" id="campaign_marketing_menu_item3" action="account.res_partner_action_supplier" sequence="4" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
             </menuitem>
-            <menuitem name="Report KPIs" id="campaign_marketing_menu_item_thirty" sequence="3" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
-                <menuitem name="Control KPIs" id="campaign_marketing_menu_thirty0" action="action_kpi_control_campaign_marketing" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
+            <menuitem name="Products" id="campaign_marketing_menu_item_thirty" sequence="3" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
+                <menuitem name="Products" id="campaign_marketing_menu_thirty0" action="sale.product_template_action" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
+                <menuitem name="Pricelists" id="campaign_marketing_menu_thirty1" action="product.product_pricelist_action2" sequence="2" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
+            </menuitem>
+            <menuitem name="Report KPIs" id="campaign_marketing_menu_item_four" sequence="4" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
+                <menuitem name="Control KPIs" id="campaign_marketing_menu_four0" action="action_kpi_control_campaign_marketing" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
             </menuitem>
             <menuitem name="Settings" id="campaign_marketing_menu_item_last" sequence="999" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group">
                 <menuitem name="Periods" id="campaign_marketing_menu_last0" action="action_period_campaign" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group"/>
