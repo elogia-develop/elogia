@@ -235,10 +235,82 @@ class ControlLineSupplier(models.Model):
                         val_tmp = record.invoice_provision * record.control_id.currency_id.rate
             record.invoice_provision_ml = val_tmp
 
-    @api.model
     def create_purchase_order(self):
-        for record in self:
-            pass
+        list_supplier = [line for line in self if line.state == 'no_process' and line.type_payment != 'client'
+                         and line.control_id.state in ['pending', 'sale']]
+        if list_supplier:
+            line_by_supplier = self._group_line_by_supplier(list_supplier)
+            if line_by_supplier:
+                for supplier_key, supplier_value in line_by_supplier.items():
+                    line_by_currency = self._group_line_by_currency(supplier_value)
+                    if line_by_currency:
+                        for currency_key, currency_value in line_by_currency.items():
+                            self.create_purchase(currency_value, supplier_key)
+                            for item in currency_value:
+                                item.state = 'process'
+        for control in set([item.control_id for item in list_supplier]):
+            if control.state == 'sale':
+                control.state = 'both'
+            else:
+                control.state = 'purchase'
+
+    def _group_line_by_supplier(self, list_supplier):
+        """"
+        Function to group the line by supplier
+        """
+        line_by_suppl = {}
+        for record in list_supplier:
+            supplier = record.partner_id
+            if supplier not in line_by_suppl:
+                line_by_suppl[supplier] = [record]
+            else:
+                line_by_suppl[supplier].append(record)
+        return line_by_suppl
+
+    def _group_line_by_currency(self, supplier_value):
+        """"
+        Function to group the line by currency
+        """
+        line_by_currency = {}
+        for record in supplier_value:
+            currency = record.currency_id
+            if currency not in line_by_currency:
+                line_by_currency[currency] = [record]
+            else:
+                line_by_currency[currency].append(record)
+        return line_by_currency
+
+    def create_purchase(self, line, supplier):
+        purchase_obj = self.env['purchase.order']
+        vals_purchase = self._prepare_vals_purchase_order(line, supplier)
+        purchase = purchase_obj.create(vals_purchase)
+        self._create_lines_purchase_order(purchase, line)
+
+    def _prepare_vals_purchase_order(self, line, supplier):
+        vals = {
+            'partner_id': supplier.id,
+            'origin': 'Control Campaign',
+            'currency_id': line[0].currency_id.id,
+            'date_planned': fields.datetime.now(),
+            'control_id': line[0].control_id.id,
+            'campaign_elogia_id': line[0].control_id.campaign_id.id
+        }
+        return vals
+
+    def _create_lines_purchase_order(self, purchase, line):
+        purchase_line_obj = self.env['purchase.order.line']
+        vals = {
+            'order_id': purchase.id,
+            'product_id': line[0].control_id.campaign_line_id.product_id.id,
+            'name': line[0].control_id.campaign_line_id.product_id.name,
+            'product_uom': line[0].control_id.campaign_line_id.product_id.uom_po_id.id,
+            'date_planned': fields.datetime.now(),
+            'product_qty': 1,
+            'price_unit': sum([item.invoice_provision for item in line]),
+            'taxes_id': [(6, 0, line[0].control_id.campaign_line_id.product_id.supplier_taxes_id.ids)]
+        }
+        purchase_line_obj.create(vals)
+        return True
 
 
 class PeriodCampaign(models.Model):
@@ -373,6 +445,8 @@ class ControlCampaign(models.Model):
             obj_setting = env_setting.search([('company_id', '=', record.company_id.id)], limit=1)
             if obj_setting:
                 self.generated_account_move(record, env_mov, obj_setting)
+            if record.state == 'purchase':
+                record.state = 'both'
 
     def generated_account_move(self, record, env_mov, obj_setting):
         list_setting = [{'key': 'debit', 'value_d': obj_setting.account_debit_second},
@@ -398,7 +472,8 @@ class ControlCampaign(models.Model):
 
     def generate_purchase(self):
         for record in self:
-            pass
+            if record.control_line_ids:
+                record.control_line_ids.create_purchase_order()
 
     @api.onchange('campaign_id')
     def onchange_campaign_id(self):
@@ -470,7 +545,7 @@ class ControlCampaign(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'account.move',
-            'domain': [('campaign_elogia_id', '=', self.id), ('move_type', 'in', ['out_invoice', 'out_refund'])],
+            'domain': [('control_id', '=', self.id), ('move_type', 'in', ['out_invoice', 'out_refund'])],
             'context': {
                 'default_partner_id': self.client_id.id,
                 'default_control_id': self.id,
