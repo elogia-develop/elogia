@@ -877,6 +877,7 @@ class CampaignMarketingElogia(models.Model):
         if self.analytic_account_id:
             self.client_id = self.analytic_account_id.partner_id.id
             self.currency_id = self.analytic_account_id.currency_id.id
+            self.company_id = self.analytic_account_id.company_id.id
 
     @api.onchange('project_id')
     def onchange_fields_by_project(self):
@@ -884,6 +885,8 @@ class CampaignMarketingElogia(models.Model):
         if self.project_id:
             if not self.client_id:
                 self.client_id = self.project_id.partner_id.id
+            if not self.company_id:
+                self.company_id = self.analytic_account_id.company_id.id
             self.date_start = self.project_id.date_start
             self.date = self.project_id.date
             list_followers = self.project_id.message_follower_ids.partner_id

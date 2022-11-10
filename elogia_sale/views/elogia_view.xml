@@ -184,6 +184,9 @@
                                 <field name="client_id" required="True"
                                        options="{'no_create': True, 'no_create_edit': True}"
                                        attrs="{'readonly':[('state','!=', 'open')]}"/>
+                                 <field name="company_id"
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':[('state','!=', 'open')]}"/>
 
                             </group>
                             <group name="second_group">
@@ -199,9 +202,6 @@
                                            options='{"related_start_date": "date_start"}'
                                            attrs="{'readonly':[('state','!=', 'open')]}"/>
                                 </div>
-                                <field name="company_id"
-                                       options="{'no_create': True, 'no_create_edit': True}"
-                                       attrs="{'readonly':[('state','!=', 'open')]}"/>
                                 <field name="currency_id" attrs="{'readonly':[('state','!=', 'open')]}"
                                        options="{'no_create': True, 'no_create_edit': True}"/>
                                 <field name="percentage_fee" attrs="{'readonly':[('state','!=', 'open')]}"/>
