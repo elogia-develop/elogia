@@ -50,9 +50,13 @@ class SaleOrderWizard(models.Model):
     def action_create_order(self):
         _logger.info('Begin: action_quotation_sale')
         env_product_setting = self.env['product.fee.setting'].search([])
+        env_pricelist_setting = self.env['pricelist.setting'].search([])
         env_control = self.env['control.campaign.marketing']
         if not env_product_setting:
             raise UserError(_('There are no "Product Settings" configured.\n Check in Settings/Product Settings menu.'))
+        if not env_pricelist_setting:
+            raise UserError(_('There are no "Pricelist Settings" configured.\n '
+                              'Check in Settings/Pricelist Settings menu.'))
         else:
             obj_control_ids = env_control.search([('id', 'in', self._context.get('active_ids'))])
             if obj_control_ids:
@@ -61,14 +65,19 @@ class SaleOrderWizard(models.Model):
                 if list_not_setting:
                     raise UserError(_('Products {} are not configured.\n Check in Settings/Product Settings menu.'
                                       .format(list_not_setting)))
+                price_not_setting = [price.name for price in obj_control_ids.mapped('currency_id')
+                                     if price not in env_pricelist_setting.mapped('currency_id')]
+                if price_not_setting:
+                    raise UserError(_('Currency {} are not configured.\n Check in Settings/Pricelist Settings menu.'
+                                      .format(price_not_setting)))
                 else:
                     if self.check_error:
                         raise UserError(_('There are campaign controls that cannot be processed.'))
                     else:
                         for obj_control in obj_control_ids:
-                            self.action_quotation_sale(obj_control, env_product_setting)
+                            self.action_quotation_sale(obj_control, env_product_setting, env_pricelist_setting)
 
-    def action_quotation_sale(self, control, setting):
+    def action_quotation_sale(self, control, setting, pricelist_ids):
         order_lines = []
         order_obj = self.env['sale.order']
         list_line = [control.campaign_line_id.product_id]
@@ -95,11 +104,12 @@ class SaleOrderWizard(models.Model):
                 'currency_id': control.currency_id.id,
             }
             order_lines.append((0, 0, line_vals))
+        pricelist = pricelist_ids.filtered(lambda e: e.currency_id == control.currency_id)
         order_vals = {
             'partner_id': control.client_id.id,
             'date_order': self.date_order,
             'order_line': order_lines,
-            'pricelist_id': control.pricelist_id.id,
+            'pricelist_id': pricelist.pricelist_id.id if pricelist else False,
             'fiscal_position_id': control.client_id.property_account_position_id.id
             if control.client_id.property_account_position_id else False,
             'currency_id': control.currency_id.id,
@@ -118,6 +128,41 @@ class SaleOrderWizard(models.Model):
             control.message_post(body=_("Created sale order: {}").format(sale_order.name))
 
 
+class HistoricalDateObjectives(models.Model):
+    _name = 'historical.date.objectives'
+    _description = 'Historical Date Objectives'
+    _rec_name = 'date_start'
+
+    date_start = fields.Date(string='Start Date', required=True)
+    date = fields.Date(string='Finish Date')
+    campaign_id = fields.Many2one('campaign.marketing.elogia', 'Campaign marketing')
+
+
+class ExpenseEntrySetting(models.Model):
+    _name = 'expense.entry.setting'
+    _description = 'Expense Entry Setting'
+    _rec_name = 'expense_account'
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company)
+    journal_id = fields.Many2one('account.journal', 'Journal', required=True)
+    expense_account = fields.Many2one('account.account', 'Expense Account', required=True)
+    passive_account = fields.Many2one('account.account', 'Passive Account', required=True)
+
+
+class PriceListSetting(models.Model):
+    _name = 'pricelist.setting'
+    _description = 'Pricelist Setting'
+    _rec_name = 'currency_id'
+
+    currency_id = fields.Many2one('res.currency', 'Currency', required=True)
+    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', check_company=True,
+                                   domain="[('currency_id', '=', currency_id)]")
+
+    _sql_constraints = [
+        ('currency_unique', 'unique (currency_id)', 'This currency already has a related Pricelist!')
+    ]
+
+
 class ProductFeeSetting(models.Model):
     _name = 'product.fee.setting'
     _description = 'Product Fee Setting'
@@ -125,6 +170,12 @@ class ProductFeeSetting(models.Model):
 
     product_id = fields.Many2one('product.product', 'Product', required=True, index=True)
     other_product_id = fields.Many2one('product.product', 'Product fee', required=True)
+    company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company)
+
+    _sql_constraints = [
+        ('company_product_unique', 'unique (company_id,product_id)',
+         'This product and company already has a related Product Fee Setting!')
+    ]
 
 
 class CampaignAccountingSetting(models.Model):
@@ -139,14 +190,13 @@ class CampaignAccountingSetting(models.Model):
     account_debit_second = fields.Many2one('account.account', 'Debit (Control)')
     account_credit_second = fields.Many2one('account.account', 'Credit (Control)')
 
-    @api.constrains('account_debit_first', 'account_credit_first', 'company_id')
+    _sql_constraints = [
+        ('company_unique', 'unique (company_id)', 'This company already has a related Accounting Setting!')
+    ]
+
+    @api.constrains('account_debit_first', 'account_credit_first')
     def check_control_account(self):
-        env_accounting = self.env['campaign.accounting.setting']
         for record in self:
-            if record.company_id:
-                obj_accounting = env_accounting.search([('company_id', '=', record.company_id.id), ('id', '!=', record.id)])
-                if obj_accounting:
-                    raise UserError(_('Company {} already has a related Accounting Setting.' .format(record.company_id.name)))
             if record.account_debit_first and record.account_credit_first:
                 record.account_debit_second = record.account_credit_first.id
                 record.account_credit_second = record.account_debit_first.id
@@ -167,11 +217,12 @@ class CampaignLineInvoice(models.Model):
     currency_id = fields.Many2one(related='campaign_id.currency_id', string="Currency")
     company_id = fields.Many2one(related='campaign_id.company_id', string="Company")
     invoice_id = fields.Many2one('account.move', string="Invoice", ondelete='restrict')
+    invoice_line_id = fields.Many2one('account.move.line', string="Invoice line", ondelete='restrict')
     move_id = fields.Many2one('account.move', string="Move")
     state = fields.Selection([
         ('no_process', 'Not processed'),
         ('process', 'Processed')
-    ], string='Status', compute='check_state_invoice', tracking=1)
+    ], string='Status', compute='check_state_invoice', store=True, tracking=1)
 
     @api.depends('move_id')
     def check_state_invoice(self):
@@ -200,6 +251,9 @@ class ControlLineSupplier(models.Model):
     control_id = fields.Many2one('control.campaign.marketing', 'Control', tracking=1)
     company_id = fields.Many2one(related='control_id.company_id', string='Company', tracking=1)
     name_campaign = fields.Char(related='control_id.campaign_id.name', store=True, string='Campaigns', tracking=1)
+    client_id = fields.Many2one(related='control_id.client_id', store=True, string='Client', tracking=1)
+    analytic_account_id = fields.Many2one(related='control_id.analytic_account_id', store=True,
+                                          string='Analytic account', tracking=1)
     partner_id = fields.Many2one('res.partner', 'Supplier', required=True, index=True, tracking=1)
     invoice_provision = fields.Float('Provision', tracking=1)
     invoice_provision_ml = fields.Float('Provision (mt)', tracking=1, compute='calc_amount_total')
@@ -400,7 +454,6 @@ class ControlCampaign(models.Model):
         ('sale', 'Sales'),
         ('account', 'Accounting')
     ], string='Billing type', tracking=1)
-    team_id = fields.Many2one('crm.team', 'Sale team', tracking=1)
     order_ids = fields.One2many('sale.order', 'control_id', 'Sales')
     invoice_ids = fields.One2many('account.move', 'control_id', 'Invoices')
     purchase_ids = fields.One2many('purchase.order', 'control_id', 'Purchase')
@@ -412,10 +465,7 @@ class ControlCampaign(models.Model):
     margin_ml = fields.Float('Margin(ml)', tracking=1, compute='calc_kpi', store=True)
     margin_factor_ml = fields.Float('Margin factor(ml)', tracking=1, compute='calc_kpi', store=True)
     check_diff = fields.Boolean('Diff', compute='get_name_campaign')
-    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', check_company=True, tracking=1,
-                                   states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
-                                   domain="[('currency_id', '=', currency_id), '|', ('company_id', '=', company_id), "
-                                          "('company_id', '=', False)]")
+    analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic account', tracking=1)
 
     def set_pending(self):
         for record in self:
@@ -498,11 +548,6 @@ class ControlCampaign(models.Model):
             self.percentage_fee = self.campaign_id.percentage_fee
             self.type_invoice = self.campaign_id.type_invoice
             self.campaign_line_id = False
-
-    @api.onchange('client_id')
-    def onchange_client_id(self):
-        if self.client_id.team_id:
-            self.team_id = self.client_id.team_id
 
     def get_count_models(self):
         for record in self:
@@ -649,6 +694,7 @@ class ObjectiveCampaignMarketing(models.Model):
                                        index=True, copy=False)
     name = fields.Char(string='Description', required=True, index=True)
     project_id = fields.Many2one('project.project', 'Project', tracking=1)
+    analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic account', tracking=1)
     campaign_id = fields.Many2one('campaign.marketing.elogia', 'Campaign')
     currency_id = fields.Many2one(related='campaign_id.currency_id', depends=['campaign_id.currency_id'], store=True,
                                   string='Currency')
@@ -757,8 +803,7 @@ class CampaignMarketingElogia(models.Model):
             record.amount_fee = sum(list_fee) if list_fee else 0
 
     name = fields.Char('Name', index=True, required=True)
-    project_id = fields.Many2one('project.project', 'Project',
-                                 domain=lambda self: [('message_follower_ids.partner_id', '=', self.env.user.partner_id.id)], tracking=1)
+    project_id = fields.Many2one('project.project', 'Project', tracking=1)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company)
     currency_id = fields.Many2one('res.currency', default=_get_default_currency_id, string="Currency")
     client_id = fields.Many2one('res.partner', 'Client', tracking=1)
@@ -799,10 +844,10 @@ class CampaignMarketingElogia(models.Model):
     check_deleted = fields.Boolean('To delete', compute='get_delete_objectives')
     list_deleted = fields.Char('List to deleted', compute='get_delete_objectives')
     check_change = fields.Boolean('Change?')
-    order_ids = fields.One2many('sale.order', 'campaign_elogia_id', 'Sales')
-    invoice_ids = fields.One2many('account.move', 'campaign_elogia_id', 'Invoices')
-    purchase_ids = fields.One2many('purchase.order', 'campaign_elogia_id', 'Purchase')
-    check_generated = fields.Boolean('Generated objectives')
+    order_ids = fields.One2many('sale.order.line', 'campaign_elogia_id', 'Sales')
+    invoice_ids = fields.One2many('account.move', 'campaign_elogia_id', 'Moves')
+    purchase_ids = fields.One2many('purchase.order.line', 'campaign_elogia_id', 'Purchase')
+    check_generated = fields.Boolean('Generated objectives', compute='get_new_objectives')
 
     def set_closed(self):
         self.state = 'closed'
@@ -824,20 +869,27 @@ class CampaignMarketingElogia(models.Model):
     def create_line(self, record):
         env_campaign_line = self.env['campaign.marketing.line']
         if record.product_id:
-            env_campaign_line.create(
-                {'product_id': record.product_id.id,
-                 'name': record.product_id.name,
-                 'amount_total': record.product_id.list_price,
-                 'campaign_id': record.id
-                 })
+            if record.product_id not in record.campaign_line_ids.mapped('product_id'):
+                env_campaign_line.create(
+                    {'product_id': record.product_id.id,
+                     'name': record.product_id.name,
+                     'amount_total': record.product_id.list_price,
+                     'campaign_id': record.id
+                     })
+
+    @api.onchange('analytic_account_id')
+    def onchange_fields_by_analytic(self):
+        if self.analytic_account_id:
+            self.client_id = self.analytic_account_id.partner_id.id
+            self.currency_id = self.analytic_account_id.currency_id.id
 
     @api.onchange('project_id')
     def onchange_fields_by_project(self):
         env_users = self.env['res.users']
         if self.project_id:
-            self.client_id = self.project_id.partner_id.id
+            if not self.client_id:
+                self.client_id = self.project_id.partner_id.id
             self.date_start = self.project_id.date_start
-            self.analytic_account_id = self.project_id.analytic_account_id
             self.date = self.project_id.date
             list_followers = self.project_id.message_follower_ids.partner_id
             group_ids = [self.env.ref('elogia_sale.sale_elogia_user_group').id,
@@ -846,10 +898,28 @@ class CampaignMarketingElogia(models.Model):
                 obj_user_ids = env_users.search([('groups_id', 'in', group_ids), ('partner_id', 'in', list_followers.ids)])
                 self.user_ids = obj_user_ids
 
-    @api.onchange('date_start', 'date')
-    def onchange_dates_campaign(self):
-        if self.date_start or self.date:
-            self.check_generated = False
+    @api.depends('date_start', 'date', 'campaign_line_ids')
+    def get_new_objectives(self):
+        env_historical = self.env['historical.date.objectives']
+        env_objective = self.env['objective.campaign.marketing']
+        check_generated = False
+        for record in self:
+            obj_historical = env_historical.search([('campaign_id', '=', record.id)], order='id desc')
+            if record.date_start and record.date:
+                if not record.count_objectives:
+                    check_generated = True
+                if obj_historical:
+                    obj_historical_date = obj_historical.filtered(
+                        lambda e: e.date_start == record.date_start and e.date == record.date)
+                    if not obj_historical_date:
+                        check_generated = True
+            obj_objective = env_objective.search([('campaign_id', '=', record.id)])
+            if obj_objective and record.campaign_line_ids:
+                lines_no_obj = [item for item in record.campaign_line_ids if
+                                item.id not in obj_objective.mapped('campaign_line_id').ids]
+                if lines_no_obj:
+                    check_generated = True
+            record.check_generated = check_generated
 
     @api.onchange('check_change')
     def onchange_user_ids(self):
@@ -866,23 +936,17 @@ class CampaignMarketingElogia(models.Model):
         self.update(values)
         return {'domain': domain}
 
-    @api.onchange('client_id')
-    def onchange_currency_by_client(self):
-        if self.client_id and self.client_id.property_product_pricelist:
-            self.currency_id = self.client_id.property_product_pricelist.currency_id.id
-
     @api.constrains('product_id', 'percentage_fee')
     def check_values_parent(self):
         for record in self:
-            if not record.campaign_line_ids:
-                self.create_line(record)
-            else:
-                if record.percentage_fee:
-                    record.campaign_line_ids.write({'percentage_fee': record.percentage_fee})
+            self.create_line(record)
+            if record.percentage_fee and self.campaign_line_ids:
+                record.campaign_line_ids.write({'percentage_fee': record.percentage_fee})
 
     def set_generated(self):
         """Generate objectives = product * count month"""
         env_objective = self.env['objective.campaign.marketing']
+        env_historical = self.env['historical.date.objectives']
         for record in self:
             if not record.campaign_line_ids:
                 raise UserError(_('There are no campaign lines created in this Campaign!'))
@@ -892,20 +956,21 @@ class CampaignMarketingElogia(models.Model):
                 if record.date_start and record.date:
                     list_months = self.get_list_month(record.date_start, record.date)
                     filter_months = list_months
+                    campaign_lines = record.campaign_line_ids
                     obj_objective = env_objective.search([('campaign_id', '=', record.id)])
                     if obj_objective:
-                        filter_months = [month for month in list_months if list_months
-                                         and month.month not in obj_objective.mapped('month_actual')]
-                    for month in filter_months:
-                        list_add_item = [{'name': record.name + ' ' + item.product_id.name + ' ' + MONTHS[month.month - 1],
-                                          'campaign_line_id': item.id, 'project_id': record.project_id.id,
-                                          'campaign_id': record.id, 'client_id': record.client_id.id,
-                                          'product_id': item.product_id.id, 'period': self.generate_period(month),
-                                          'amount_period': item.amount_total, 'percentage_margin': 0, 'margin': 0,
-                                          'month_actual': month.month, 'type_payment': record.type_payment}
-                                         for item in record.campaign_line_ids]
-                        env_objective.create(list_add_item)
-                        record.check_generated = True
+                        lines_no_obj = [item for item in campaign_lines if item.id not in obj_objective.mapped('campaign_line_id').ids]
+                        if lines_no_obj:
+                            self.create_objectives(record, filter_months, lines_no_obj, env_objective)
+                        else:
+                            filter_months = [month for month in list_months if list_months and month.month
+                                             not in obj_objective.mapped('month_actual')
+                                             and obj_objective.mapped('campaign_line_id')
+                                             not in record.campaign_line_ids.ids]
+                            self.create_objectives(record, filter_months, campaign_lines, env_objective)
+                    else:
+                        self.create_objectives(record, filter_months, campaign_lines, env_objective)
+                    env_historical.create({'date_start': record.date_start, 'date': record.date, 'campaign_id': record.id})
                     list_filter = [month.month for month in list_months]
                     obj_objective.filtered(lambda e: e.month_actual not in list_filter).write({'check_deleted': True})
 
@@ -922,6 +987,18 @@ class CampaignMarketingElogia(models.Model):
                     'company_id': self.company_id.id
                 })
         return val_period.id
+
+    def create_objectives(self, record, filter_months, list_lines, env_objective):
+        for month in filter_months:
+            list_add_item = [
+                {'name': record.name + ' ' + item.product_id.name + ' ' + MONTHS[month.month - 1],
+                 'campaign_line_id': item.id, 'client_id': record.client_id.id,
+                 'analytic_account_id': record.analytic_account_id.id, 'campaign_id': record.id,
+                 'project_id': record.project_id.id, 'product_id': item.product_id.id,
+                 'period': self.generate_period(month), 'amount_period': item.amount_total,
+                 'month_actual': month.month, 'type_payment': record.type_payment}
+                for item in list_lines]
+            env_objective.create(list_add_item)
 
     def action_view_objectives(self):
         action = self.env["ir.actions.actions"]._for_xml_id("elogia_sale.action_objective_campaign_marketing")
@@ -940,10 +1017,9 @@ class CampaignMarketingElogia(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'sale.order',
-            'domain': [('campaign_elogia_id', '=', self.id)],
+            'domain': [('id', 'in', self.order_ids.mapped('order_id').ids)],
             'context': {
                 'default_partner_id': self.client_id.id,
-                'default_campaign_elogia_id': self.id
             }
         }
         if self.order_ids:
@@ -958,10 +1034,7 @@ class CampaignMarketingElogia(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'purchase.order',
-            'domain': [('campaign_elogia_id', '=', self.id)],
-            'context': {
-                'default_campaign_elogia_id': self.id
-            }
+            'domain': [('id', 'in', self.purchase_ids.mapped('order_id').ids)],
         }
         if self.purchase_ids:
             dic_return['view_mode'] = 'tree,form'
@@ -970,38 +1043,39 @@ class CampaignMarketingElogia(models.Model):
         return dic_return
 
     def action_view_invoice_sale(self):
+        obj_line = self.env['account.move.line'].search([('campaign_elogia_id', '=', self.id)])
         dic_return = {
             'name': 'Invoices',
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'account.move',
-            'domain': [('campaign_elogia_id', '=', self.id), ('move_type', 'in', ['out_invoice', 'out_refund'])],
+            'domain': [('id', 'in', obj_line.filtered(
+                lambda e: e.move_id.move_type in ['out_invoice', 'out_refund']).mapped('move_id.id'))],
             'context': {
                 'default_partner_id': self.client_id.id,
-                'default_campaign_elogia_id': self.id,
                 'default_move_type': 'out_invoice'
             }
         }
-        if self.invoice_ids.filtered(lambda l: l.move_type in ['out_invoice', 'out_refund']):
+        if obj_line.filtered(lambda e: e.move_id.move_type in ['out_invoice', 'out_refund']):
             dic_return['view_mode'] = 'tree,form'
         else:
             dic_return['view_mode'] = 'form'
         return dic_return
 
     def action_view_invoice_purchase(self):
+        obj_line = self.env['account.move.line'].search([('campaign_elogia_id', '=', self.id)])
         dic_return = {
             'name': 'Invoices',
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'account.move',
-            'domain': [('campaign_elogia_id', '=', self.id), ('move_type', 'in', ['in_invoice', 'in_refund'])],
+            'domain': [('id', 'in', obj_line.filtered(
+                lambda e: e.move_id.move_type in ['in_invoice', 'in_refund']).mapped('move_id.id'))],
             'context': {
-                'default_partner_id': self.client_id.id,
-                'default_campaign_elogia_id': self.id,
                 'default_move_type': 'in_invoice'
             }
         }
-        if self.invoice_ids.filtered(lambda l: l.move_type in ['in_invoice', 'in_refund']):
+        if obj_line.filtered(lambda e: e.move_id.move_type in ['in_invoice', 'in_refund']):
             dic_return['view_mode'] = 'tree,form'
         else:
             dic_return['view_mode'] = 'form'
@@ -1026,13 +1100,15 @@ class CampaignMarketingElogia(models.Model):
             record.count_control = len(obj_control) if obj_control else 0
 
     def get_count_models(self):
+        env_line = self.env['account.move.line']
         for record in self:
-            record.count_invoice_sale = len(record.invoice_ids.filtered(
-                lambda l: l.move_type in ['out_invoice', 'out_refund'])) if record.invoice_ids else 0
-            record.count_invoice_purchase = len(record.invoice_ids.filtered(
-                lambda l: l.move_type in ['in_invoice', 'in_refund'])) if record.invoice_ids else 0
-            record.count_sale = len(record.order_ids) if record.order_ids else 0
-            record.count_purchase = len(record.purchase_ids) if record.purchase_ids else 0
+            obj_line = env_line.search([('campaign_elogia_id', '=', record.id)])
+            record.count_invoice_sale = len(obj_line.filtered(
+                lambda e: e.move_id.move_type in ['out_invoice', 'out_refund']).mapped('move_id')) if obj_line else 0
+            record.count_invoice_purchase = len(obj_line.filtered(
+                lambda e: e.move_id.move_type in ['in_invoice', 'in_refund']).mapped('move_id')) if obj_line else 0
+            record.count_sale = len(record.order_ids.mapped('order_id')) if record.order_ids else 0
+            record.count_purchase = len(record.purchase_ids.mapped('order_id')) if record.purchase_ids else 0
             record.count_move = len(record.invoice_ids.filtered(lambda l: l.move_type == 'entry')) \
                 if record.invoice_ids else 0
 
@@ -1092,9 +1168,9 @@ class CampaignMarketingElogia(models.Model):
                 raise UserError(_("You can't delete a campaign if you have associated vendor invoices."))
             if any(record.invoice_ids.filtered(lambda e: e.move_type == 'entry' and e.state != 'cancel')):
                 raise UserError(_("You can't delete a campaign if you have associated move lines."))
-            if any(record.invoice_ids.filtered(lambda e: e.state not in ['draft', 'cancel'])):
+            if any(record.order_ids.filtered(lambda e: e.state not in ['draft', 'cancel'])):
                 raise UserError(_("You can't delete a campaign if you have associated sale orders."))
-            if any(record.invoice_ids.filtered(lambda e: e.state not in ['draft', 'cancel'])):
+            if any(record.purchase_ids.filtered(lambda e: e.state not in ['draft', 'cancel'])):
                 raise UserError(_("You can't delete a campaign if you have associated purchase orders."))
         res = super(CampaignMarketingElogia, self).unlink()
         return res

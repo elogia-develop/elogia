@@ -4,8 +4,8 @@
 from odoo import api, fields, models
 
 
-class SaleOrder(models.Model):
-    _inherit = 'sale.order'
+class SaleOrderLine(models.Model):
+    _inherit = 'sale.order.line'
 
-    campaign_elogia_id = fields.Many2one('campaign.marketing.elogia', 'Campaigns', ondelete='restrict', tracking=1)
-    control_id = fields.Many2one('control.campaign.marketing', 'Control', ondelete='restrict', tracking=1)
+    campaign_elogia_id = fields.Many2one('campaign.marketing.elogia', 'Campaigns', ondelete='restrict')
+    control_id = fields.Many2one('control.campaign.marketing', 'Control', ondelete='restrict')
