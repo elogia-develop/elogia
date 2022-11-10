@@ -64,7 +64,8 @@
                     <field name="campaign_elogia_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
                            attrs="{'required': [('control_id', '=', False)]}"/>
                     <field name="control_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
-                            attrs="{'required': [('campaign_elogia_id', '=', False)]}"/>
+                            attrs="{'required': [('campaign_elogia_id', '=', False)]}"
+                           domain="[('campaign_id', '=', campaign_elogia_id), ('type_invoice', '=', 'sale')]"/>
                 </xpath>
             </field>
         </record>
@@ -263,9 +264,9 @@
                                         <field name="invoice_id" attrs="{'readonly':[('state','=', 'process')]}"
                                                options="{'no_create': True, 'no_create_edit': True}" required="True"
                                                domain="[('move_type','!=', 'entry')]"/>
-                                        <field name="invoice_line_id" domain="[('move_id','=', invoice_id)]" required="True"
-                                               options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
-                                               attrs="{'readonly':[('state','=', 'process')]}"/>
+                                        <field name="invoice_line_id" domain="[('move_id','=', invoice_id), ('exclude_from_invoice_tab','=', False)]"
+                                               required="True" attrs="{'readonly':[('state','=', 'process')]}"
+                                               options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                                         <field name="move_id" readonly="True"
                                                options="{'no_create': True, 'no_create_edit': True}"/>
                                         <field name="currency_id" invisible="True"/>
@@ -416,24 +417,25 @@
                             <button class="oe_stat_button" name="action_view_invoice_purchase" type="object" icon="fa-pencil-square-o">
                                 <field string="Invoices vendor" name="count_invoice_purchase" widget="statinfo"/>
                             </button>
-                            <button class="oe_stat_button" name="action_view_moves" type="object" icon="fa-copy"
-                                    attrs="{'invisible':[('type_invoice','=','sale')]}">
+                            <button class="oe_stat_button" name="action_view_moves" type="object" icon="fa-copy">
                                 <field string="Moves" name="count_move" widget="statinfo"/>
                             </button>
                         </div>
                         <group>
                             <group name="firs_group">
-                                <field name="campaign_id" required="True"
-                                       options="{'no_create': True, 'no_create_edit': True}"
-                                       attrs="{'readonly':[('state','!=', 'draft')]}"/>
-                                <field name="type_invoice" required="True" attrs="{'readonly':[('state','!=', 'draft')]}"/>
-                                <field name="company_id" required="True"
+                                <field name="analytic_account_id" required="True"
                                        options="{'no_create': True, 'no_create_edit': True}"
                                        attrs="{'readonly':[('state','!=', 'draft')]}"/>
                                 <field name="project_id" required="True"
                                        options="{'no_create': True, 'no_create_edit': True}"
-                                       attrs="{'readonly':[('state','!=', 'draft')]}"/>
-                                <field name="analytic_account_id" required="True"
+                                       attrs="{'readonly':[('state','!=', 'draft')]}"
+                                       domain="[('analytic_account_id', '=', analytic_account_id)]"/>
+                                <field name="campaign_id" required="True"
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':[('state','!=', 'draft')]}"
+                                       domain="[('analytic_account_id', '=', analytic_account_id), ('state', '=', 'open')]"/>
+                                <field name="type_invoice" required="True" readonly="True"/>
+                                <field name="company_id" required="True"
                                        options="{'no_create': True, 'no_create_edit': True}"
                                        attrs="{'readonly':[('state','!=', 'draft')]}"/>
                                 <field name="campaign_line_id" required="True"
@@ -442,7 +444,7 @@
                                        domain="[('campaign_id', '=', campaign_id)]"/>
                                 <field name="client_id" required="True" attrs="{'readonly':[('state','!=', 'draft')]}"
                                        options="{'no_create': True, 'no_create_edit': True}"/>
-                                <field name="currency_id" required="True" attrs="{'readonly':[('state','!=', 'draft')]}"
+                                <field name="currency_id" required="True" readonly="True"
                                        options="{'no_create': True, 'no_create_edit': True}"/>
                                 <field name="currency_company_id" invisible="True"/>
                             </group>
@@ -461,6 +463,8 @@
                                 <field name="consume" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                 <field name="consume_currency" widget='monetary'
                                        options="{'currency_field': 'currency_company_id'}"/>
+                                <field name="percent_objective" widget='monetary'
+                                       options="{'currency_field': 'currency_id'}"/>
                                 <field name="check_change" invisible="True"/>
                             </group>
                         </group>
@@ -482,6 +486,8 @@
                                        options="{'currency_field': 'currency_company_id'}"/>
                                 <field name="margin_factor_ml" widget='monetary'
                                        options="{'currency_field': 'currency_company_id'}"/>
+                                <field name="objective_month" widget='monetary'
+                                       options="{'currency_field': 'currency_id'}"/>
                             </group>
                         </group>
                         <notebook>
@@ -489,7 +495,8 @@
                                 <field name="control_line_ids" attrs="{'readonly':[('state','!=', 'draft')]}">
                                     <tree nolabel="1" editable="bottom" decoration-info="state == 'no_process'"
                                                decoration-muted="state == 'process'">
-                                        <field name="control_id" invisible="True"/>
+                                        <field name="control_id" optional="hide"/>
+                                        <field name="name_campaign" optional="hide"/>
                                         <field name="partner_id" options="{'no_create': True, 'no_create_edit': True}"
                                                required="True"/>
                                         <field name="invoice_provision" widget='monetary' required="True"
@@ -525,11 +532,11 @@
                 <tree string="Control campaign" sample="1" decoration-info="state == 'pending'" decoration-muted="state == 'cancel'"
                            decoration-success="state == 'both'" decoration-danger="state in ['sale', 'purchase']" >
                     <field name="name" optional="show"/>
+                    <field name="analytic_account_id"/>
+                    <field name="project_id"/>
                     <field name="campaign_id"/>
                     <field name="type_invoice" optional="hide"/>
                     <field name="company_id"/>
-                    <field name="project_id"/>
-                    <field name="analytic_account_id"/>
                     <field name="client_id"/>
                     <field name="campaign_line_id"/>
                     <field name="period"/>
@@ -556,6 +563,10 @@
                            optional="show" sum="margin_ml"/>
                     <field name="margin_factor_ml" widget='monetary' options="{'currency_field': 'currency_company_id'}"
                            optional="show" sum="margin_factor_ml"/>
+                    <field name="objective_month" widget='monetary' options="{'currency_field': 'currency_id'}"
+                           optional="hide"/>
+                    <field name="percent_objective" widget='monetary' options="{'currency_field': 'currency_id'}"
+                           optional="hide"/>
                     <field name="state" decoration-info="state == 'pending'" decoration-muted="state == 'cancel'"
                            decoration-success="state == 'both'" decoration-danger="state in ['sale', 'purchase']"
                            widget="badge"/>
@@ -570,14 +581,12 @@
             <field name="arch" type="xml">
                 <search>
                     <field name="name"/>
-                    <field name="campaign_id"/>
-                    <field name="type_invoice"/>
-                    <field name="company_id"/>
-                    <field name="project_id"/>
                     <field name="analytic_account_id"/>
+                    <field name="project_id"/>
+                    <field name="campaign_id"/>
+                    <field name="company_id"/>
                     <field name="client_id"/>
                     <field name="campaign_line_id"/>
-                    <field name="order_ids"/>
                     <field name="period"/>
                     <field name="state"/>
                     <filter string="My campaigns" name="campaign" domain="[('campaign_id.create_uid','=', uid)]"/>
@@ -593,11 +602,11 @@
                     <filter string="Cancelled" name="cancel" domain="[('state', '=', 'cancel')]"/>
                     <separator/>
                     <group expand="0" string="Group By">
+                        <filter string="Analytic account" name="group_analytic" domain="[]" context="{'group_by':'analytic_account_id'}"/>
+                        <filter string="Project" name="group_project" domain="[]" context="{'group_by':'project_id'}"/>
                         <filter string="Campaign" name="group_campaign_id" domain="[]" context="{'group_by':'campaign_id'}"/>
                         <filter string="Type invoice" name="group_type_invoice" domain="[]" context="{'group_by':'type_invoice'}"/>
                         <filter string="Company" name="group_company" domain="[]" context="{'group_by':'company_id'}"/>
-                        <filter string="Project" name="group_project" domain="[]" context="{'group_by':'project_id'}"/>
-                        <filter string="Analytic account" name="group_analytic" domain="[]" context="{'group_by':'analytic_account_id'}"/>
                         <filter string="Client" name="group_client" domain="[]" context="{'group_by':'client_id'}"/>
                         <filter string="Product" name="group_product" domain="[]" context="{'group_by':'campaign_line_id'}"/>
                         <filter string="Period" name="group_period" domain="[]" context="{'group_by':'period'}"/>
@@ -613,6 +622,7 @@
             <field name="model">control.campaign.marketing</field>
             <field name="arch" type="xml">
                 <pivot string="Report Analysis" disable_linking="True" sample="1">
+                    <field name="analytic_account_id" type="row"/>
                     <field name="campaign_id" type="row"/>
                     <field name="client_id" type="row"/>
                     <field name="campaign_line_id" type="row"/>
@@ -625,6 +635,8 @@
                     <field name="purchase_ml" type="measure"/>
                     <field name="margin_ml" type="measure"/>
                     <field name="margin_factor_ml" type="measure"/>
+                    <field name="objective_month" type="measure"/>
+                    <field name="percent_objective" type="measure"/>
                 </pivot>
             </field>
         </record>
@@ -635,6 +647,7 @@
             <field name="model">control.campaign.marketing</field>
             <field name="arch" type="xml">
                 <graph string="Report Analysis" sample="1">
+                    <field name="analytic_account_id" type="measure"/>
                     <field name="campaign_id" type="measure"/>
                     <field name="period"/>
                     <field name="state"/>
@@ -931,8 +944,8 @@
                       decoration-info="state == 'no_process'" decoration-muted="state == 'process'">
                     <field name="partner_id" readonly="True" options="{'no_create': True, 'no_create_edit': True}"/>
                     <field name="control_id" readonly="True" optional="hide"/>
-                    <field name="name_campaign" readonly="True"/>
                     <field name="analytic_account_id" readonly="True" options="{'no_create': True, 'no_create_edit': True}"/>
+                    <field name="name_campaign" readonly="True"/>
                     <field name="client_id" readonly="True" options="{'no_create': True, 'no_create_edit': True}"/>
                     <field name="currency_control_id" invisible="True"/>
                     <field name="invoice_provision" widget='monetary' readonly="True"
@@ -955,11 +968,11 @@
             <field name="arch" type="xml">
                 <search>
                     <field name="partner_id"/>
+                    <field name="analytic_account_id"/>
                     <field name="name_campaign"/>
                     <field name="type_payment"/>
                     <field name="control_id"/>
                     <field name="client_id"/>
-                    <field name="analytic_account_id"/>
                     <field name="company_id"/>
                     <field name="state"/>
                     <separator/>
@@ -975,9 +988,9 @@
                     <separator/>
                     <group expand="0" string="Group By">
                         <filter string="Supplier" name="group_partner_id" domain="[]" context="{'group_by':'partner_id'}"/>
+                        <filter string="Analytic account" name="group_analytic_account_id" domain="[]" context="{'group_by':'analytic_account_id'}"/>
                         <filter string="Campaign" name="group_name_campaign" domain="[]" context="{'group_by':'name_campaign'}"/>
                         <filter string="Client" name="group_client" domain="[]" context="{'group_by':'client_id'}"/>
-                        <filter string="Analytic account" name="group_analytic_account_id" domain="[]" context="{'group_by':'analytic_account_id'}"/>
                         <filter string="Type payment" name="group_type_payment" domain="[]" context="{'group_by':'type_payment'}"/>
                         <filter string="Company" name="group_company" domain="[]" context="{'group_by':'company_id'}"/>
                         <filter string="Status" name="group_state" domain="[]" context="{'group_by':'state'}"/>
@@ -1086,17 +1099,12 @@
                     <field name="invoice_id"/>
                     <field name="move_id"/>
                     <field name="company_id"/>
-                    <field name="state"/>
-                    <filter string="Not processed" name="no_process" domain="[('state', '=', 'no_process')]"/>
-                    <filter string="Processed" name="process" domain="[('state', '=', 'process')]"/>
-                    <separator/>
                     <group expand="0" string="Group By">
                         <filter string="Campaign" name="group_campaign_id" domain="[]" context="{'group_by':'campaign_id'}"/>
                         <filter string="Order" name="group_order_id" domain="[]" context="{'group_by':'order_id'}"/>
                         <filter string="Invoice" name="group_invoice_id" domain="[]" context="{'group_by':'invoice_id'}"/>
                         <filter string="Move" name="group_move_id" domain="[]" context="{'group_by':'move_id'}"/>
                         <filter string="Company" name="group_company" domain="[]" context="{'group_by':'company_id'}"/>
-                        <filter string="Status" name="group_state" domain="[]" context="{'group_by':'state'}"/>
                     </group>
                 </search>
             </field>
