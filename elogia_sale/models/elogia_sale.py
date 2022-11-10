@@ -65,8 +65,8 @@ class SaleOrderWizard(models.Model):
                 if list_not_setting:
                     raise UserError(_('Products {} are not configured.\n Check in Settings/Product Settings menu.'
                                       .format(list_not_setting)))
-                price_not_setting = [price.name for price in obj_control_ids.mapped('currency_id')
-                                     if price not in env_pricelist_setting.mapped('currency_id')]
+                price_not_setting = (obj_control_ids.mapped('currency_id') -
+                                     env_pricelist_setting.mapped('currency_id')).mapped('name')
                 if price_not_setting:
                     raise UserError(_('Currency {} are not configured.\n Check in Settings/Pricelist Settings menu.'
                                       .format(price_not_setting)))
@@ -87,13 +87,10 @@ class SaleOrderWizard(models.Model):
         for line in list_line:
             line_vals = {}
             taxes = line.taxes_id if line.taxes_id else False
-            if line.check_fee:
-                price_unit = control.fee_revenue
+            if self.check_fee:
+                price_unit = control.billed_revenue - control.fee_revenue
             else:
-                if self.check_fee:
-                    price_unit = control.billed_revenue - control.fee_revenue
-                else:
-                    price_unit = control.billed_revenue
+                price_unit = control.billed_revenue
             line_vals = {
                 'price_unit': price_unit,
                 'product_id': line.id,
@@ -102,6 +99,8 @@ class SaleOrderWizard(models.Model):
                 'name': line.name,
                 'tax_id': [(6, 0, taxes.ids)] if taxes else False,
                 'currency_id': control.currency_id.id,
+                'control_id': control.id,
+                'campaign_elogia_id': control.campaign_id.id
             }
             order_lines.append((0, 0, line_vals))
         pricelist = pricelist_ids.filtered(lambda e: e.currency_id == control.currency_id)
@@ -109,7 +108,7 @@ class SaleOrderWizard(models.Model):
             'partner_id': control.client_id.id,
             'date_order': self.date_order,
             'order_line': order_lines,
-            'pricelist_id': pricelist.pricelist_id.id if pricelist else False,
+            'pricelist_id': pricelist and pricelist.pricelist_id.id or False,
             'fiscal_position_id': control.client_id.property_account_position_id.id
             if control.client_id.property_account_position_id else False,
             'currency_id': control.currency_id.id,
@@ -117,8 +116,6 @@ class SaleOrderWizard(models.Model):
             'analytic_account_id': control.campaign_id.analytic_account_id.id,
             'client_order_ref': self.description,
             'origin': self.reference,
-            'control_id': control.id,
-            'campaign_elogia_id': control.campaign_id.id
         }
         sale_order = order_obj.create(order_vals)
         if sale_order:
@@ -652,9 +649,10 @@ class ControlCampaign(models.Model):
     def calc_kpi(self):
         env_objective = self.env['objective.campaign.marketing']
         for record in self:
-            obj_objective_id = env_objective.search([('campaign_id', '=', record.campaign_id.id),
-                                                      ('period', '=', record.period.id),
-                                                      ('product_id', '=', record.campaign_line_id.product_id.id)], limit=1)
+            obj_objective_id = env_objective.search([
+                ('campaign_id', '=', record.campaign_id.id),
+                ('period', '=', record.period.id),
+                ('product_id', '=', record.campaign_line_id.product_id.id)], limit=1)
             sum_client = sum(record.control_line_ids.filtered(
                 lambda e: e.type_payment == 'client').mapped('invoice_provision_ml'))
             sum_not_client = (sum(record.control_line_ids.filtered(
