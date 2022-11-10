@@ -509,23 +509,29 @@ class ControlCampaign(models.Model):
             'campaign_elogia_id': record.campaign_id.id,
             'control_id': record.id,
             'move_type': 'entry',
+            'partner_id': record.client_id.id,
+            'currency_id': record.currency_id.id,
             'line_ids': []
         }
-        billed_currency = record.billed_revenue_ml
+        billed_currency = record.billed_revenue
+        billed_amount = record.billed_revenue
         if record.currency_id != record.company_id.currency_id:
             if record.currency_id.rate > 0:
-                billed_currency = record.billed_revenue_ml / record.currency_id.rate
+                billed_amount = record.billed_revenue / record.currency_id.rate
         for item in list_setting:
             vals['line_ids'].append(((0, 0, {
                 'account_id': item['value_d'].id if item['key'] == 'debit' else item['value_c'].id,
                 'name': record.name,
                 'partner_id': record.client_id.id,
-                'debit': billed_currency if item['key'] == 'debit' else 0,
-                'credit': billed_currency if item['key'] == 'credit' else 0,
+                'amount_currency': - billed_currency if item['key'] == 'credit' else billed_currency,
+                'currency_id': record.currency_id.id,
+                'debit': billed_amount if item['key'] == 'debit' else 0,
+                'credit': billed_amount if item['key'] == 'credit' else 0,
             })))
         obj_move = env_mov.with_context(check_move_validity=False).create(vals)
         if obj_move:
             record.message_post(body=_("Created move: {}") .format(obj_move.ref))
+            obj_move.action_post()
 
     def generate_purchase(self):
         for record in self:
@@ -1137,6 +1143,7 @@ class CampaignMarketingElogia(models.Model):
             'date': record.invoice_date,
             'campaign_elogia_id': record.campaign_id.id,
             'move_type': 'entry',
+            'partner_id': record.campaign_id.client_id.id,
             'currency_id': record.currency_id.id,
             'line_ids': []
         }
