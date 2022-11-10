@@ -10,12 +10,10 @@ class AccountMove(models.Model):
     campaign_elogia_id = fields.Many2one('campaign.marketing.elogia', 'Campaigns', ondelete='restrict', tracking=1)
     control_id = fields.Many2one('control.campaign.marketing', 'Control', ondelete='restrict', tracking=1)
 
-    @api.constrains('invoice_origin')
-    def check_ref_in_sale(self):
-        env_order = self.env['sale.order']
-        for record in self:
-            if record.invoice_origin:
-                obj_order = env_order.search([('name', 'like', record.invoice_origin)], limit=1)
-                if obj_order:
-                    record.control_id = obj_order.control_id.id
-                    record.campaign_elogia_id = obj_order.campaign_elogia_id.id
+
+class AccountMoveLine(models.Model):
+    """ Override AccountInvoice_line to add the link to the purchase order line it is related to"""
+    _inherit = 'account.move.line'
+
+    campaign_elogia_id = fields.Many2one('campaign.marketing.elogia', 'Campaigns', ondelete='restrict', index=True, copy=True)
+    control_id = fields.Many2one('control.campaign.marketing', 'Control', ondelete='restrict', index=True, copy=True)
