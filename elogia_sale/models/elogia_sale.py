@@ -167,11 +167,10 @@ class ProductFeeSetting(models.Model):
 
     product_id = fields.Many2one('product.product', 'Product', required=True, index=True)
     other_product_id = fields.Many2one('product.product', 'Product fee', required=True)
-    company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company)
 
     _sql_constraints = [
-        ('company_product_unique', 'unique (company_id,product_id)',
-         'This product and company already has a related Product Fee Setting!')
+        ('product_unique', 'unique (product_id)',
+         'This product already has a related Product Fee Setting!')
     ]
 
 
@@ -242,9 +241,6 @@ class ControlLineSupplier(models.Model):
     _description = 'Control Line'
     _rec_name = 'partner_id'
 
-    def _get_default_currency_id(self):
-        return self.env.company.currency_id.id
-
     control_id = fields.Many2one('control.campaign.marketing', 'Control', tracking=1)
     company_id = fields.Many2one(related='control_id.company_id', string='Company', tracking=1)
     name_campaign = fields.Char(related='control_id.campaign_id.name', store=True, string='Campaigns', tracking=1)
@@ -254,7 +250,7 @@ class ControlLineSupplier(models.Model):
     partner_id = fields.Many2one('res.partner', 'Supplier', required=True, index=True, tracking=1)
     invoice_provision = fields.Float('Provision', tracking=1)
     invoice_provision_ml = fields.Float('Provision (mt)', tracking=1, compute='calc_amount_total')
-    currency_id = fields.Many2one('res.currency', default=_get_default_currency_id, string="Currency")
+    currency_id = fields.Many2one('res.currency', 'Currency')
     currency_control_id = fields.Many2one(related='control_id.currency_id', store=True, string="Currency control")
     type_payment = fields.Selection(selection=[
         ('spain', 'Spain'),
@@ -271,7 +267,7 @@ class ControlLineSupplier(models.Model):
         if self.partner_id and self.partner_id.property_product_pricelist:
             self.currency_id = self.partner_id.property_product_pricelist.currency_id.id
 
-    @api.depends('invoice_provision')
+    @api.depends('invoice_provision', 'currency_id')
     def calc_amount_total(self):
         for record in self:
             val_tmp = 0
@@ -947,6 +943,12 @@ class CampaignMarketingElogia(models.Model):
             if record.percentage_fee and self.campaign_line_ids:
                 record.campaign_line_ids.write({'percentage_fee': record.percentage_fee})
 
+    def set_not_delete(self):
+        env_objective = self.env['objective.campaign.marketing']
+        for record in self:
+            obj_objective = env_objective.search([('campaign_id', '=', record.id), ('check_deleted', '=', 'True')])
+            obj_objective.write({'check_deleted': False})
+
     def set_generated(self):
         """Generate objectives = product * count month"""
         env_objective = self.env['objective.campaign.marketing']
@@ -1005,7 +1007,7 @@ class CampaignMarketingElogia(models.Model):
             env_objective.create(list_add_item)
 
     def action_view_objectives(self):
-        action = self.env["ir.actions.actions"]._for_xml_id("elogia_sale.action_objective_campaign_marketing")
+        action = self.env["ir.actions.actions"]._for_xml_id("elogia_sale.action_objective_campaign_sum_marketing")
         action['domain'] = [('campaign_id', '=', self.id)]
         return action
 

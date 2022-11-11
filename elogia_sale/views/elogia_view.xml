@@ -128,6 +128,8 @@
                                 attrs="{'invisible':['|', ('state','!=', 'open'), ('check_generated', '=', False)]}"/>
                         <button name="create_invoice" string="Create move" type="object" class="btn-primary"
                                 attrs="{'invisible':['|', ('state','!=', 'open'), ('type_invoice', '!=', 'account')]}"/>
+                        <button name="set_not_delete" string="Reset objectives" type="object"
+                                attrs="{'invisible':[('check_deleted', '=', False)]}"/>
                         <button name="set_closed" string="To close" type="object"
                                 attrs="{'invisible':[('state','=', 'closed')]}"/>
                         <button name="set_open" string="To open" type="object" class="btn-primary"
@@ -265,8 +267,8 @@
                                                options="{'no_create': True, 'no_create_edit': True}" required="True"
                                                domain="[('move_type','!=', 'entry')]"/>
                                         <field name="invoice_line_id" domain="[('move_id','=', invoice_id), ('exclude_from_invoice_tab','=', False)]"
-                                               required="True" attrs="{'readonly':[('state','=', 'process')]}"
-                                               options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                                               required="True" attrs="{'readonly':[('state','=', 'process')], 'invisible':[('invoice_id','=', False)]}"
+                                               options="{'no_create': True, 'no_create_edit': True}"/>
                                         <field name="move_id" readonly="True"
                                                options="{'no_create': True, 'no_create_edit': True}"/>
                                         <field name="currency_id" invisible="True"/>
@@ -753,6 +755,38 @@
             </field>
         </record>
 
+        <!-- View Tree objective.campaign.marketing-->
+        <record model="ir.ui.view" id="objective_campaign_marketing_sum_tree">
+            <field name="name">objective.campaign.marketing.tree</field>
+            <field name="model">objective.campaign.marketing</field>
+            <field name="arch" type="xml">
+                <tree string="Objectives" editable="bottom" sample="1" decoration-danger="check_deleted == True">
+                    <field name="name" readonly="True"/>
+                    <field name="analytic_account_id" readonly="True"/>
+                    <field name="project_id" readonly="True"/>
+                    <field name="campaign_id" readonly="True"/>
+                    <field name="client_id" readonly="True"/>
+                    <field name="product_id" readonly="True"/>
+                    <field name="period" readonly="True"/>
+                    <field name="amount_period" options="{'currency_field': 'currency_id'}" widget='monetary'
+                           sum="Total"/>
+                    <field name="percentage_fee" options="{'currency_field': 'currency_id'}" widget='monetary'
+                           sum="TotalFee"/>
+                    <field name="percentage_margin" sum="TotalPercent"/>
+                    <field name="margin" options="{'currency_field': 'currency_id'}" widget='monetary' readonly="True"
+                           sum="Margin"/>
+                    <field name="margin_total" options="{'currency_field': 'currency_id'}" widget='monetary'
+                           readonly="True" sum="TotalMargin"/>
+                    <field name="type_payment" readonly="True" optional="hide"/>
+                    <field name="company_id" optional="hide"/>
+                    <field name="create_uid" string="User" optional="hide"/>
+                    <field name="check_deleted" invisible="True"/>
+                    <field name="currency_id" invisible="True"/>
+                    <button name="action_read_objective" type="object" string="View" class="float-right btn-secondary"/>
+                </tree>
+            </field>
+        </record>
+
         <!-- View search objective.campaign.marketing -->
         <record model="ir.ui.view" id="objective_campaign_marketing_search">
             <field name="name">objective.campaign.marketing.search</field>
@@ -795,6 +829,27 @@
             <field name="name">Objectives</field>
             <field name="res_model">objective.campaign.marketing</field>
             <field name="view_mode">tree,form</field>
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('objective_campaign_marketing_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('objective_campaign_marketing_form')})]"/>
+            <field name="search_view_id" ref="objective_campaign_marketing_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    There are no objectives to display!
+                </p>
+            </field>
+        </record>
+
+        <record id="action_objective_campaign_sum_marketing" model="ir.actions.act_window">
+            <field name="name">Objectives</field>
+            <field name="res_model">objective.campaign.marketing</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('objective_campaign_marketing_sum_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('objective_campaign_marketing_form')})]"/>
+            <field name="search_view_id" ref="objective_campaign_marketing_search"/>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     There are no objectives to display!
@@ -846,7 +901,7 @@
             <field name="arch" type="xml">
                 <tree string="Period" editable="bottom" sample="1" decoration-info="state == 'open' or state_objective == 'open'"
                       decoration-muted="state == 'closed' or state_objective == 'closed'">
-                    <field name="name"/>
+                    <field name="name" readonly="True"/>
                     <field name="name_month"/>
                     <field name="name_year"/>
                     <field name="company_id"/>
@@ -1212,7 +1267,6 @@
                         <group>
                             <group name="first_group">
                                 <field name="product_id"/>
-                                <field name="company_id"/>
                             </group>
                             <group name="second_group">
                                 <field name="other_product_id"/>
@@ -1231,7 +1285,6 @@
                 <tree string="Product fee" editable="bottom" sample="1">
                     <field name="product_id" options="{'no_create': True, 'no_create_edit': True}"/>
                     <field name="other_product_id" options="{'no_create': True, 'no_create_edit': True}"/>
-                    <field name="company_id" options="{'no_create': True, 'no_create_edit': True}"/>
                     <field name="create_uid" string="User"/>
                     <field name="create_date"/>
                 </tree>
@@ -1246,11 +1299,9 @@
                 <search>
                     <field name="product_id"/>
                     <field name="other_product_id"/>
-                    <field name="company_id"/>
                     <separator/>
                     <group expand="0" string="Group By">
                         <filter string="Product" name="group_product" domain="[]" context="{'group_by':'product_id'}"/>
-                        <filter string="Company" name="group_company_id" domain="[]" context="{'group_by':'company_id'}"/>
                     </group>
                 </search>
             </field>

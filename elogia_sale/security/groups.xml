@@ -146,25 +146,6 @@
             <field name="groups" eval="[(4, ref('elogia_sale.sale_elogia_user_group'))]"/>
         </record>
 
-        <record id="model_product_fee_setting_admin_rule" model="ir.rule">
-            <field name="name">Admin Product fee setting</field>
-            <field ref="model_product_fee_setting" name="model_id"/>
-            <field name="domain_force">[(1,'=',1), ('company_id', 'in', company_ids)]</field>
-            <field name="groups" eval="[(4, ref('elogia_sale.sale_elogia_admin_group'))]"/>
-        </record>
-        <record id="model_product_fee_setting_manager_rule" model="ir.rule">
-            <field name="name">Management Poduct fee setting</field>
-            <field ref="model_product_fee_setting" name="model_id"/>
-            <field name="domain_force">[('create_uid','=',user.id), ('company_id', 'in', company_ids)]</field>
-            <field name="groups" eval="[(4, ref('elogia_sale.sale_elogia_manager_group'))]"/>
-        </record>
-        <record id="model_product_fee_setting_user_rule" model="ir.rule">
-            <field name="name">User Product fee setting</field>
-            <field ref="model_product_fee_setting" name="model_id"/>
-            <field name="domain_force">[('create_uid','=',user.id), ('company_id', 'in', company_ids)]</field>
-            <field name="groups" eval="[(4, ref('elogia_sale.sale_elogia_user_group'))]"/>
-        </record>
-
         <record id="model_expense_entry_setting_admin_rule" model="ir.rule">
             <field name="name">Admin Expense entry</field>
             <field ref="model_expense_entry_setting" name="model_id"/>
