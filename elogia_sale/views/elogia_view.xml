@@ -184,6 +184,9 @@
                                 <field name="client_id" required="True"
                                        options="{'no_create': True, 'no_create_edit': True}"
                                        attrs="{'readonly':[('state','!=', 'open')]}"/>
+                                 <field name="company_id"
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':[('state','!=', 'open')]}"/>
 
                             </group>
                             <group name="second_group">
@@ -199,19 +202,16 @@
                                            options='{"related_start_date": "date_start"}'
                                            attrs="{'readonly':[('state','!=', 'open')]}"/>
                                 </div>
-                                <field name="company_id"
-                                       options="{'no_create': True, 'no_create_edit': True}"
-                                       attrs="{'readonly':[('state','!=', 'open')]}"/>
-                                <field name="currency_id" attrs="{'readonly':[('state','!=', 'open')]}"
+                                <field name="currency_id" attrs="{'readonly':[('state','!=', 'open')]}" required="True"
                                        options="{'no_create': True, 'no_create_edit': True}"/>
                                 <field name="percentage_fee" attrs="{'readonly':[('state','!=', 'open')]}"/>
                                 <field name="amount_total" widget='monetary' options="{'currency_field': 'currency_id'}"
-                                       attrs="{'readonly':[('state','!=', 'open')]}" />
+                                       attrs="{'readonly':[('state','!=', 'open')]}" required="True"/>
                                 <field name="amount_diff" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                 <field name="amount_fee" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                             </group>
                             <group name="thirty_group">
-                                <field name="product_id" attrs="{'readonly':[('state','!=', 'open')]}"
+                                <field name="product_id" attrs="{'readonly':[('state','!=', 'open')]}" required="True"
                                        options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                                 <field name="type_invoice" required="True" attrs="{'readonly':[('state','!=', 'open')]}"/>
                                 <field name="type_payment" required="True" attrs="{'readonly':[('state','!=', 'open')]}"/>
