@@ -265,9 +265,11 @@
                                                required="True" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                         <field name="invoice_id" attrs="{'readonly':[('state','=', 'process')]}"
                                                options="{'no_create': True, 'no_create_edit': True}" required="True"
-                                               domain="[('move_type','!=', 'entry')]"/>
-                                        <field name="invoice_line_id" domain="[('move_id','=', invoice_id), ('exclude_from_invoice_tab','=', False)]"
-                                               required="True" attrs="{'readonly':[('state','=', 'process')], 'invisible':[('invoice_id','=', False)]}"
+                                               domain="[('move_type','!=', 'entry'), ('journal_id.type', '=', 'sale')]"/>
+                                        <field name="invoice_line_id"  required="True"
+                                               domain="[('move_id','=', invoice_id),
+                                               ('exclude_from_invoice_tab','=', False), ('journal_id.type', '=', 'sale')]"
+                                               attrs="{'readonly':[('state','=', 'process')], 'invisible':[('invoice_id','=', False)]}"
                                                options="{'no_create': True, 'no_create_edit': True}"/>
                                         <field name="move_id" readonly="True"
                                                options="{'no_create': True, 'no_create_edit': True}"/>
