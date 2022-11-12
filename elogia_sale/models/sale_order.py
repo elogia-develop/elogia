@@ -9,3 +9,9 @@ class SaleOrderLine(models.Model):
 
     campaign_elogia_id = fields.Many2one('campaign.marketing.elogia', 'Campaigns', ondelete='restrict')
     control_id = fields.Many2one('control.campaign.marketing', 'Control', ondelete='restrict')
+
+    def _prepare_invoice_line(self, **optional_values):
+        values = super(SaleOrderLine, self)._prepare_invoice_line(**optional_values)
+        values['campaign_elogia_id'] = self.campaign_elogia_id.id
+        values['control_id'] = self.control_id.id
+        return values
