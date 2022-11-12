@@ -165,8 +165,10 @@ class ProductFeeSetting(models.Model):
     _description = 'Product Fee Setting'
     _rec_name = 'product_id'
 
-    product_id = fields.Many2one('product.product', 'Product', required=True, index=True)
-    other_product_id = fields.Many2one('product.product', 'Product fee', required=True)
+    product_id = fields.Many2one('product.product', 'Product', domain="[('sale_ok', '=', True)]", required=True,
+                                 index=True)
+    other_product_id = fields.Many2one('product.product', 'Product fee', domain="[('sale_ok', '=', True)]",
+                                       required=True)
 
     _sql_constraints = [
         ('product_unique', 'unique (product_id)',
@@ -234,33 +236,47 @@ class CampaignLineInvoice(models.Model):
         res = super(CampaignLineInvoice, self).unlink()
         return res
 
+    @api.onchange('invoice_id')
+    def onchange_invoice_id(self):
+        domain = {
+            'invoice_line_id': False,
+        }
+        values = {
+            'invoice_line_id': False,
+        }
+        if self.invoice_id:
+            domain = {'invoice_line_id': [('move_id', '=', self.invoice_id.id),
+                                          ('exclude_from_invoice_tab', '=', False),
+                                          ('journal_id.type', '=', 'sale')]}
+        self.update(values)
+        return {'domain': domain}
+
 
 class ControlLineSupplier(models.Model):
     _name = 'control.line.supplier'
-    _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin', 'utm.mixin']
     _description = 'Control Line'
-    _rec_name = 'partner_id'
+    _rec_name = 'control_id'
 
-    control_id = fields.Many2one('control.campaign.marketing', 'Control', tracking=1)
-    company_id = fields.Many2one(related='control_id.company_id', string='Company', tracking=1)
-    name_campaign = fields.Char(related='control_id.campaign_id.name', store=True, string='Campaigns', tracking=1)
-    client_id = fields.Many2one(related='control_id.client_id', store=True, string='Client', tracking=1)
+    control_id = fields.Many2one('control.campaign.marketing', 'Control', index=True)
+    company_id = fields.Many2one(related='control_id.company_id', string='Company')
+    campaign_id = fields.Many2one(related='control_id.campaign_id', store=True, string='Campaigns')
+    client_id = fields.Many2one(related='control_id.client_id', store=True, string='Client')
     analytic_account_id = fields.Many2one(related='control_id.analytic_account_id', store=True,
-                                          string='Analytic account', tracking=1)
-    partner_id = fields.Many2one('res.partner', 'Supplier', required=True, index=True, tracking=1)
-    invoice_provision = fields.Float('Provision', tracking=1)
-    invoice_provision_ml = fields.Float('Provision (mt)', tracking=1, compute='calc_amount_total')
+                                          string='Analytic account')
+    partner_id = fields.Many2one('res.partner', 'Supplier', required=True)
+    invoice_provision = fields.Float('Provision')
+    invoice_provision_ml = fields.Float('Provision (mt)', compute='calc_amount_total')
     currency_id = fields.Many2one('res.currency', 'Currency')
     currency_control_id = fields.Many2one(related='control_id.currency_id', store=True, string="Currency control")
     type_payment = fields.Selection(selection=[
         ('spain', 'Spain'),
         ('client', 'Client'),
         ('mexico', 'Mexico'),
-    ], string='Payment type', tracking=1)
+    ], string='Payment type')
     state = fields.Selection([
         ('no_process', 'Not processed'),
         ('process', 'Processed')
-    ], string='Status', default='no_process', tracking=1)
+    ], string='Status', default='no_process')
 
     @api.onchange('partner_id')
     def onchange_currency_by_partner(self):
@@ -454,7 +470,6 @@ class ControlCampaign(models.Model):
     objective_month = fields.Float('Month objective', tracking=1, compute='calc_kpi', store=True)
     percent_objective = fields.Float('% Over objectives', tracking=1, compute='calc_kpi', store=True)
     margin_factor_ml = fields.Float('Margin factor(ml)', tracking=1, compute='calc_kpi', store=True)
-    check_diff = fields.Boolean('Diff', compute='get_name_campaign')
     analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic account', tracking=1)
 
     def set_pending(self):
@@ -674,12 +689,6 @@ class ControlCampaign(models.Model):
             record.percent_objective = (record.consume * 100)/record.objective_month \
                 if record.objective_month > 0 else 0
 
-    def get_name_campaign(self):
-        for record in self:
-            record.check_diff = False
-            if record.campaign_id and record.campaign_id.currency_id != record.currency_id:
-                record.check_diff = True
-
 
 class ObjectiveCampaignMarketing(models.Model):
     _name = 'objective.campaign.marketing'
@@ -841,6 +850,7 @@ class CampaignMarketingElogia(models.Model):
     check_deleted = fields.Boolean('To delete', compute='get_delete_objectives')
     list_deleted = fields.Char('List to deleted', compute='get_delete_objectives')
     check_change = fields.Boolean('Change?')
+    show_product_fee = fields.Boolean('Product fee?', compute='get_product_fee')
     order_ids = fields.One2many('sale.order.line', 'campaign_elogia_id', 'Sales')
     invoice_ids = fields.One2many('account.move', 'campaign_elogia_id', 'Moves')
     purchase_ids = fields.One2many('purchase.order.line', 'campaign_elogia_id', 'Purchase')
@@ -897,6 +907,21 @@ class CampaignMarketingElogia(models.Model):
             if list_followers:
                 obj_user_ids = env_users.search([('groups_id', 'in', group_ids), ('partner_id', 'in', list_followers.ids)])
                 self.user_ids = obj_user_ids
+
+    @api.depends('product_id')
+    def get_product_fee(self):
+        show_product_fee = True
+        env_product_fee = self.env['product.fee.setting']
+        for record in self:
+            if not any(env_product_fee.search([('product_id', '=', record.product_id.id)])):
+                show_product_fee = False
+        record.show_product_fee = show_product_fee
+
+    @api.constrains('show_product_fee', 'product_id')
+    def check_product_fee(self):
+        for record in self:
+            if not record.show_product_fee:
+                record.percentage_fee = 0
 
     @api.depends('date_start', 'date', 'campaign_line_ids')
     def get_new_objectives(self):

@@ -138,6 +138,7 @@
                     </header>
                     <field name="check_deleted" invisible="True"/>
                     <field name="check_generated" invisible="True"/>
+                    <field name="show_product_fee" invisible="True"/>
                     <field name="list_deleted" invisible="1"/>
                     <div class="alert alert-warning" role="alert" attrs="{'invisible': [('check_deleted', '=', False)]}"
                          style="margin-bottom: 0px;">
@@ -206,7 +207,8 @@
                                 </div>
                                 <field name="currency_id" attrs="{'readonly':[('state','!=', 'open')]}" required="True"
                                        options="{'no_create': True, 'no_create_edit': True}"/>
-                                <field name="percentage_fee" attrs="{'readonly':[('state','!=', 'open')]}"/>
+                                <field name="percentage_fee"
+                                       attrs="{'readonly':['|', ('state','!=', 'open'), ('show_product_fee','=', False)]}"/>
                                 <field name="amount_total" widget='monetary' options="{'currency_field': 'currency_id'}"
                                        attrs="{'readonly':[('state','!=', 'open')]}" required="True"/>
                                 <field name="amount_diff" widget='monetary' options="{'currency_field': 'currency_id'}"/>
@@ -267,8 +269,6 @@
                                                options="{'no_create': True, 'no_create_edit': True}" required="True"
                                                domain="[('move_type','!=', 'entry'), ('journal_id.type', '=', 'sale')]"/>
                                         <field name="invoice_line_id"  required="True"
-                                               domain="[('move_id','=', invoice_id),
-                                               ('exclude_from_invoice_tab','=', False), ('journal_id.type', '=', 'sale')]"
                                                attrs="{'readonly':[('state','=', 'process')], 'invisible':[('invoice_id','=', False)]}"
                                                options="{'no_create': True, 'no_create_edit': True}"/>
                                         <field name="move_id" readonly="True"
@@ -401,10 +401,6 @@
                         <field name="state" widget="statusbar" required="True"
                                statusbar_visible="draft,pending,both,cancel"/>
                     </header>
-                    <field name="check_diff" invisible="True"/>
-                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('check_diff', '=', False)]}">
-                        <strong>Campaign control currency and campaign (<field name="campaign_id" readonly="True"/>) do not match.</strong>
-                    </div>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button class="oe_stat_button" name="action_view_sales" type="object" icon="fa-dollar"
@@ -467,8 +463,6 @@
                                 <field name="consume" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                 <field name="consume_currency" widget='monetary'
                                        options="{'currency_field': 'currency_company_id'}"/>
-                                <field name="percent_objective" widget='monetary'
-                                       options="{'currency_field': 'currency_id'}"/>
                                 <field name="check_change" invisible="True"/>
                             </group>
                         </group>
@@ -492,6 +486,8 @@
                                        options="{'currency_field': 'currency_company_id'}"/>
                                 <field name="objective_month" widget='monetary'
                                        options="{'currency_field': 'currency_id'}"/>
+                                <field name="percent_objective" widget='monetary'
+                                       options="{'currency_field': 'currency_id'}"/>
                             </group>
                         </group>
                         <notebook>
@@ -499,8 +495,8 @@
                                 <field name="control_line_ids" attrs="{'readonly':[('state','!=', 'draft')]}">
                                     <tree nolabel="1" editable="bottom" decoration-info="state == 'no_process'"
                                                decoration-muted="state == 'process'">
-                                        <field name="control_id" optional="hide"/>
-                                        <field name="name_campaign" optional="hide"/>
+                                        <field name="control_id" invisible="True"/>
+                                        <field name="campaign_id" invisible="True"/>
                                         <field name="partner_id" options="{'no_create': True, 'no_create_edit': True}"
                                                required="True"/>
                                         <field name="invoice_provision" widget='monetary' required="True"
@@ -983,11 +979,6 @@
                             </group>
                         </group>
                     </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids"/>
-                        <field name="activity_ids"/>
-                        <field name="message_ids"/>
-                    </div>
                 </form>
             </field>
         </record>
@@ -999,10 +990,10 @@
             <field name="arch" type="xml">
                 <tree string="Line supplier" editable="bottom" create="false" delete="false" sample="1"
                       decoration-info="state == 'no_process'" decoration-muted="state == 'process'">
-                    <field name="partner_id" readonly="True" options="{'no_create': True, 'no_create_edit': True}"/>
                     <field name="control_id" readonly="True" optional="hide"/>
+                    <field name="partner_id" readonly="True" options="{'no_create': True, 'no_create_edit': True}"/>
                     <field name="analytic_account_id" readonly="True" options="{'no_create': True, 'no_create_edit': True}"/>
-                    <field name="name_campaign" readonly="True"/>
+                    <field name="campaign_id" readonly="True" options="{'no_create': True, 'no_create_edit': True}"/>
                     <field name="client_id" readonly="True" options="{'no_create': True, 'no_create_edit': True}"/>
                     <field name="currency_control_id" invisible="True"/>
                     <field name="invoice_provision" widget='monetary' readonly="True"
@@ -1026,7 +1017,7 @@
                 <search>
                     <field name="partner_id"/>
                     <field name="analytic_account_id"/>
-                    <field name="name_campaign"/>
+                    <field name="campaign_id"/>
                     <field name="type_payment"/>
                     <field name="control_id"/>
                     <field name="client_id"/>
@@ -1046,7 +1037,7 @@
                     <group expand="0" string="Group By">
                         <filter string="Supplier" name="group_partner_id" domain="[]" context="{'group_by':'partner_id'}"/>
                         <filter string="Analytic account" name="group_analytic_account_id" domain="[]" context="{'group_by':'analytic_account_id'}"/>
-                        <filter string="Campaign" name="group_name_campaign" domain="[]" context="{'group_by':'name_campaign'}"/>
+                        <filter string="Campaign" name="group_campaign" domain="[]" context="{'group_by':'campaign_id'}"/>
                         <filter string="Client" name="group_client" domain="[]" context="{'group_by':'client_id'}"/>
                         <filter string="Type payment" name="group_type_payment" domain="[]" context="{'group_by':'type_payment'}"/>
                         <filter string="Company" name="group_company" domain="[]" context="{'group_by':'company_id'}"/>
