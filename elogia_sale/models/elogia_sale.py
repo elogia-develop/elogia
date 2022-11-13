@@ -1000,9 +1000,17 @@ class CampaignMarketingElogia(models.Model):
 
     def set_not_delete(self):
         env_objective = self.env['objective.campaign.marketing']
+        env_historical = self.env['historical.date.objectives']
         for record in self:
             obj_objective = env_objective.search([('campaign_id', '=', record.id), ('check_deleted', '=', 'True')])
             obj_objective.write({'check_deleted': False})
+            obj_historical = env_historical.search([('campaign_id', '=', record.id)], order='id desc')
+            if record.date_start and record.date:
+                obj_historical_date = obj_historical.filtered(
+                    lambda e: e.date_start != record.date_start or e.date != record.date)
+                if obj_historical_date:
+                    record.date_start = obj_historical_date[0].date_start
+                    record.date = obj_historical_date[0].date
 
     def set_generated(self):
         """Generate objectives = product * count month"""
