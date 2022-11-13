@@ -83,21 +83,10 @@
                            options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                 </xpath>
                 <xpath expr="//field[@name='line_ids']/tree/field[@name='analytic_tag_ids']" position="after">
-                    <field name="campaign_elogia_id" invisible="True"/>
-                    <field name="control_id" invisible="True"/>
-                </xpath>
-            </field>
-        </record>
-
-        <!--View inherit Tree account.move-->
-        <record id="view_move_tree_inherit_elogia" model="ir.ui.view">
-            <field name="name">account.move.tree.inherit.elogia</field>
-            <field name="model">account.move</field>
-            <field name="inherit_id" ref="account.view_move_tree"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='company_id']" position="before">
-                    <field name="campaign_elogia_id"/>
-                    <field name="control_id"/>
+                    <field name="campaign_elogia_id" attrs="{'required': [('control_id', '=', False)]}"
+                           options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                    <field name="control_id" attrs="{'required': [('campaign_elogia_id', '=', False)]}"
+                           options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                 </xpath>
             </field>
         </record>
@@ -401,6 +390,11 @@
                         <field name="state" widget="statusbar" required="True"
                                statusbar_visible="draft,pending,both,cancel"/>
                     </header>
+                    <field name="show_product_fee" invisible="True"/>
+                    <field name="check_new_fee" invisible="True"/>
+                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('check_new_fee', '=', False)]}">
+                        <strong>* You should check if it is necessary to update the % Fee</strong>.
+                    </div>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button class="oe_stat_button" name="action_view_sales" type="object" icon="fa-dollar"
@@ -447,6 +441,7 @@
                                 <field name="currency_id" required="True" readonly="True"
                                        options="{'no_create': True, 'no_create_edit': True}"/>
                                 <field name="currency_company_id" invisible="True"/>
+                                <field name="objective_id" invisible="True"/>
                             </group>
                             <group name="second_group">
                                 <field name="period" required="True"
@@ -459,7 +454,8 @@
                                 <field name="amount_currency" widget='monetary' required="True"
                                                options="{'currency_field': 'currency_company_id'}"/>
                                 <field name="clicks" attrs="{'readonly':[('state','!=', 'draft')]}"/>
-                                <field name="percentage_fee" attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="percentage_fee"
+                                       attrs="{'readonly':['|', ('state','!=', 'draft'), ('show_product_fee','=', False)]}"/>
                                 <field name="consume" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                 <field name="consume_currency" widget='monetary'
                                        options="{'currency_field': 'currency_company_id'}"/>
@@ -770,7 +766,7 @@
                            sum="Total"/>
                     <field name="percentage_fee" options="{'currency_field': 'currency_id'}" widget='monetary'
                            sum="TotalFee"/>
-                    <field name="percentage_margin" sum="TotalPercent"/>
+                    <field name="percentage_margin"/>
                     <field name="margin" options="{'currency_field': 'currency_id'}" widget='monetary' readonly="True"
                            sum="Margin"/>
                     <field name="margin_total" options="{'currency_field': 'currency_id'}" widget='monetary'
