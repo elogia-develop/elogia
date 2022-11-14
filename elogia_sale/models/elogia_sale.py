@@ -995,8 +995,10 @@ class CampaignMarketingElogia(models.Model):
     user_ids = fields.Many2many('res.users', 'campaign_user_rel', 'campaign_id', 'user_id', string='Optimizers')
     product_id = fields.Many2one('product.product', string='Product', domain="[('sale_ok', '=', True)]", tracking=1)
     amount_total = fields.Float('Amount', tracking=1)
-    amount_diff = fields.Float('Consumed', tracking=1, compute=_calc_revenue_control)
-    amount_fee = fields.Float('Consumed Fee', tracking=1, compute=_calc_revenue_control)
+    amount_diff = fields.Float('Consumed', tracking=1, compute=_calc_revenue_control,
+                               help='= sum(Campaign revenue of controls * rate currency)')
+    amount_fee = fields.Float('Consumed Fee', tracking=1, compute=_calc_revenue_control,
+                              help='sum(Fee revenue of controls * rate currency)')
     check_deleted = fields.Boolean('To delete', compute='get_delete_objectives')
     list_deleted = fields.Char('List to deleted', compute='get_delete_objectives')
     check_change = fields.Boolean('Change?')
