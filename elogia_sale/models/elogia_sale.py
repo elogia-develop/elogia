@@ -30,7 +30,6 @@ class SaleOrderWizard(models.Model):
 
     date_order = fields.Date('Order date', required=True, index=True)
     check_fee = fields.Boolean('Management Fee')
-    description = fields.Char('Description')
     reference = fields.Char('No. reference')
     check_change = fields.Boolean('Change?')
     check_error = fields.Boolean('Error')
@@ -41,68 +40,107 @@ class SaleOrderWizard(models.Model):
         env_control = self.env['control.campaign.marketing']
         if self.check_change:
             obj_control = env_control.search([('id', 'in', self._context.get('active_ids'))])
-            control_filter = obj_control.filtered(lambda e: e.state == 'sale' or e.type_invoice != 'sale') \
-                if obj_control else False
+            control_filter = obj_control.filtered(
+                lambda e: e.state not in ['pending', 'purchase'] or e.type_invoice != 'sale') if obj_control else False
             if control_filter:
                 self.check_error = True
-            self.list_error = '{}' .format(control_filter.mapped('campaign_id.name'))
+            self.list_error = '{}' .format(control_filter.mapped('name'))
+
+    def _group_control_by_supplier(self, obj_control_ids):
+        """"
+        Function to group the line by supplier
+        """
+        control_by_suppl = {}
+        for record in obj_control_ids:
+            supplier = record.client_id
+            if supplier not in control_by_suppl:
+                control_by_suppl[supplier] = [record]
+            else:
+                control_by_suppl[supplier].append(record)
+        return control_by_suppl
+
+    def _group_control_by_currency(self, supplier_value):
+        """"
+        Function to group the line by currency
+        """
+        control_by_currency = {}
+        for record in supplier_value:
+            currency = record.currency_id
+            if currency not in control_by_currency:
+                control_by_currency[currency] = [record]
+            else:
+                control_by_currency[currency].append(record)
+        return control_by_currency
 
     def action_create_order(self):
         _logger.info('Begin: action_quotation_sale')
         env_product_setting = self.env['product.fee.setting'].search([])
         env_pricelist_setting = self.env['pricelist.setting'].search([])
         env_control = self.env['control.campaign.marketing']
-        if not env_product_setting:
-            raise UserError(_('There are no "Product Settings" configured.\n Check in Settings/Product Settings menu.'))
         if not env_pricelist_setting:
             raise UserError(_('There are no "Pricelist Settings" configured.\n '
                               'Check in Settings/Pricelist Settings menu.'))
         else:
             obj_control_ids = env_control.search([('id', 'in', self._context.get('active_ids'))])
             if obj_control_ids:
-                list_not_setting = [product.name for product in obj_control_ids.mapped('campaign_line_id.product_id')
-                                    if product not in env_product_setting.mapped('product_id')]
-                if list_not_setting:
-                    raise UserError(_('Products {} are not configured.\n Check in Settings/Product Settings menu.'
-                                      .format(list_not_setting)))
-                price_not_setting = (obj_control_ids.mapped('currency_id') -
+                control_filter = obj_control_ids.filtered(
+                    lambda e: e.state in ['pending', 'purchase'] and e.type_invoice == 'sale') \
+                    if obj_control_ids else False
+                price_not_setting = (control_filter.mapped('currency_id') -
                                      env_pricelist_setting.mapped('currency_id')).mapped('name')
                 if price_not_setting:
-                    raise UserError(_('Currency {} are not configured.\n Check in Settings/Pricelist Settings menu.'
+                    raise UserError(_('Currency {} are not configured.\n '
+                                      'Check in Settings/Pricelist Settings menu.'
                                       .format(price_not_setting)))
                 else:
-                    if self.check_error:
-                        raise UserError(_('There are campaign controls that cannot be processed.'))
-                    else:
-                        for obj_control in obj_control_ids:
-                            self.action_quotation_sale(obj_control, env_product_setting, env_pricelist_setting)
+                    control_by_supplier = self._group_control_by_supplier(control_filter)
+                    if control_by_supplier:
+                        for supplier_key, supplier_value in control_by_supplier.items():
+                            control_by_currency = self._group_control_by_currency(supplier_value)
+                            if control_by_currency:
+                                for currency_key, currency_value in control_by_currency.items():
+                                    self.action_quotation_sale(currency_value, env_product_setting, env_pricelist_setting)
 
-    def action_quotation_sale(self, control, setting, pricelist_ids):
+    def action_quotation_sale(self, controls, setting, pricelist_ids):
         order_lines = []
+        list_line = []
         order_obj = self.env['sale.order']
-        list_line = [control.campaign_line_id.product_id]
-        other_product = setting.filtered(lambda e: e.product_id == control.campaign_line_id.product_id)
-        if other_product and self.check_fee:
-            list_line.append(other_product.other_product_id)
-        for line in list_line:
-            line_vals = {}
-            taxes = line.taxes_id if line.taxes_id else False
-            if self.check_fee:
-                price_unit = control.billed_revenue - control.fee_revenue
-            else:
-                price_unit = control.billed_revenue
-            line_vals = {
-                'price_unit': price_unit,
-                'product_id': line.id,
-                'product_uom': line.uom_id.id,
-                'product_uom_qty': 1,
-                'name': line.name,
-                'tax_id': [(6, 0, taxes.ids)] if taxes else False,
-                'currency_id': control.currency_id.id,
-                'control_id': control.id,
-                'campaign_elogia_id': control.campaign_id.id
-            }
-            order_lines.append((0, 0, line_vals))
+        for control in controls:
+            if not control.billed_revenue - control.fee_revenue == 0:
+                list_line.append({'product': control.campaign_line_id.product_id,
+                                  'price': control.billed_revenue - control.fee_revenue,
+                                  'fee': False,
+                                  'control': control
+
+                                  })
+            if control.percentage_fee > 0:
+                other_product = setting.filtered(lambda e: e.product_id == control.campaign_line_id.product_id)
+                if other_product:
+                    list_line.append({
+                        'product': other_product[0].other_product_id,
+                        'price': control.fee_revenue,
+                        'fee': True,
+                        'control': control
+                    })
+        if list_line:
+            for line in list_line:
+                name_line = line['control'].name
+                if self.check_fee:
+                    if line['fee']:
+                        name_line = line['control'].name + '- Fee de Gestion'
+                taxes = line['product'].taxes_id if line['product'].taxes_id else False
+                line_vals = {
+                    'price_unit': line['price'],
+                    'product_id': line['product'].id,
+                    'product_uom': line['product'].uom_id.id,
+                    'product_uom_qty': 1,
+                    'name': name_line,
+                    'tax_id': [(6, 0, taxes.ids)] if taxes else False,
+                    'currency_id': line['control'].currency_id.id,
+                    'control_id': line['control'].id,
+                    'campaign_elogia_id': line['control'].campaign_id.id
+                }
+                order_lines.append((0, 0, line_vals))
         pricelist = pricelist_ids.filtered(lambda e: e.currency_id == control.currency_id)
         order_vals = {
             'partner_id': control.client_id.id,
@@ -113,15 +151,15 @@ class SaleOrderWizard(models.Model):
             if control.client_id.property_account_position_id else False,
             'currency_id': control.currency_id.id,
             'user_id': self.env.user.id,
-            'analytic_account_id': control.campaign_id.analytic_account_id.id,
-            'client_order_ref': self.description,
+            'analytic_account_id': control.analytic_account_id.id,
             'origin': self.reference,
         }
         sale_order = order_obj.create(order_vals)
         if sale_order:
+            sale_order.action_confirm()
             _logger.info('Order Created')
             _logger.info(sale_order.name)
-            control.state = 'sale'
+            control.write({'state': 'sale', 'process_sale': +1})
             control.message_post(body=_("Created sale order: {}").format(sale_order.name))
 
 
@@ -267,6 +305,8 @@ class ControlLineSupplier(models.Model):
     invoice_provision = fields.Float('Provision')
     invoice_provision_ml = fields.Float('Provision (mt)', compute='calc_amount_total')
     currency_id = fields.Many2one('res.currency', 'Currency')
+    order_line_id = fields.Many2one('purchase.order.line', 'Order Line')
+    order_id = fields.Many2one(related='order_line_id.order_id', string='Purchase order', store=True)
     currency_control_id = fields.Many2one(related='control_id.currency_id', store=True, string="Currency control")
     type_payment = fields.Selection(selection=[
         ('spain', 'Spain'),
@@ -314,10 +354,7 @@ class ControlLineSupplier(models.Model):
                             for item in currency_value:
                                 item.state = 'process'
         for control in list_supplier.mapped('control_id'):
-            if control.state == 'sale':
-                control.state = 'both'
-            else:
-                control.state = 'purchase'
+            control.process_line += 1
 
     def _group_line_by_supplier(self, list_supplier):
         """"
@@ -345,36 +382,41 @@ class ControlLineSupplier(models.Model):
                 line_by_currency[currency].append(record)
         return line_by_currency
 
-    def create_purchase(self, line, supplier):
+    def create_purchase(self, lines, supplier):
         purchase_obj = self.env['purchase.order']
-        vals_purchase = self._prepare_vals_purchase_order(line, supplier)
+        vals_purchase = self._prepare_vals_purchase_order(lines, supplier)
         purchase = purchase_obj.create(vals_purchase)
-        self._create_lines_purchase_order(purchase, line)
+        lines = self._create_lines_purchase_order(purchase, lines)
+        if lines:
+            purchase.button_confirm()
 
-    def _prepare_vals_purchase_order(self, line, supplier):
+    def _prepare_vals_purchase_order(self, lines, supplier):
         vals = {
             'partner_id': supplier.id,
             'origin': 'Control Campaign',
-            'currency_id': line[0].currency_id.id,
+            'currency_id': lines[0].currency_id.id,
             'date_planned': fields.datetime.now(),
-            'control_id': line[0].control_id.id,
-            'campaign_elogia_id': line[0].control_id.campaign_id.id
         }
         return vals
 
-    def _create_lines_purchase_order(self, purchase, line):
+    def _create_lines_purchase_order(self, purchase, lines):
         purchase_line_obj = self.env['purchase.order.line']
-        vals = {
-            'order_id': purchase.id,
-            'product_id': line[0].control_id.campaign_line_id.product_id.id,
-            'name': line[0].control_id.campaign_line_id.product_id.name,
-            'product_uom': line[0].control_id.campaign_line_id.product_id.uom_po_id.id,
-            'date_planned': fields.datetime.now(),
-            'product_qty': 1,
-            'price_unit': sum([item.invoice_provision for item in line]),
-            'taxes_id': [(6, 0, line[0].control_id.campaign_line_id.product_id.supplier_taxes_id.ids)]
-        }
-        purchase_line_obj.create(vals)
+        for line in lines:
+            vals = {
+                'order_id': purchase.id,
+                'product_id': line.control_id.campaign_line_id.product_id.id,
+                'name': line.control_id.campaign_line_id.product_id.name,
+                'product_uom': line.control_id.campaign_line_id.product_id.uom_po_id.id,
+                'date_planned': fields.datetime.now(),
+                'product_qty': 1,
+                'price_unit': line.invoice_provision,
+                'taxes_id': [(6, 0, line.control_id.campaign_line_id.product_id.supplier_taxes_id.ids)],
+                'control_id': line.control_id.id,
+                'campaign_elogia_id': line.control_id.campaign_id.id
+            }
+            create_line = purchase_line_obj.create(vals)
+            if create_line:
+                line.write({'order_line_id': create_line.id})
         return True
 
 
@@ -446,7 +488,8 @@ class ControlCampaign(models.Model):
     clicks = fields.Float('Click/Lead/Sale', required=True, default=1)
     amount_unit = fields.Float('Amount total', tracking=1)
     amount_currency = fields.Float('Amount(ml)', tracking=1, compute='calc_price_ml', store=True)
-    consume = fields.Float('Campaign revenue', tracking=1, compute='calc_price_ml', store=True)
+    consume = fields.Float('Campaign revenue', tracking=1, compute='calc_price_ml', store=True,
+                           help='Amount total * Click/Lead/Sale')
     consume_currency = fields.Float('Campaign revenue(ml)', tracking=1, compute='calc_price_ml', store=True)
     client_id = fields.Many2one('res.partner', 'Client', tracking=1)
     percentage_fee = fields.Float('% Fee', tracking=1)
@@ -472,20 +515,27 @@ class ControlCampaign(models.Model):
     percent_objective = fields.Float('% Over objectives', tracking=1, compute='calc_month_objectives', store=True)
     margin_factor_ml = fields.Float('Margin factor(ml)', tracking=1, compute='calc_kpi', store=True)
     analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic account', tracking=1)
-    show_product_fee = fields.Boolean('Product fee?', compute='get_product_fee')
+    show_product_fee = fields.Boolean('Product fee?', compute='get_product_fee', store=True)
+    show_purchase = fields.Boolean('Purchase process?', compute='get_purchase_process')
+    show_sale = fields.Boolean('Sale process?', compute='get_sale_process')
+    show_move = fields.Boolean('Move process?', compute='get_move_process')
     check_new_fee = fields.Boolean('New fee?')
+    process_line = fields.Integer('Processed line')
+    process_sale = fields.Integer('Processed sale')
+    process_move = fields.Integer('Processed move')
 
     def set_pending(self):
         for record in self:
             record.state = 'pending'
-
-    def set_process(self):
-        for record in self:
-            record.state = 'both'
+            record.check_new_fee = False
+            record.control_line_ids.filtered(
+                lambda e: e.type_payment == 'client' and e.state == 'no_process').write({'state': 'process'})
 
     def set_draft(self):
         for record in self:
             record.state = 'draft'
+            record.control_line_ids.filtered(
+                lambda e: e.type_payment == 'client' and e.state == 'process').write({'state': 'no_process'})
 
     def set_cancel(self):
         for record in self:
@@ -506,14 +556,12 @@ class ControlCampaign(models.Model):
         env_mov = self.env['account.move']
         env_setting = self.env['campaign.accounting.setting']
         for record in self:
+            if record.billed_revenue < 0:
+                raise UserError(_('Billed revenue cannot be in negative value.'))
             obj_setting = env_setting.search([('company_id', '=', record.company_id.id)], limit=1)
             if obj_setting:
                 self.generated_account_move(record, env_mov, obj_setting)
-            if record.state == 'purchase':
-                record.state = 'both'
-            else:
-                if record.count_purchase >= 1:
-                    record.state = 'both'
+            record.process_move += 1
 
     def generated_account_move(self, record, env_mov, obj_setting):
         list_setting = [{'key': 'debit', 'value_d': obj_setting.account_debit_second},
@@ -565,6 +613,27 @@ class ControlCampaign(models.Model):
     def write(self, vals):
         if 'percentage_fee' in vals:
             self.check_new_fee = False
+        if 'process_line' in vals:
+            if not self.show_purchase:
+                if self.state == 'sale':
+                    self.state = 'both'
+                else:
+                    self.state = 'purchase'
+        if 'process_sale' in vals:
+            if not self.show_sale:
+                if self.state == 'purchase':
+                    self.state = 'both'
+                else:
+                    self.state = 'sale'
+        if 'process_move' in vals:
+            if not self.show_sale and not self.show_purchase:
+                self.state = 'both'
+            else:
+                if not self.show_purchase:
+                    self.state = 'purchase'
+                else:
+                    self.state = 'pending'
+
         return super(ControlCampaign, self).write(vals)
 
     @api.onchange('campaign_id', 'campaign_line_id', 'period')
@@ -711,7 +780,34 @@ class ControlCampaign(models.Model):
         for record in self:
             if not any(env_product_fee.search([('product_id', '=', record.campaign_line_id.product_id.id)])):
                 show_product_fee = False
-        record.show_product_fee = show_product_fee
+            record.show_product_fee = show_product_fee
+
+    @api.depends('control_line_ids')
+    def get_purchase_process(self):
+        show_purchase = False
+        for record in self:
+            if any(record.control_line_ids.filtered(lambda e: e.type_payment != 'client' and e.state == 'no_process')):
+                show_purchase = True
+            record.show_purchase = show_purchase
+
+    @api.depends('control_line_ids')
+    def get_sale_process(self):
+        show_sale = False
+        for record in self:
+            if record.type_invoice == 'sale':
+                if record.state in ['pending', 'purchase']:
+                    show_sale = True
+                    if any(record.order_ids.mapped('order_id').filtered(lambda e: e.state == 'sale')):
+                        show_sale = False
+            record.show_sale = show_sale
+
+    @api.depends('control_line_ids')
+    def get_move_process(self):
+        show_move = False
+        for record in self:
+            if record.type_invoice == 'account':
+                show_move = True
+            record.show_move = show_move
 
     @api.constrains('show_product_fee', 'campaign_line_id')
     def check_product_fee(self):

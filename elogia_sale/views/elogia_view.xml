@@ -9,16 +9,15 @@
                     <field name="check_error" invisible="True"/>
                     <field name="check_change" invisible="True"/>
                     <div class="alert alert-warning" role="alert" attrs="{'invisible': [('check_error', '=', False)]}">
-                        <strong>Campaign controls <field name="list_error" readonly="True"/> that cannot be processed.</strong>
+                        <strong>Controls <field name="list_error" readonly="True"/> that cannot be processed.</strong>
                     </div>
                     <sheet>
                         <group>
                             <group name="first_group">
-                                <field name="description"/>
+                                <field name="date_order"/>
                                 <field name="check_fee"/>
                             </group>
                             <group name="second_group">
-                                <field name="date_order"/>
                                 <field name="reference"/>
                             </group>
                         </group>
@@ -376,13 +375,11 @@
                         <button name="set_pending" string="Pending" type="object" class="btn-primary"
                                 attrs="{'invisible':[('state','!=', 'draft')]}"/>
                         <button name="generate_sale" string="Generate Sale" type="object" class="btn-primary"
-                                attrs="{'invisible':['|', ('state','not in', ['pending', 'purchase']), ('type_invoice', '!=', 'sale')]}"/>
+                                attrs="{'invisible':[('show_sale', '=', False)]}"/>
                         <button name="generate_move" string="Generate Move" type="object" class="btn-primary"
                                 attrs="{'invisible':['|', ('state','not in', ['pending', 'purchase']), ('type_invoice', '!=', 'account')]}"/>
                         <button name="generate_purchase" string="Generate Purchase" type="object" class="btn-primary"
-                                attrs="{'invisible':[('state','not in', ['pending', 'sale'])]}"/>
-                        <button name="set_process" string="Set to process" type="object"
-                                attrs="{'invisible':[('state','!=', 'sale')]}"/>
+                                attrs="{'invisible':['|', ('state','not in', ['pending', 'sale']), ('show_purchase', '=', False)]}"/>
                         <button name="set_draft" string="set to draft" type="object"
                                 attrs="{'invisible':[('state','not in', ['pending', 'cancel'])]}"/>
                         <button name="set_cancel" string="set to cancel" type="object"
@@ -392,6 +389,9 @@
                     </header>
                     <field name="show_product_fee" invisible="True"/>
                     <field name="check_new_fee" invisible="True"/>
+                    <field name="show_purchase" invisible="True"/>
+                    <field name="show_sale" invisible="True"/>
+                    <field name="show_move" invisible="True"/>
                     <div class="alert alert-warning" role="alert" attrs="{'invisible': [('check_new_fee', '=', False)]}">
                         <strong>* You should check if it is necessary to update the % Fee</strong>.
                     </div>
@@ -502,6 +502,8 @@
                                         <field name="invoice_provision_ml" optional="hide" widget='monetary' required="True"
                                                options="{'currency_field': 'currency_control_id'}"/>
                                         <field name="type_payment" required="True"/>
+                                        <field name="order_id" readonly="True"/>
+                                        <field name="order_line_id" readonly="True"/>
                                         <field name="company_id" optional="hide"/>
                                         <field name="currency_control_id" invisible="True"/>
                                         <field name="state" widget="badge" decoration-info="state == 'no_process'"
@@ -539,26 +541,27 @@
                     <field name="currency_id" optional="hide"/>
                     <field name="currency_company_id" invisible="True"/>
                     <field name="percentage_fee" optional="hide" sum="fee"/>
-                    <field name="amount_unit" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                    <field name="amount_unit" widget='monetary' options="{'currency_field': 'currency_id'}"
+                           optional="hide"/>
                     <field name="amount_currency" sum="amount_currency"
-                           widget='monetary' options="{'currency_field': 'currency_company_id'}"/>
-                    <field name="consume" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                           widget='monetary' options="{'currency_field': 'currency_company_id'}" optional="hide"/>
+                    <field name="consume" widget='monetary' options="{'currency_field': 'currency_id'}" optional="show"/>
                     <field name="consume_currency" sum="consume_currency" widget='monetary'
-                           options="{'currency_field': 'currency_company_id'}"/>
+                           options="{'currency_field': 'currency_company_id'}" optional="hide"/>
                     <field name="fee_revenue" widget='monetary' options="{'currency_field': 'currency_id'}"
                            optional="show"/>
                     <field name="fee_revenue_ml" widget='monetary' options="{'currency_field': 'currency_company_id'}"
-                           optional="show" sum="fee_revenue_ml"/>
+                           optional="hide" sum="fee_revenue_ml"/>
                     <field name="billed_revenue" widget='monetary' options="{'currency_field': 'currency_id'}"
                            optional="show"/>
                     <field name="billed_revenue_ml" widget='monetary' options="{'currency_field': 'currency_company_id'}"
-                           optional="show" sum="billed_revenue_ml"/>
+                           optional="hide" sum="billed_revenue_ml"/>
                     <field name="purchase_ml" widget='monetary' options="{'currency_field': 'currency_company_id'}"
                            optional="show" sum="purchase_ml"/>
                     <field name="margin_ml" widget='monetary' options="{'currency_field': 'currency_company_id'}"
                            optional="show" sum="margin_ml"/>
                     <field name="margin_factor_ml" widget='monetary' options="{'currency_field': 'currency_company_id'}"
-                           optional="show" sum="margin_factor_ml"/>
+                           optional="hide" sum="margin_factor_ml"/>
                     <field name="objective_month" widget='monetary' options="{'currency_field': 'currency_id'}"
                            optional="hide"/>
                     <field name="percent_objective" widget='monetary' options="{'currency_field': 'currency_id'}"
@@ -951,7 +954,7 @@
                         <group>
                             <group name="first_group">
                                 <field name="partner_id" readonly="True"
-                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                                       options="{'no_create': True, 'no_create_edit': True}"/>
                                 <field name="analytic_account_id" readonly="True"/>
                                 <field name="client_id" readonly="True"/>
                                 <field name="type_payment" readonly="True"/>
@@ -960,7 +963,7 @@
                                 <field name="invoice_provision" readonly="True" widget='monetary'
                                        options="{'currency_field': 'currency_id'}"/>
                                 <field name="currency_id" readonly="True"
-                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                                       options="{'no_create': True, 'no_create_edit': True}"/>
                                 <field name="currency_control_id" invisible="True"/>
                                 <field name="invoice_provision_ml" widget='monetary' readonly="True"
                                                options="{'currency_field': 'currency_control_id'}"/>
@@ -969,9 +972,13 @@
                         <group>
                             <group name="third_group">
                                 <field name="control_id" invisible="True"
-                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                                       options="{'no_create': True, 'no_create_edit': True}"/>
                                 <field name="company_id" readonly="True"
-                                       options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                                       options="{'no_create': True, 'no_create_edit': True}"/>
+                                <field name="order_id" readonly="True"
+                                       options="{'no_create': True, 'no_create_edit': True}"/>
+                                <field name="order_line_id" readonly="True"
+                                       options="{'no_create': True, 'no_create_edit': True}"/>
                             </group>
                         </group>
                     </sheet>
@@ -986,7 +993,7 @@
             <field name="arch" type="xml">
                 <tree string="Line supplier" editable="bottom" create="false" delete="false" sample="1"
                       decoration-info="state == 'no_process'" decoration-muted="state == 'process'">
-                    <field name="control_id" readonly="True" optional="hide"/>
+                    <field name="control_id" readonly="True" optional="show"/>
                     <field name="partner_id" readonly="True" options="{'no_create': True, 'no_create_edit': True}"/>
                     <field name="analytic_account_id" readonly="True" options="{'no_create': True, 'no_create_edit': True}"/>
                     <field name="campaign_id" readonly="True" options="{'no_create': True, 'no_create_edit': True}"/>
@@ -998,6 +1005,8 @@
                     <field name="invoice_provision_ml" widget='monetary' readonly="True"
                            options="{'currency_field': 'currency_control_id'}"/>
                     <field name="type_payment" readonly="True"/>
+                    <field name="order_id" readonly="True" optional="show"/>
+                    <field name="order_line_id" readonly="True" optional="show"/>
                     <field name="company_id" readonly="True"/>
                     <field name="state" widget="badge" decoration-info="state == 'no_process'"
                            decoration-muted="state == 'process'"/>
