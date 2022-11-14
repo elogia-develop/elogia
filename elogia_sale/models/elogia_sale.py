@@ -159,7 +159,7 @@ class SaleOrderWizard(models.Model):
             sale_order.action_confirm()
             _logger.info('Order Created')
             _logger.info(sale_order.name)
-            control.write({'state': 'sale', 'process_sale': +1})
+            control.write({'process_sale': +1})
             control.message_post(body=_("Created sale order: {}").format(sale_order.name))
 
 
@@ -487,10 +487,12 @@ class ControlCampaign(models.Model):
     currency_company_id = fields.Many2one(related='company_id.currency_id', store=True, string='Company currency')
     clicks = fields.Float('Click/Lead/Sale', required=True, default=1)
     amount_unit = fields.Float('Amount total', tracking=1)
-    amount_currency = fields.Float('Amount(ml)', tracking=1, compute='calc_price_ml', store=True)
+    amount_currency = fields.Float('Amount(ml)', tracking=1, compute='calc_price_ml', store=True,
+                                   help='= Amount total / rate currency')
     consume = fields.Float('Campaign revenue', tracking=1, compute='calc_price_ml', store=True,
-                           help='Amount total * Click/Lead/Sale')
-    consume_currency = fields.Float('Campaign revenue(ml)', tracking=1, compute='calc_price_ml', store=True)
+                           help='= Amount total * Click/Lead/Sale')
+    consume_currency = fields.Float('Campaign revenue(ml)', tracking=1, compute='calc_price_ml', store=True,
+                                    help='= Amount(ml) * Click/Lead/Sale')
     client_id = fields.Many2one('res.partner', 'Client', tracking=1)
     percentage_fee = fields.Float('% Fee', tracking=1)
     check_change = fields.Boolean('Change?')
@@ -504,16 +506,25 @@ class ControlCampaign(models.Model):
     order_ids = fields.One2many('sale.order.line', 'control_id', 'Sales')
     invoice_ids = fields.One2many('account.move.line', 'control_id', 'Move lines')
     purchase_ids = fields.One2many('purchase.order.line', 'control_id', 'Purchase')
-    fee_revenue = fields.Float('Fee revenue', tracking=1, compute='calc_price_ml', store=True)
-    fee_revenue_ml = fields.Float('Fee revenue(ml)', tracking=1, compute='calc_kpi', store=True)
-    billed_revenue = fields.Float('Billed revenue', tracking=1, compute='calc_kpi', store=True)
-    billed_revenue_ml = fields.Float('Billed revenue(ml)', tracking=1, compute='calc_kpi', store=True)
-    purchase_ml = fields.Float('Purchases(ml)', tracking=1, compute='calc_kpi', store=True)
-    margin_ml = fields.Float('Margin(ml)', tracking=1, compute='calc_kpi', store=True)
+    fee_revenue = fields.Float('Fee revenue', tracking=1, compute='calc_price_ml', store=True,
+                               help='= Campaign revenue * % Fee / 100')
+    fee_revenue_ml = fields.Float('Fee revenue(ml)', tracking=1, compute='calc_kpi', store=True,
+                                  help='= Fee revenue / rate currency')
+    billed_revenue = fields.Float('Billed revenue', tracking=1, compute='calc_kpi', store=True,
+                                  help='= Campaign revenue + Fee revenue - sum(Supplier Provision(mt) type client)')
+    billed_revenue_ml = fields.Float('Billed revenue(ml)', tracking=1, compute='calc_kpi', store=True,
+                                     help='= Billed revenue / rate currency')
+    purchase_ml = fields.Float('Purchases(ml)', tracking=1, compute='calc_kpi', store=True,
+                               help='= Sum(Supplier Provision(mt) type not client) / rate currency')
+    margin_ml = fields.Float('Margin(ml)', tracking=1, compute='calc_kpi', store=True,
+                             help='= Billed revenue - sum(Supplier Provision(mt) type not client)')
     objective_id = fields.Many2one('objective.campaign.marketing', 'Objective', tracking=1)
-    objective_month = fields.Float('Month objective', tracking=1, compute='calc_month_objectives', store=True)
-    percent_objective = fields.Float('% Over objectives', tracking=1, compute='calc_month_objectives', store=True)
-    margin_factor_ml = fields.Float('Margin factor(ml)', tracking=1, compute='calc_kpi', store=True)
+    objective_month = fields.Float('Month objective', tracking=1, compute='calc_month_objectives', store=True,
+                                   help='= Amount of period')
+    percent_objective = fields.Float('% Over objective', tracking=1, compute='calc_month_objectives', store=True,
+                                     help='= Campaign revenue * 100 / Month objective')
+    margin_factor_ml = fields.Float('Margin factor(ml)', tracking=1, compute='calc_kpi', store=True,
+                                    help='= Margin(ml) - Fee revenue(ml)')
     analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic account', tracking=1)
     show_product_fee = fields.Boolean('Product fee?', compute='get_product_fee', store=True)
     show_purchase = fields.Boolean('Purchase process?', compute='get_purchase_process')
@@ -530,6 +541,8 @@ class ControlCampaign(models.Model):
             record.check_new_fee = False
             record.control_line_ids.filtered(
                 lambda e: e.type_payment == 'client' and e.state == 'no_process').write({'state': 'process'})
+            if not record.show_purchase and not record.show_sale and not record.show_move:
+                record.state = 'both'
 
     def set_draft(self):
         for record in self:
@@ -571,6 +584,7 @@ class ControlCampaign(models.Model):
             'move_type': 'entry',
             'partner_id': record.client_id.id,
             'currency_id': record.currency_id.id,
+            'type_move': 'accounting',
             'line_ids': []
         }
         billed_currency = record.billed_revenue
@@ -619,12 +633,16 @@ class ControlCampaign(models.Model):
                     self.state = 'both'
                 else:
                     self.state = 'purchase'
+                    if self.type_invoice == 'account' and not self.show_move:
+                        self.state = 'both'
         if 'process_sale' in vals:
             if not self.show_sale:
                 if self.state == 'purchase':
                     self.state = 'both'
                 else:
                     self.state = 'sale'
+                    if not self.control_line_ids:
+                        self.state = 'both'
         if 'process_move' in vals:
             if not self.show_sale and not self.show_purchase:
                 self.state = 'both'
@@ -633,7 +651,8 @@ class ControlCampaign(models.Model):
                     self.state = 'purchase'
                 else:
                     self.state = 'pending'
-
+                    if not self.control_line_ids:
+                        self.state = 'both'
         return super(ControlCampaign, self).write(vals)
 
     @api.onchange('campaign_id', 'campaign_line_id', 'period')
@@ -786,8 +805,9 @@ class ControlCampaign(models.Model):
     def get_purchase_process(self):
         show_purchase = False
         for record in self:
-            if any(record.control_line_ids.filtered(lambda e: e.type_payment != 'client' and e.state == 'no_process')):
-                show_purchase = True
+            if record.state in ['pending', 'sale']:
+                if any(record.control_line_ids.filtered(lambda e: e.type_payment != 'client' and e.state == 'no_process')):
+                    show_purchase = True
             record.show_purchase = show_purchase
 
     @api.depends('control_line_ids')
@@ -805,8 +825,12 @@ class ControlCampaign(models.Model):
     def get_move_process(self):
         show_move = False
         for record in self:
-            if record.type_invoice == 'account':
-                show_move = True
+            if record.state in ['pending', 'purchase']:
+                if record.type_invoice == 'account':
+                    show_move = True
+                    if any(record.invoice_ids.mapped('move_id').filtered(
+                            lambda e: e.state == 'posted' and e.type_move == 'accounting')):
+                        show_move = False
             record.show_move = show_move
 
     @api.constrains('show_product_fee', 'campaign_line_id')
@@ -1304,6 +1328,7 @@ class CampaignMarketingElogia(models.Model):
             'move_type': 'entry',
             'partner_id': record.campaign_id.client_id.id,
             'currency_id': record.currency_id.id,
+            'type_move': 'accounting',
             'line_ids': []
         }
         for item in list_setting:
