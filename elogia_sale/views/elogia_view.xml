@@ -377,9 +377,9 @@
                         <button name="generate_sale" string="Generate Sale" type="object" class="btn-primary"
                                 attrs="{'invisible':[('show_sale', '=', False)]}"/>
                         <button name="generate_move" string="Generate Move" type="object" class="btn-primary"
-                                attrs="{'invisible':['|', ('state','not in', ['pending', 'purchase']), ('type_invoice', '!=', 'account')]}"/>
+                                attrs="{'invisible':[('show_move', '=', False)]}"/>
                         <button name="generate_purchase" string="Generate Purchase" type="object" class="btn-primary"
-                                attrs="{'invisible':['|', ('state','not in', ['pending', 'sale']), ('show_purchase', '=', False)]}"/>
+                                attrs="{'invisible':[('show_purchase', '=', False)]}"/>
                         <button name="set_draft" string="set to draft" type="object"
                                 attrs="{'invisible':[('state','not in', ['pending', 'cancel'])]}"/>
                         <button name="set_cancel" string="set to cancel" type="object"
