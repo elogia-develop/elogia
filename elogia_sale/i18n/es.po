@@ -131,7 +131,7 @@ msgstr "= Sum(Provisión(mt) de líneas de proveedor que tipo de pago no es clie
 #. module: elogia_sale
 #: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__amount_diff
 msgid "= sum(Campaign revenue of controls * rate currency)"
-msgstr "= Sum(Ingreso campaña * tasa de cambio)"
+msgstr "= Sum(Ingreso de controles)"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__access_warning
@@ -753,19 +753,19 @@ msgstr "Cuenta gasto"
 #. module: elogia_sale
 #: model:ir.model,name:elogia_sale.model_expense_entry_setting
 msgid "Expense Entry Setting"
-msgstr "Configuración entrada de gasto"
+msgstr "Entradas de gastos"
 
 #. module: elogia_sale
 #: model_terms:ir.ui.view,arch_db:elogia_sale.expense_entry_setting_elogia_form
 #: model_terms:ir.ui.view,arch_db:elogia_sale.expense_entry_setting_elogia_tree
 msgid "Expense entry"
-msgstr "Entrada de gasto"
+msgstr "Entradas de gastos"
 
 #. module: elogia_sale
 #: model:ir.actions.act_window,name:elogia_sale.action_expense_entry_setting
 #: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_last96
 msgid "Expense entry setting"
-msgstr "Configuración entrada de gasto"
+msgstr "Entradas de gastos"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__fee_revenue
@@ -1453,7 +1453,7 @@ msgstr "Lista de precios"
 #. module: elogia_sale
 #: model:ir.model,name:elogia_sale.model_pricelist_setting
 msgid "Pricelist Setting"
-msgstr "Configuración lista de precios"
+msgstr "Lista de precios"
 
 #. module: elogia_sale
 #: model:ir.actions.act_window,name:elogia_sale.action_pricelist_elogia_setting
@@ -1461,7 +1461,7 @@ msgstr "Configuración lista de precios"
 #: model_terms:ir.ui.view,arch_db:elogia_sale.pricelist_setting_elogia_form
 #: model_terms:ir.ui.view,arch_db:elogia_sale.pricelist_setting_elogia_tree
 msgid "Pricelist setting"
-msgstr "Configuración lista de precios"
+msgstr "Lista de precios"
 
 #. module: elogia_sale
 #: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_thirty1
@@ -1514,7 +1514,7 @@ msgstr "Producto"
 #. module: elogia_sale
 #: model:ir.model,name:elogia_sale.model_product_fee_setting
 msgid "Product Fee Setting"
-msgstr "Configuración producto fee"
+msgstr "Producto fee"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__product_template_id
@@ -1543,7 +1543,7 @@ msgstr "Producto"
 #: model:ir.actions.act_window,name:elogia_sale.action_product_fee_setting
 #: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_last98
 msgid "Product setting"
-msgstr "Configuración producto"
+msgstr "Productos predeterminados"
 
 #. module: elogia_sale
 #: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_item_thirty
@@ -2124,7 +2124,7 @@ msgstr "Restablecer a borrador"
 #. module: elogia_sale
 #: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__amount_fee
 msgid "sum(Fee revenue of controls * rate currency)"
-msgstr "= sum(Ingreso fee de controles * tasa de cambio)"
+msgstr "= sum(Ingreso fee de controles)"
 
 #. module: elogia_sale
 #: model_terms:ir.ui.view,arch_db:elogia_sale.sale_order_elogia_wizard_form
