@@ -1350,7 +1350,7 @@ msgstr "Objetivo campaña marketing"
 #: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_sum_tree
 #: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_tree
 msgid "Objectives"
-msgstr "Objetivos"
+msgstr "Objetivos mes"
 
 #. module: elogia_sale
 #: model:ir.model.fields.selection,name:elogia_sale.selection__campaign_marketing_elogia__state__open

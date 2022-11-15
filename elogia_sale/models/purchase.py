@@ -38,5 +38,5 @@ class PurchaseOrderLine(models.Model):
                                 if line.control_id.type_invoice == 'sale':
                                     line.control_id.write({'state': 'sale'})
                                 else:
-                                    if line.control_id.state != 'cancel':
+                                    if line.control_id.state not in ['cancel', 'draft']:
                                         line.control_id.write({'state': 'pending'})

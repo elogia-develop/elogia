@@ -22,3 +22,22 @@ class AccountMoveLine(models.Model):
 
     campaign_elogia_id = fields.Many2one('campaign.marketing.elogia', 'Campaigns', ondelete='restrict', index=True)
     control_id = fields.Many2one('control.campaign.marketing', 'Control', ondelete='restrict', index=True)
+
+    @api.constrains('parent_state')
+    def check_state_by_order_line(self):
+        env_control = self.env['control.campaign.marketing']
+        for record in self:
+            if record.parent_state == 'cancel':
+                obj_control_ids = env_control.search([('id', '=', record.control_id.id)])
+                if obj_control_ids:
+                    if any(obj_control_ids.filtered(lambda e: e.state == 'both')):
+                        raise UserError(_('Account move cannot be cancelled. \n '
+                                          'The related control is in "Processed" state!'))
+                    else:
+                        for control in obj_control_ids:
+                            if control.type_invoice == 'account':
+                                if control.show_purchase:
+                                    control.write({'state': 'pending'})
+                                else:
+                                    if control.state not in ['cancel', 'pending', 'draft']:
+                                        control.write({'state': 'purchase'})
