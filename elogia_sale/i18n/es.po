@@ -1,0 +1,2137 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* elogia_sale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e-20221018\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-14 21:29+0000\n"
+"PO-Revision-Date: 2022-11-14 21:29+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__percentage_fee
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__percentage_fee
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__percentage_fee
+msgid "% Fee"
+msgstr "% Fee"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__percentage_margin
+msgid "% Margin"
+msgstr "% Margen"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__percent_objective
+msgid "% Over objective"
+msgstr "% Sobre objetivo"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid "* This campaign has objectives in the period(s)"
+msgstr "* Esta campaña tiene objetivos en el período"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid ""
+"<br/>\n"
+"                        View this information by accessing the Campaigns/Objectives menu."
+msgstr ""
+"<br/>\n"
+"                        Consulta esta información accediendo al menú Campañas/Objetivos."
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid ""
+"<i class=\"fa fa-long-arrow-right mx-2 oe_edit_only\" aria-label=\"Arrow icon\" title=\"Arrow\"/>\n"
+"                                    <i class=\"fa fa-long-arrow-right mx-2 oe_read_only\" aria-label=\"Arrow icon\" title=\"Arrow\" attrs=\"{'invisible': [('date_start', '=', False), ('date', '=', False)]}\"/>"
+msgstr ""
+"<i class=\"fa fa-long-arrow-right mx-2 oe_edit_only\" aria-label=\"Arrow icon\" title=\"Arrow\"/>\n"
+"                                    <i class=\"fa fa-long-arrow-right mx-2 oe_read_only\" aria-label=\"Arrow icon\" title=\"Arrow\" attrs=\"{'invisible': [('date_start', '=', False), ('date', '=', False)]}\"/>"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid ""
+"<strong>* You should check if it is necessary to update the % Fee</strong>."
+msgstr ""
+"<strong>* Debe verificar si es necesario actualizar el % Fee para este control</strong>."
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid "<strong>* You should generate new objectives</strong>."
+msgstr "<strong>* Debe generar nuevos objetivos para esta campaña</strong>."
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__objective_month
+msgid "= Amount of period"
+msgstr "= Importe objetivo mes en el período"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__consume
+msgid "= Amount total * Click/Lead/Sale"
+msgstr "= Importe de control * Click/Lead/Venta"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__amount_currency
+msgid "= Amount total / rate currency"
+msgstr "= Importe de control / tasa de cambio"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__consume_currency
+msgid "= Amount(ml) * Click/Lead/Sale"
+msgstr "= Importe(ml) * Click/Lead/Venta"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__margin_ml
+msgid "= Billed revenue - sum(Supplier Provision(mt) type not client)"
+msgstr "= Ingreso facturado - sum(Provisión de líneas de proveedor que tipo de pago no es cliente)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__billed_revenue_ml
+msgid "= Billed revenue / rate currency"
+msgstr "= Ingreso facturado / tasa de cambio"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__fee_revenue
+msgid "= Campaign revenue * % Fee / 100"
+msgstr "= Ingreso campaña * % Fee / 100"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__percent_objective
+msgid "= Campaign revenue * 100 / Month objective"
+msgstr "= Ingreso campaña * 100 / Importe objetivo mes"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__billed_revenue
+msgid ""
+"= Campaign revenue + Fee revenue - sum(Supplier Provision(mt) type client)"
+msgstr "= Ingreso campaña + Ingreso fee - sum(Provisión de líneas de proveedor que tipo de pago es cliente)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__fee_revenue_ml
+msgid "= Fee revenue / rate currency"
+msgstr "= Ingreso fee / tasa de cambio"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__margin_factor_ml
+msgid "= Margin(ml) - Fee revenue(ml)"
+msgstr "= Margen(ml) - Ingreso fee(ml)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__purchase_ml
+msgid "= Sum(Supplier Provision(mt) type not client) / rate currency"
+msgstr "= Sum(Provisión(mt) de líneas de proveedor que tipo de pago no es cliente) / tasa de cambio"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__amount_diff
+msgid "= sum(Campaign revenue of controls * rate currency)"
+msgstr "= Sum(Ingreso campaña * tasa de cambio)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__access_warning
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__access_warning
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__access_warning
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__access_warning
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__access_warning
+msgid "Access warning"
+msgstr "Permiso de acceso"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+msgid "Account"
+msgstr "Asiento contable"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__account_move__type_move__accounting
+#: model:ir.model.fields.selection,name:elogia_sale.selection__campaign_marketing_elogia__type_invoice__account
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+msgid "Accounting"
+msgstr "Asiento contable"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_campaign_accounting_setting
+msgid "Accounting Setting"
+msgstr "Configuración contable"
+
+#. module: elogia_sale
+#: model:ir.actions.act_window,name:elogia_sale.action_campaign_accounting_setting
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_last99
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_accounting_setting_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_accounting_setting_tree
+msgid "Accounting setting"
+msgstr "Configuración contable"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_accounting_setting_form
+msgid "Accounts for campaign control"
+msgstr "Cuentas para control de campañas"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_accounting_setting_form
+msgid "Accounts for invoice"
+msgstr "Cuentas para facturas"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_needaction
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__message_needaction
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__message_needaction
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__message_needaction
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_needaction
+msgid "Action Needed"
+msgstr "Acción necesaria"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__activity_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__activity_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__activity_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__activity_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__activity_ids
+msgid "Activities"
+msgstr "Actividades"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__activity_exception_decoration
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__activity_exception_decoration
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__activity_exception_decoration
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__activity_exception_decoration
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Excepción de actividad"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__activity_state
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__activity_state
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__activity_state
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__activity_state
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__activity_state
+msgid "Activity State"
+msgstr "Estado de actividad"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__activity_type_icon
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__activity_type_icon
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__activity_type_icon
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__activity_type_icon
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Icono tipo de actividad"
+
+#. module: elogia_sale
+#: model:res.groups,name:elogia_sale.sale_elogia_admin_group
+msgid "Admin Vertical"
+msgstr "Administrador vertical"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__amount
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__amount_total
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__amount_total
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__amount_period
+msgid "Amount"
+msgstr "Importe"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__amount_unit
+msgid "Amount total"
+msgstr "Importe"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__amount_currency
+msgid "Amount(ml)"
+msgstr "Importe(ml)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__analytic_account_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__analytic_account_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__analytic_account_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__analytic_account_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_search
+msgid "Analytic account"
+msgstr "Cuenta analítica"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_attachment_count
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__message_attachment_count
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__message_attachment_count
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__message_attachment_count
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_attachment_count
+msgid "Attachment Count"
+msgstr "Adjuntos"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__billed_revenue
+msgid "Billed revenue"
+msgstr "Ingreso facturado"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "Billed revenue cannot be in negative value."
+msgstr "El ingreso facturado no puede tomar valor negativo."
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__billed_revenue_ml
+msgid "Billed revenue(ml)"
+msgstr "Ingreso facturado(ml)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__type_invoice
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__type_invoice
+msgid "Billing type"
+msgstr "Tipo facturación"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__campaign_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__campaign_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__campaign_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__campaign_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__campaign_id
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__campaign_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_line_invoice_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_search
+msgid "Campaign"
+msgstr "Campaña"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__campaign_line_id
+msgid "Campaign Line"
+msgstr "Línea de campaña"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_campaign_marketing_elogia
+msgid "Campaign Marketing"
+msgstr "Campaña Marketing"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_campaign_marketing_line
+msgid "Campaign Marketing Line"
+msgstr "Línea campaña marketing"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__campaign_line_ids
+msgid "Campaign lines"
+msgstr "Líneas campañas"
+
+#. module: elogia_sale
+#: model:ir.actions.act_window,name:elogia_sale.action_campaign_marketing_elogia
+#: model:ir.model.fields,field_description:elogia_sale.field_historical_date_objectives__campaign_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_tree
+msgid "Campaign marketing"
+msgstr "Campaña Marketing"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__consume
+msgid "Campaign revenue"
+msgstr "Ingreso campaña"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__consume_currency
+msgid "Campaign revenue(ml)"
+msgstr "Ingreso campaña(ml)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_account_move_line__campaign_elogia_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__campaign_id
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_line__campaign_elogia_id
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_line__campaign_elogia_id
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_item0
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_item_first
+msgid "Campaigns"
+msgstr "Campañas"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.sale_order_elogia_wizard_form
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__control_campaign_marketing__state__cancel
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+msgid "Cancelled"
+msgstr "Cancelado"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__check_change
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__check_change
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__check_change
+msgid "Change?"
+msgstr "Cambio?"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__clicks
+msgid "Click/Lead/Sale"
+msgstr "Click/Lead/Venta"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__client_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__client_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__client_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__client_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__client_id
+#: model:ir.model.fields.selection,name:elogia_sale.selection__campaign_marketing_elogia__type_payment__client
+#: model:ir.model.fields.selection,name:elogia_sale.selection__control_line_supplier__type_payment__client
+#: model:ir.model.fields.selection,name:elogia_sale.selection__objective_campaign_marketing__type_payment__client
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_search
+msgid "Client"
+msgstr "Cliente"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__campaign_marketing_elogia__state__closed
+#: model:ir.model.fields.selection,name:elogia_sale.selection__period_campaign__state__closed
+#: model:ir.model.fields.selection,name:elogia_sale.selection__period_campaign__state_objective__closed
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+msgid "Closed"
+msgstr "Cerrado"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting__company_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__company_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__company_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__company_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__company_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__company_id
+#: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting__company_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__company_id
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__company_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_accounting_setting_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_line_invoice_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.period_campaign_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.product_fee_setting_elogia_search
+msgid "Company"
+msgstr "Compañía"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__currency_company_id
+msgid "Company currency"
+msgstr "Moneda compañia"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__amount_diff
+msgid "Consumed"
+msgstr "Consumido"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__amount_fee
+msgid "Consumed Fee"
+msgstr "Consumido fee"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_account_move_line__control_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__control_id
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_line__control_id
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_line__control_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid "Control"
+msgstr "Control"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_control_campaign_marketing
+msgid "Control Campaign"
+msgstr "Control campaña"
+
+#. module: elogia_sale
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_item_second
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_second0
+msgid "Control Campaigns"
+msgstr "Control campaña"
+
+#. module: elogia_sale
+#: model:ir.actions.act_window,name:elogia_sale.action_kpi_control_campaign_marketing
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_four0
+msgid "Control KPIs"
+msgstr "KPIS"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_control_line_supplier
+msgid "Control Line"
+msgstr "Línea de control"
+
+#. module: elogia_sale
+#: model:ir.actions.act_window,name:elogia_sale.action_control_campaign_marketing
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_tree
+msgid "Control campaign"
+msgstr "Control campaña"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__control_line_ids
+msgid "Control lines"
+msgstr "Línea de control"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.sale_order_elogia_wizard_form
+msgid "Controls"
+msgstr "Control"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__count_invoice_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__count_invoice_sale
+msgid "Count Invoice sale"
+msgstr "Cant. Factura cliente"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__count_invoice_purchase
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__count_invoice_purchase
+msgid "Count Invoice vendor"
+msgstr "Cant. Factura proveedor"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__count_move
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__count_move
+msgid "Count Move"
+msgstr "Cant. Asientos"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__count_purchase
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__count_purchase
+msgid "Count Purchase"
+msgstr "Cant. Compras"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__count_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__count_sale
+msgid "Count Sales"
+msgstr "Cant. Ventas"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__count_control
+msgid "Count control"
+msgstr "Cant. Control"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__count_objectives
+msgid "Count objectives"
+msgstr "Cant. Objetivos"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.sale_order_elogia_wizard_form
+msgid "Create"
+msgstr "Crear"
+
+#. module: elogia_sale
+#: model_terms:ir.actions.act_window,help:elogia_sale.action_campaign_accounting_setting
+msgid "Create a new Accounting setting!"
+msgstr "¡Cree una nueva configuración de contabilidad!"
+
+#. module: elogia_sale
+#: model_terms:ir.actions.act_window,help:elogia_sale.action_expense_entry_setting
+msgid "Create a new Expense entry setting!"
+msgstr "¡Cree una nueva configuración de entrada de gastos!"
+
+#. module: elogia_sale
+#: model_terms:ir.actions.act_window,help:elogia_sale.action_campaign_marketing_elogia
+msgid "Create a new campaigns!"
+msgstr "¡Cree una nueva campaña!"
+
+#. module: elogia_sale
+#: model_terms:ir.actions.act_window,help:elogia_sale.action_kpi_control_campaign_marketing
+msgid "Create a new control KPIs!"
+msgstr "¡Cree un nuevo informe KPIs!"
+
+#. module: elogia_sale
+#: model_terms:ir.actions.act_window,help:elogia_sale.action_control_campaign_marketing
+msgid "Create a new control campaign!"
+msgstr "¡Cree un nuevo control de campaña!"
+
+#. module: elogia_sale
+#: model_terms:ir.actions.act_window,help:elogia_sale.action_period_campaign
+msgid "Create a new period!"
+msgstr "¡Cree un nuevo período!"
+
+#. module: elogia_sale
+#: model_terms:ir.actions.act_window,help:elogia_sale.action_pricelist_elogia_setting
+msgid "Create a new pricelist setting!"
+msgstr "¡Cree una nueva configuración de lista de precios!"
+
+#. module: elogia_sale
+#: model_terms:ir.actions.act_window,help:elogia_sale.action_product_fee_setting
+msgid "Create a new product setting!"
+msgstr "¡Cree una nueva configuración de producto!"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid "Create move"
+msgstr "Crear asiento"
+
+#. module: elogia_sale
+#: model:ir.actions.server,name:elogia_sale.action_control_line_supplier_campaign
+msgid "Create purchase order"
+msgstr "Crear pedido de compra"
+
+#. module: elogia_sale
+#: model:ir.actions.act_window,name:elogia_sale.action_control_campaign_marketing_wizard
+msgid "Create sale order"
+msgstr "Crear pedido de venta"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting__create_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__create_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__create_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__create_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__create_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__create_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting__create_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_historical_date_objectives__create_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__create_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__create_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__create_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__create_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "Created move: {}"
+msgstr "Asiento contable creado: {}"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting__create_date
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__create_date
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__create_date
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__create_date
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__create_date
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__create_date
+#: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting__create_date
+#: model:ir.model.fields,field_description:elogia_sale.field_historical_date_objectives__create_date
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__create_date
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__create_date
+#: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__create_date
+#: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__create_date
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "Created sale order: {}"
+msgstr "Pedido de venta creado: {}"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting__account_credit_second
+msgid "Credit (Control)"
+msgstr "Crédito (Control)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting__account_credit_first
+msgid "Credit (Invoice)"
+msgstr "Crédito (Factura)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__currency_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__currency_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__currency_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__currency_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__currency_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__currency_id
+#: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__currency_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.pricelist_setting_elogia_search
+msgid "Currency"
+msgstr "Moneda"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__currency_control_id
+msgid "Currency control"
+msgstr "Moneda"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid ""
+"Currency {} are not configured.\n"
+" Check in Settings/Pricelist Settings menu."
+msgstr ""
+"La moneda {} no está configurada.\n"
+"Comprueba en el menú Configuración/Configuración de lista de precios."
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__campaign_marketing_elogia__type_purchase__purchase
+msgid "Current Purchase Order"
+msgstr "Pedido de compra corriente"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__campaign_client_id
+msgid "Customer"
+msgstr "Cliente"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__access_url
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__access_url
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__access_url
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__access_url
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__access_url
+msgid "Customer Portal URL"
+msgstr "URL Portal cliente"
+
+#. module: elogia_sale
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_item3
+msgid "Customers"
+msgstr "Clientes"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid "Dates"
+msgstr "Fechas"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting__account_debit_second
+msgid "Debit (Control)"
+msgstr "Débito (Control)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting__account_debit_first
+msgid "Debit (Invoice)"
+msgstr "Débito (Factura)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__description
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__name
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__name
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__name
+msgid "Description"
+msgstr "Descripción"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting__display_name
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__display_name
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__display_name
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__display_name
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__display_name
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__display_name
+#: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting__display_name
+#: model:ir.model.fields,field_description:elogia_sale.field_historical_date_objectives__display_name
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__display_name
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__display_name
+#: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__display_name
+#: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__display_name
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__display_name
+msgid "Display Name"
+msgstr "Nombre mostrado"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__control_campaign_marketing__state__draft
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+msgid "Draft"
+msgstr "Borrador"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__invoice_date_due
+msgid "Due Date"
+msgstr "Fecha vencimiento"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__check_error
+msgid "Error"
+msgstr "Error"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting__expense_account
+msgid "Expense Account"
+msgstr "Cuenta gasto"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_expense_entry_setting
+msgid "Expense Entry Setting"
+msgstr "Configuración entrada de gasto"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.expense_entry_setting_elogia_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.expense_entry_setting_elogia_tree
+msgid "Expense entry"
+msgstr "Entrada de gasto"
+
+#. module: elogia_sale
+#: model:ir.actions.act_window,name:elogia_sale.action_expense_entry_setting
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_last96
+msgid "Expense entry setting"
+msgstr "Configuración entrada de gasto"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__fee_revenue
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__percentage_fee
+msgid "Fee revenue"
+msgstr "Ingreso fee"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__fee_revenue_ml
+msgid "Fee revenue(ml)"
+msgstr "Ingreso fee(ml)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__date
+#: model:ir.model.fields,field_description:elogia_sale.field_historical_date_objectives__date
+msgid "Finish Date"
+msgstr "Fecha fin"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+msgid "Finish date"
+msgstr "Fecha fin"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_follower_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__message_follower_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__message_follower_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__message_follower_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_follower_ids
+msgid "Followers"
+msgstr "Seguidores"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_partner_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__message_partner_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__message_partner_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__message_partner_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Seguidores (Contactos)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__activity_type_icon
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__activity_type_icon
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__activity_type_icon
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__activity_type_icon
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Icono de fuente, p. fa-tareas"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid "Generate Move"
+msgstr "Generar asiento"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid "Generate Purchase"
+msgstr "Generar Pedido compra"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid "Generate Sale"
+msgstr "Generar Pedido venta"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid "Generate objectives"
+msgstr "Generar objetivos"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__check_generated
+msgid "Generated objectives"
+msgstr "Objetivos generados"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_accounting_setting_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_line_invoice_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.period_campaign_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.pricelist_setting_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.product_fee_setting_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.product_fee_setting_search
+msgid "Group By"
+msgstr "Agrupar por"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__has_message
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__has_message
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__has_message
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__has_message
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__has_message
+msgid "Has Message"
+msgstr "Tiene mensaje"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_historical_date_objectives
+msgid "Historical Date Objectives"
+msgstr "Histórico fecha objetivos"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting__id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__id
+#: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting__id
+#: model:ir.model.fields,field_description:elogia_sale.field_historical_date_objectives__id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__id
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__id
+#: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__id
+#: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__id
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__activity_exception_icon
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__activity_exception_icon
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__activity_exception_icon
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__activity_exception_icon
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__activity_exception_icon
+msgid "Icon"
+msgstr "Icono"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__activity_exception_icon
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__activity_exception_icon
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__activity_exception_icon
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__activity_exception_icon
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Icono para indicar una excepción de actividad."
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__message_needaction
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__message_unread
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__message_needaction
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__message_unread
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__message_needaction
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__message_unread
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__message_needaction
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__message_unread
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__message_needaction
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__message_unread
+msgid "If checked, new messages require your attention."
+msgstr "Si está marcado, los nuevos mensajes requieren su atención."
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__message_has_error
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__message_has_sms_error
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__message_has_error
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__message_has_sms_error
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__message_has_error
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__message_has_sms_error
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__message_has_error
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__message_has_sms_error
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__message_has_error
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Si está marcada, algunos mensajes tienen un error de entrega."
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__invoice_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_line_invoice_search
+msgid "Invoice"
+msgstr "Factura"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__invoice_date
+msgid "Invoice Date"
+msgstr "Fecha factura"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__invoice_line_id
+msgid "Invoice line"
+msgstr "Línea factura"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid "Invoices"
+msgstr "Facturas"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid "Invoices vendor"
+msgstr "Facturas proveedores"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_is_follower
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__message_is_follower
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__message_is_follower
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__message_is_follower
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_is_follower
+msgid "Is Follower"
+msgstr "Es seguidor"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting__journal_id
+#: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting__journal_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_accounting_setting_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.product_fee_setting_elogia_search
+msgid "Journal"
+msgstr "Diario"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_account_move
+msgid "Journal Entry"
+msgstr "Asiento contable"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_account_move_line
+msgid "Journal Item"
+msgstr "Apunte contable"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid "KPIS"
+msgstr "KPIS"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting____last_update
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice____last_update
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia____last_update
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line____last_update
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing____last_update
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier____last_update
+#: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting____last_update
+#: model:ir.model.fields,field_description:elogia_sale.field_historical_date_objectives____last_update
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing____last_update
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign____last_update
+#: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting____last_update
+#: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting____last_update
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting__write_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__write_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__write_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__write_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__write_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__write_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting__write_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_historical_date_objectives__write_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__write_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__write_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__write_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__write_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting__write_date
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__write_date
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__write_date
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__write_date
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__write_date
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__write_date
+#: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting__write_date
+#: model:ir.model.fields,field_description:elogia_sale.field_historical_date_objectives__write_date
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__write_date
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__write_date
+#: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__write_date
+#: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__write_date
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__write_date
+msgid "Last Updated on"
+msgstr "Última actualización en"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_campaign_line_invoice
+msgid "Line Invoice"
+msgstr ""
+
+#. module: elogia_sale
+#: model:ir.actions.act_window,name:elogia_sale.action_campaign_line_invoice
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_line_invoice_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_line_invoice_tree
+msgid "Line invoice"
+msgstr "Línea factura"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__invoice_line_ids
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_item1
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid "Line invoices"
+msgstr "Líneas de facturas"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "Line invoices have been processed in this Campaign!"
+msgstr "¡Las líneas de facturas han sido procesadas en esta Campaña!"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid "Line products"
+msgstr ""
+
+#. module: elogia_sale
+#: model:ir.actions.act_window,name:elogia_sale.action_control_line_supplier
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_tree
+msgid "Line supplier"
+msgstr "Productos"
+
+#. module: elogia_sale
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_second1
+msgid "Line suppliers"
+msgstr "Líneas de proveedores"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__list_error
+msgid "List errors"
+msgstr "Lista errores"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__list_deleted
+msgid "List to deleted"
+msgstr "Lista a eliminar"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_main_attachment_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__message_main_attachment_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__message_main_attachment_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__message_main_attachment_id
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Adjunto principal"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__check_fee
+msgid "Management Fee"
+msgstr "Gestión de fee"
+
+#. module: elogia_sale
+#: model:res.groups,name:elogia_sale.sale_elogia_manager_group
+msgid "Manager Vertical"
+msgstr "Manager Vertical"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__margin
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_sum_tree
+msgid "Margin"
+msgstr "Margen"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__margin_factor_ml
+msgid "Margin factor(ml)"
+msgstr "Margen factor(ml)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__margin_total
+msgid "Margin total"
+msgstr "Margen total"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__margin_ml
+msgid "Margin(ml)"
+msgstr "Margen(ml)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__medium_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__medium_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__medium_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__medium_id
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__medium_id
+msgid "Medium"
+msgstr "Medio"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_has_error
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__message_has_error
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__message_has_error
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__message_has_error
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_has_error
+msgid "Message Delivery error"
+msgstr "Error en entrega de mensajes"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__message_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__message_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__message_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_ids
+msgid "Messages"
+msgstr "Mensajes"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__campaign_marketing_elogia__type_payment__mexico
+#: model:ir.model.fields.selection,name:elogia_sale.selection__control_line_supplier__type_payment__mexico
+#: model:ir.model.fields.selection,name:elogia_sale.selection__objective_campaign_marketing__type_payment__mexico
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_search
+msgid "Mexico"
+msgstr "México"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__month_actual
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__name_month
+msgid "Month"
+msgstr "Mes"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__objective_month
+msgid "Month objective"
+msgstr "Objetivo mes"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__move_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_line_invoice_search
+msgid "Move"
+msgstr "Asiento contable"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__invoice_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__invoice_ids
+msgid "Move lines"
+msgstr "Líneas de asiento"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__show_move
+msgid "Move process?"
+msgstr "Asiento procesado?"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid "Moves"
+msgstr "Asientos"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__my_activity_date_deadline
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__my_activity_date_deadline
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__my_activity_date_deadline
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__my_activity_date_deadline
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Fecha límite de actividad"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_search
+msgid "My campaigns"
+msgstr "Mis campañas"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__name
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__check_new_fee
+msgid "New fee?"
+msgstr "Fee nuevo?"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__activity_calendar_event_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__activity_calendar_event_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__activity_calendar_event_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__activity_calendar_event_id
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Próximo evento de calendario"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__activity_date_deadline
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__activity_date_deadline
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__activity_date_deadline
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__activity_date_deadline
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Fecha límite de próxima actividad"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__activity_summary
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__activity_summary
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__activity_summary
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__activity_summary
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__activity_summary
+msgid "Next Activity Summary"
+msgstr "Resumen de siguiente actividad"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__activity_type_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__activity_type_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__activity_type_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__activity_type_id
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__activity_type_id
+msgid "Next Activity Type"
+msgstr "Tipo Siguiente actividad"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__reference
+msgid "No. reference"
+msgstr "No. referencia"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__campaign_line_invoice__state__no_process
+#: model:ir.model.fields.selection,name:elogia_sale.selection__control_line_supplier__state__no_process
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
+msgid "Not processed"
+msgstr "No procesado"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__account_move__type_move__null
+msgid "Null"
+msgstr "Null"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_needaction_counter
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__message_needaction_counter
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__message_needaction_counter
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__message_needaction_counter
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Número acciones"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_has_error_counter
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__message_has_error_counter
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__message_has_error_counter
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__message_has_error_counter
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_has_error_counter
+msgid "Number of errors"
+msgstr "Número errores"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__message_needaction_counter
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__message_needaction_counter
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__message_needaction_counter
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__message_needaction_counter
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Mensajes que requieren acción"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__message_has_error_counter
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__message_has_error_counter
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__message_has_error_counter
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__message_has_error_counter
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Mensajes con error de entrega"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__message_unread_counter
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__message_unread_counter
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__message_unread_counter
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__message_unread_counter
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__message_unread_counter
+msgid "Number of unread messages"
+msgstr "Mensajes no leídos"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__objective_id
+msgid "Objective"
+msgstr "Objetivo"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_objective_campaign_marketing
+msgid "Objective Campaign Marketing"
+msgstr "Objetivo campaña marketing"
+
+#. module: elogia_sale
+#: model:ir.actions.act_window,name:elogia_sale.action_objective_campaign_marketing
+#: model:ir.actions.act_window,name:elogia_sale.action_objective_campaign_sum_marketing
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_item2
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_sum_tree
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_tree
+msgid "Objectives"
+msgstr "Objetivos"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__campaign_marketing_elogia__state__open
+#: model:ir.model.fields.selection,name:elogia_sale.selection__period_campaign__state__open
+#: model:ir.model.fields.selection,name:elogia_sale.selection__period_campaign__state_objective__open
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+msgid "Open"
+msgstr "Abierto"
+
+#. module: elogia_sale
+#: model:res.groups,name:elogia_sale.sale_elogia_user_group
+msgid "Optimizer Vertical"
+msgstr "Optimizador Vertical"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__user_ids
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid "Optimizers"
+msgstr "Optimizadores"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_line_invoice_search
+msgid "Order"
+msgstr "Pedido venta"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__order_line_id
+msgid "Order Line"
+msgstr "Línea pedido compra"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__date_order
+msgid "Order date"
+msgstr "Fecha pedido"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting__passive_account
+msgid "Passive Account"
+msgstr "Cuenta Pasiva"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__type_payment
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__type_payment
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__type_payment
+msgid "Payment type"
+msgstr "Tipo pago"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid "Pending"
+msgstr "Pendiente"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
+msgid "Pending control"
+msgstr "Controles pendientes"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__control_campaign_marketing__state__pending
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+msgid "Pending processing"
+msgstr "Pendiente procesar"
+
+#. module: elogia_sale
+#: model:ir.actions.act_window,name:elogia_sale.action_period_campaign
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__period
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__period
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.period_campaign_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.period_campaign_tree
+msgid "Period"
+msgstr "Período"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_period_campaign
+msgid "Period campaign"
+msgstr "Período campaña"
+
+#. module: elogia_sale
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_last0
+msgid "Periods"
+msgstr "Períodos"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__access_url
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__access_url
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__access_url
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__access_url
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__access_url
+msgid "Portal Access URL"
+msgstr "URL acceso portal"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__pricelist_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.pricelist_setting_elogia_search
+msgid "Pricelist"
+msgstr "Lista de precios"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_pricelist_setting
+msgid "Pricelist Setting"
+msgstr "Configuración lista de precios"
+
+#. module: elogia_sale
+#: model:ir.actions.act_window,name:elogia_sale.action_pricelist_elogia_setting
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_last97
+#: model_terms:ir.ui.view,arch_db:elogia_sale.pricelist_setting_elogia_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.pricelist_setting_elogia_tree
+msgid "Pricelist setting"
+msgstr "Configuración lista de precios"
+
+#. module: elogia_sale
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_thirty1
+msgid "Pricelists"
+msgstr "Lista de precios"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__campaign_line_invoice__state__process
+#: model:ir.model.fields.selection,name:elogia_sale.selection__control_campaign_marketing__state__both
+#: model:ir.model.fields.selection,name:elogia_sale.selection__control_line_supplier__state__process
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
+msgid "Processed"
+msgstr "Procesado"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__process_line
+msgid "Processed line"
+msgstr "Procesado compra"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__process_move
+msgid "Processed move"
+msgstr "Procesado asiento"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__control_campaign_marketing__state__purchase
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+msgid "Processed purchase"
+msgstr "Procesada compra"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__process_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__control_campaign_marketing__state__sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+msgid "Processed sale"
+msgstr "Procesada venta"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__product_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__product_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__product_id
+#: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__product_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.product_fee_setting_search
+msgid "Product"
+msgstr "Producto"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_product_fee_setting
+msgid "Product Fee Setting"
+msgstr "Configuración producto fee"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__product_template_id
+msgid "Product Template"
+msgstr "Plantilla Producto"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__other_product_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.product_fee_setting_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.product_fee_setting_tree
+msgid "Product fee"
+msgstr "Producto fee"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__show_product_fee
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__show_product_fee
+msgid "Product fee?"
+msgstr "Producto fee?"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__campaign_line_id
+msgid "Product line"
+msgstr "Producto"
+
+#. module: elogia_sale
+#: model:ir.actions.act_window,name:elogia_sale.action_product_fee_setting
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_last98
+msgid "Product setting"
+msgstr "Configuración producto"
+
+#. module: elogia_sale
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_item_thirty
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_thirty0
+msgid "Products"
+msgstr "Productos"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__project_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__project_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__project_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_search
+msgid "Project"
+msgstr "Proyecto"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__invoice_provision
+#: model:ir.model.fields.selection,name:elogia_sale.selection__account_move__type_move__provision
+msgid "Provision"
+msgstr "Provisión"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__invoice_provision_ml
+msgid "Provision (mt)"
+msgstr "Provision (mt)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__purchase_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__purchase_ids
+msgid "Purchase"
+msgstr "Compras"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_purchase_order_line
+msgid "Purchase Order Line"
+msgstr "Línea de pedido de compra"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__order_id
+msgid "Purchase order"
+msgstr "Pedido compra"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/purchase.py:0
+#, python-format
+msgid ""
+"Purchase order cannot be cancelled. \n"
+" The related control is in \"Processed\" state!"
+msgstr ""
+"El pedido de compra no puede ser cancelado. \n"
+" El control relacionado está en estado \"Procesado\"!"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__type_purchase
+msgid "Purchase order document type"
+msgstr "Tipo de documento de orden de compra"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__show_purchase
+msgid "Purchase process?"
+msgstr "Compra procesada?"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__type_purchase
+msgid "Purchase type"
+msgstr "Tipo compra"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid "Purchases"
+msgstr "Compras"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__purchase_ml
+msgid "Purchases(ml)"
+msgstr "Compras(ml)"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_graph
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_pivot
+msgid "Report Analysis"
+msgstr "Análisis de Informes"
+
+#. module: elogia_sale
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_item_four
+msgid "Report KPIs"
+msgstr "Informes"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid "Reset objectives"
+msgstr "Restablecer objetivos"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__activity_user_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__activity_user_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__activity_user_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__activity_user_id
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__activity_user_id
+msgid "Responsible User"
+msgstr "Usuario responsable"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_has_sms_error
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__message_has_sms_error
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__message_has_sms_error
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__message_has_sms_error
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Error de entrega de SMS"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__order_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+msgid "Sale"
+msgstr "Pedido venta"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_sale_order_wizard
+msgid "Sale Order Wizard"
+msgstr "Crear Pedidos de venta"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/sale_order.py:0
+#, python-format
+msgid ""
+"Sale order cannot be cancelled. \n"
+" The related control is in \"Processed\" state!"
+msgstr ""
+"El pedido de venta no puede ser cancelado. \n"
+" El control relacionado está en estado \"Procesado\"!"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__show_sale
+msgid "Sale process?"
+msgstr "Procesada venta?"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__order_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__order_ids
+#: model:ir.model.fields.selection,name:elogia_sale.selection__campaign_marketing_elogia__type_invoice__sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid "Sales"
+msgstr "Ventas"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Línea de pedido de venta"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__access_token
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__access_token
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__access_token
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__access_token
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__access_token
+msgid "Security Token"
+msgstr "Token de seguridad"
+
+#. module: elogia_sale
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_item_last
+msgid "Settings"
+msgstr "Configuración"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__source_id
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__source_id
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__source_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__source_id
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__source_id
+msgid "Source"
+msgstr "Fuente"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__campaign_marketing_elogia__type_payment__spain
+#: model:ir.model.fields.selection,name:elogia_sale.selection__control_line_supplier__type_payment__spain
+#: model:ir.model.fields.selection,name:elogia_sale.selection__objective_campaign_marketing__type_payment__spain
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_search
+msgid "Spain"
+msgstr "España"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__date_start
+#: model:ir.model.fields,field_description:elogia_sale.field_historical_date_objectives__date_start
+msgid "Start Date"
+msgstr "Fecha inicio"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+msgid "Start date"
+msgstr "Fecha inicio"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__state
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__state
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__state
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__state
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__state
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
+msgid "Status"
+msgstr "Estado"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__activity_state
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__activity_state
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__activity_state
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__activity_state
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Estado basado en actividades\n"
+"Atrasado: la fecha de vencimiento ya pasó\n"
+"Hoy: la fecha de la actividad es hoy\n"
+"Planificado: Actividades futuras."
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__state
+msgid "Status control"
+msgstr "Estado control"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__state_objective
+msgid "Status objective"
+msgstr "Estado objetivo"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__partner_id
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__partner_id
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
+msgid "Supplier"
+msgstr "Proveedor"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid "Suppliers"
+msgstr "Proveedores"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid ""
+"There are no \"Accounting Settings\" configured.\n"
+" Check in Settings/Accounting Settings menu."
+msgstr ""
+"No existe configurada un \"Configuraciones de contabilidad\".\n"
+" Comprueba en el menú Configuración/Configuración de contabilidad."
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid ""
+"There are no \"Pricelist Settings\" configured.\n"
+" Check in Settings/Pricelist Settings menu."
+msgstr ""
+"No existe configurada un \"Configuración de lista de precios\".\n"
+" Comprobar en el menú Configuración/Configuración de lista de precios."
+
+#. module: elogia_sale
+#: model_terms:ir.actions.act_window,help:elogia_sale.action_campaign_line_invoice
+msgid "There are no Line invoice to display!"
+msgstr "¡No existen líneas de facturas para mostrar!"
+
+#. module: elogia_sale
+#: model_terms:ir.actions.act_window,help:elogia_sale.action_control_line_supplier
+msgid "There are no Line supplier to display!"
+msgstr "¡No existen líneas de proveedor para mostrar!"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "There are no Optimizers created in this Campaign!"
+msgstr "¡No se han creado optimizadores en esta campaña!"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "There are no campaign lines created in this Campaign!"
+msgstr "¡No existen líneas de campaña creadas en esta campaña!"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "There are no line invoices created in this Campaign!"
+msgstr "¡No existen líneas de facturas creadas en esta campaña!"
+
+#. module: elogia_sale
+#: model_terms:ir.actions.act_window,help:elogia_sale.action_objective_campaign_marketing
+#: model_terms:ir.actions.act_window,help:elogia_sale.action_objective_campaign_sum_marketing
+msgid "There are no objectives to display!"
+msgstr "¡No existen objetivos para mostrar!"
+
+#. module: elogia_sale
+#: model:ir.model.constraint,message:elogia_sale.constraint_campaign_accounting_setting_company_unique
+msgid "This company already has a related Accounting Setting!"
+msgstr "¡Esta configuración de contabilidad ya tiene una configuración para esta compañía!"
+
+#. module: elogia_sale
+#: model:ir.model.constraint,message:elogia_sale.constraint_pricelist_setting_currency_unique
+msgid "This currency already has a related Pricelist!"
+msgstr "¡Esta moneda ya tiene una lista de precios relacionada!"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__campaign_id
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__campaign_id
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__campaign_id
+#: model:ir.model.fields,help:elogia_sale.field_control_line_supplier__campaign_id
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__campaign_id
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__campaign_id
+msgid ""
+"This is a name that helps you keep track of your different campaign efforts,"
+" e.g. Fall_Drive, Christmas_Special"
+msgstr ""
+"Este es un nombre que lo ayuda a realizar un seguimiento de sus diferentes campañas"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__medium_id
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__medium_id
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__medium_id
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__medium_id
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__medium_id
+msgid "This is the method of delivery, e.g. Postcard, Email, or Banner Ad"
+msgstr "Este es el método de entrega"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__source_id
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__source_id
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__source_id
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__source_id
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__source_id
+msgid ""
+"This is the source of the link, e.g. Search Engine, another domain, or name "
+"of email list"
+msgstr ""
+"Esta es la fuente del enlace"
+
+#. module: elogia_sale
+#: model:ir.model.constraint,message:elogia_sale.constraint_product_fee_setting_product_unique
+msgid "This product already has a related Product Fee Setting!"
+msgstr "¡Este producto ya tiene una configuración de tarifa de producto relacionada!"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid "To close"
+msgstr "Cerrar"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__check_deleted
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__check_deleted
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_search
+msgid "To delete"
+msgstr "Para eliminar"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid "To open"
+msgstr "Abrir"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_sum_tree
+msgid "Total"
+msgstr "Total"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_sum_tree
+msgid "TotalFee"
+msgstr "TotalFee"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_sum_tree
+msgid "TotalMargin"
+msgstr "TotalMargin"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
+msgid "Type invoice"
+msgstr "Tipo facturación"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_account_bank_statement_line__type_move
+#: model:ir.model.fields,field_description:elogia_sale.field_account_move__type_move
+#: model:ir.model.fields,field_description:elogia_sale.field_account_payment__type_move
+msgid "Type move"
+msgstr "Tip asiento"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__activity_exception_decoration
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__activity_exception_decoration
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__activity_exception_decoration
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__activity_exception_decoration
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Tipo de actividad de excepción registrada."
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_search
+msgid "Type payment"
+msgstr "Tipo pago"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_unread
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__message_unread
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__message_unread
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__message_unread
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_unread
+msgid "Unread Messages"
+msgstr "Mensajes no leídos"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_unread_counter
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__message_unread_counter
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__message_unread_counter
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__message_unread_counter
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Contador de mensajes no leídos"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_accounting_setting_tree
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_tree
+#: model_terms:ir.ui.view,arch_db:elogia_sale.expense_entry_setting_elogia_tree
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_sum_tree
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_tree
+#: model_terms:ir.ui.view,arch_db:elogia_sale.period_campaign_tree
+#: model_terms:ir.ui.view,arch_db:elogia_sale.pricelist_setting_elogia_tree
+#: model_terms:ir.ui.view,arch_db:elogia_sale.product_fee_setting_tree
+msgid "User"
+msgstr "Usuario"
+
+#. module: elogia_sale
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_second3
+msgid "Vendors"
+msgstr "Proveedores"
+
+#. module: elogia_sale
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_principal
+msgid "Vertical"
+msgstr "Vertical"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_sum_tree
+#: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_tree
+#: model_terms:ir.ui.view,arch_db:elogia_sale.period_campaign_tree
+msgid "View"
+msgstr "Configurar"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__website_message_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__website_message_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__website_message_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__website_message_ids
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__website_message_ids
+msgid "Website Messages"
+msgstr "Mensajes del sitio web"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__website_message_ids
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__website_message_ids
+#: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__website_message_ids
+#: model:ir.model.fields,help:elogia_sale.field_objective_campaign_marketing__website_message_ids
+#: model:ir.model.fields,help:elogia_sale.field_period_campaign__website_message_ids
+msgid "Website communication history"
+msgstr "Historial de comunicación del sitio web"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__name_year
+#: model_terms:ir.ui.view,arch_db:elogia_sale.period_campaign_search
+msgid "Year"
+msgstr "Año"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "You can't delete a campaign if you have associated controls."
+msgstr "No puede eliminar una campaña si tiene controles asociados."
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "You can't delete a campaign if you have associated customer invoices."
+msgstr "No puede eliminar una campaña si tiene facturas de clientes asociadas."
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "You can't delete a campaign if you have associated move lines."
+msgstr "No puede eliminar una campaña si tiene líneas de movimiento asociadas."
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "You can't delete a campaign if you have associated purchase orders."
+msgstr "No puede eliminar una campaña si tiene órdenes de compra asociadas."
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "You can't delete a campaign if you have associated sale orders."
+msgstr "No puede eliminar una campaña si tiene pedidos de venta asociados."
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "You can't delete a campaign if you have associated vendor invoices."
+msgstr "No puede eliminar una campaña si tiene facturas de proveedores asociadas."
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "You cannot delete an line invoice in the processed state."
+msgstr "No puede eliminar una línea de factura en estado procesado."
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_tree
+msgid "amount_currency"
+msgstr "Importe moneda"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_tree
+msgid "billed_revenue_ml"
+msgstr "Ingreso facturado(ml)"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_tree
+msgid "consume_currency"
+msgstr "Consumido moneda"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_tree
+msgid "fee"
+msgstr "fee"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_tree
+msgid "fee_revenue_ml"
+msgstr "Ingreso fee(ml)"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_tree
+msgid "margin_factor_ml"
+msgstr "Margen factor(ml)"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_tree
+msgid "margin_ml"
+msgstr ""
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_tree
+msgid "purchase_ml"
+msgstr "Compras(ml)"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid "set to cancel"
+msgstr "Cancelar"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
+msgid "set to draft"
+msgstr "Restablecer a borrador"
+
+#. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__amount_fee
+msgid "sum(Fee revenue of controls * rate currency)"
+msgstr "= sum(Ingreso fee de controles * tasa de cambio)"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.sale_order_elogia_wizard_form
+msgid "that cannot be processed."
+msgstr "no puede se procesado."
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
+msgid "that should be deleted."
+msgstr "que podrían ser eliminados."
