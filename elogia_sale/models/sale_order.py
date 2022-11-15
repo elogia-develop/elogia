@@ -33,6 +33,7 @@ class SaleOrderLine(models.Model):
                                 control.write({'state': 'pending'})
                             else:
                                 if control.type_invoice == 'sale':
-                                    control.write({'state': 'purchase'})
+                                    if control.state not in ['cancel', 'pending', 'draft']:
+                                        control.write({'state': 'purchase'})
                                 else:
                                     control.write({'state': 'pending'})
