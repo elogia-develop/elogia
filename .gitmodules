@@ -22,3 +22,7 @@
 	path = OCA/server-ux
 	url = https://github.com/OCA/server-ux.git
 	branch = 15.0
+[submodule "OCA/community-data-files"]
+	path = OCA/community-data-files
+	url = https://github.com/OCA/community-data-files.git
+	branch = 15.0
