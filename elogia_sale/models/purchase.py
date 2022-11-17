@@ -8,8 +8,37 @@ from odoo.exceptions import UserError
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
-    campaign_elogia_id = fields.Many2one('campaign.marketing.elogia', 'Campaigns', ondelete='restrict')
-    control_id = fields.Many2one('control.campaign.marketing', 'Control', ondelete='restrict')
+    def _get_default_campaign(self):
+        env_campaign = self.env['campaign.marketing.elogia']
+        env_control = self.env['control.campaign.marketing']
+        if 'active_model' in self._context:
+            if self._context.get('active_model') == 'campaign.marketing.elogia':
+                return env_campaign.search([('id', '=', self._context.get('active_id'))], limit=1)
+            elif self._context.get('active_model') == 'control.campaign.marketing':
+                return env_control.search([('id', '=', self._context.get('active_id'))], limit=1).mapped('campaign_id')
+
+    def _get_default_control(self):
+        env_control = self.env['control.campaign.marketing']
+        if 'active_model' in self._context:
+            if self._context.get('active_model') == 'control.campaign.marketing':
+                return env_control.search([('id', '=', self._context.get('active_id'))], limit=1)
+
+    def _get_default_account(self):
+        env_campaign = self.env['campaign.marketing.elogia']
+        env_control = self.env['control.campaign.marketing']
+        if 'active_model' in self._context:
+            if self._context.get('active_model') == 'campaign.marketing.elogia':
+                return env_campaign.search([('id', '=', self._context.get('active_id'))], limit=1).mapped('analytic_account_id')
+            elif self._context.get('active_model') == 'control.campaign.marketing':
+                return env_control.search([('id', '=', self._context.get('active_id'))], limit=1).mapped('analytic_account_id')
+
+    campaign_elogia_id = fields.Many2one('campaign.marketing.elogia', 'Campaigns', ondelete='restrict',
+                                         default=_get_default_campaign)
+    control_id = fields.Many2one('control.campaign.marketing', 'Control', ondelete='restrict',
+                                 default=_get_default_control)
+    account_analytic_id = fields.Many2one('account.analytic.account', store=True, string='Analytic Account',
+                                          compute='_compute_account_analytic_id', readonly=False,
+                                          default=_get_default_account)
 
     def _prepare_account_move_line(self, move=False):
         res = super(PurchaseOrderLine, self)._prepare_account_move_line(move=False)
@@ -26,17 +55,9 @@ class PurchaseOrderLine(models.Model):
             if record.state == 'cancel':
                 obj_line_ids = env_line.search([('order_line_id', '=', record.id), ('type_payment', '!=', 'client')])
                 if obj_line_ids:
-                    if any(obj_line_ids.mapped('control_id').filtered(lambda e: e.state == 'both')):
+                    if any(obj_line_ids.mapped('control_id').filtered(lambda e: e.state != 'draft')):
                         raise UserError(_('Purchase order cannot be cancelled. \n '
-                                          'The related control is in "Processed" state!'))
+                                          'The related control must be in "Draft" state!'))
                     else:
                         obj_line_ids.write({'state': 'no_process'})
-                        for line in obj_line_ids:
-                            if line.control_id.show_sale:
-                                line.control_id.write({'state': 'pending'})
-                            else:
-                                if line.control_id.type_invoice == 'sale':
-                                    line.control_id.write({'state': 'sale'})
-                                else:
-                                    if line.control_id.state not in ['cancel', 'draft']:
-                                        line.control_id.write({'state': 'pending'})
+

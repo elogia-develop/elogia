@@ -14,10 +14,11 @@
                     <sheet>
                         <group>
                             <group name="first_group">
-                                <field name="date_order"/>
+                                <field name="description"/>
                                 <field name="check_fee"/>
                             </group>
                             <group name="second_group">
+                                <field name="date_order"/>
                                 <field name="reference"/>
                             </group>
                         </group>
@@ -59,12 +60,18 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                    <field name="client_order_ref"/>
+                </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='analytic_tag_ids']" position="after">
-                    <field name="campaign_elogia_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
-                           attrs="{'required': [('control_id', '=', False)]}"/>
+                    <field name="analytic_account_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
+                           optional="show"/>
+                    <field name="campaign_elogia_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                     <field name="control_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
-                            attrs="{'required': [('campaign_elogia_id', '=', False)]}"
                            domain="[('campaign_id', '=', campaign_elogia_id), ('type_invoice', '=', 'sale')]"/>
+                </xpath>
+                <xpath expr="//group[@name='sales_person']/field[@name='client_order_ref']" position="attributes">
+                    <attribute name="invisible">True</attribute>
                 </xpath>
             </field>
         </record>
@@ -76,16 +83,12 @@
             <field name="inherit_id" ref="sale.account_invoice_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='analytic_tag_ids']" position="after">
-                    <field name="campaign_elogia_id" attrs="{'required': [('control_id', '=', False)]}"
-                           options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
-                    <field name="control_id" attrs="{'required': [('campaign_elogia_id', '=', False)]}"
-                           options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                    <field name="campaign_elogia_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                    <field name="control_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                 </xpath>
                 <xpath expr="//field[@name='line_ids']/tree/field[@name='analytic_tag_ids']" position="after">
-                    <field name="campaign_elogia_id" attrs="{'required': [('control_id', '=', False)]}"
-                           options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
-                    <field name="control_id" attrs="{'required': [('campaign_elogia_id', '=', False)]}"
-                           options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                    <field name="campaign_elogia_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                    <field name="control_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                 </xpath>
             </field>
         </record>
@@ -97,10 +100,8 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='order_line']/tree/field[@name='analytic_tag_ids']" position="after">
-                    <field name="campaign_elogia_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
-                           attrs="{'required': [('control_id', '=', False)]}"/>
-                    <field name="control_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
-                            attrs="{'required': [('campaign_elogia_id', '=', False)]}"/>
+                    <field name="campaign_elogia_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
+                    <field name="control_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                 </xpath>
             </field>
         </record>
@@ -115,7 +116,8 @@
                         <button name="set_generated" string="Generate objectives" type="object" class="btn-primary"
                                 attrs="{'invisible':['|', ('state','!=', 'open'), ('check_generated', '=', False)]}"/>
                         <button name="create_invoice" string="Create move" type="object" class="btn-primary"
-                                attrs="{'invisible':['|', ('state','!=', 'open'), ('type_invoice', '!=', 'account')]}"/>
+                                attrs="{'invisible':['|', ('state','!=', 'open'), '|', ('type_invoice', '!=', 'account'),
+                                ('show_move', '=', False)]}"/>
                         <button name="set_not_delete" string="Reset objectives" type="object"
                                 attrs="{'invisible':[('check_deleted', '=', False)]}"/>
                         <button name="set_closed" string="To close" type="object"
@@ -127,6 +129,7 @@
                     <field name="check_deleted" invisible="True"/>
                     <field name="check_generated" invisible="True"/>
                     <field name="show_product_fee" invisible="True"/>
+                    <field name="show_move" invisible="True"/>
                     <field name="list_deleted" invisible="1"/>
                     <div class="alert alert-warning" role="alert" attrs="{'invisible': [('check_deleted', '=', False)]}"
                          style="margin-bottom: 0px;">
@@ -170,8 +173,7 @@
                                        options="{'no_create': True, 'no_create_edit': True}"
                                        attrs="{'readonly':[('state','!=', 'open')]}"/>
                                 <field name="project_id" options="{'no_create': True, 'no_create_edit': True}"
-                                       attrs="{'readonly':[('state','!=', 'open')]}"
-                                       domain="[('analytic_account_id', '=', analytic_account_id)]"/>
+                                       attrs="{'readonly':[('state','!=', 'open')]}"/>
                                 <field name="client_id" required="True"
                                        options="{'no_create': True, 'no_create_edit': True}"
                                        attrs="{'readonly':[('state','!=', 'open')]}"/>
@@ -258,7 +260,10 @@
                                                domain="[('move_type','!=', 'entry'), ('journal_id.type', '=', 'sale')]"/>
                                         <field name="invoice_line_id"  required="True"
                                                attrs="{'readonly':[('state','=', 'process')], 'invisible':[('invoice_id','=', False)]}"
-                                               options="{'no_create': True, 'no_create_edit': True}"/>
+                                               options="{'no_create': True, 'no_create_edit': True}"
+                                                domain="[('move_id','=', invoice_id), ('journal_id.type', '=', 'sale'),
+                                                ('exclude_from_invoice_tab', '=', False)]"
+                                        />
                                         <field name="move_id" readonly="True"
                                                options="{'no_create': True, 'no_create_edit': True}"/>
                                         <field name="currency_id" invisible="True"/>
@@ -392,6 +397,7 @@
                     <field name="show_purchase" invisible="True"/>
                     <field name="show_sale" invisible="True"/>
                     <field name="show_move" invisible="True"/>
+                    <field name="show_read" invisible="True"/>
                     <div class="alert alert-warning" role="alert" attrs="{'invisible': [('check_new_fee', '=', False)]}">
                         <strong>* You should check if it is necessary to update the % Fee</strong>.
                     </div>
@@ -419,43 +425,42 @@
                             <group name="firs_group">
                                 <field name="analytic_account_id" required="True"
                                        options="{'no_create': True, 'no_create_edit': True}"
-                                       attrs="{'readonly':[('state','!=', 'draft')]}"/>
-                                <field name="project_id" required="True"
+                                       attrs="{'readonly':['|', ('show_read','=', False), ('state','!=', 'draft')]}"/>
+                                <field name="project_id"
                                        options="{'no_create': True, 'no_create_edit': True}"
-                                       attrs="{'readonly':[('state','!=', 'draft')]}"
-                                       domain="[('analytic_account_id', '=', analytic_account_id)]"/>
+                                       attrs="{'readonly':['|', ('show_read','=', False), ('state','!=', 'draft')]}"/>
                                 <field name="campaign_id" required="True"
                                        options="{'no_create': True, 'no_create_edit': True}"
-                                       attrs="{'readonly':[('state','!=', 'draft')]}"
+                                       attrs="{'readonly':['|', ('show_read','=', False), ('state','!=', 'draft')]}"
                                        domain="[('analytic_account_id', '=', analytic_account_id), ('state', '=', 'open')]"/>
                                 <field name="type_invoice" required="True" readonly="True"/>
                                 <field name="company_id" required="True"
                                        options="{'no_create': True, 'no_create_edit': True}"
-                                       attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                       attrs="{'readonly':['|', ('show_read','=', False), ('state','!=', 'draft')]}"/>
                                 <field name="campaign_line_id" required="True"
                                        options="{'no_create': True, 'no_create_edit': True}"
-                                       attrs="{'readonly':[('state','!=', 'draft')]}"
+                                       attrs="{'readonly':['|', ('show_read','=', False), ('state','!=', 'draft')]}"
                                        domain="[('campaign_id', '=', campaign_id)]"/>
-                                <field name="client_id" required="True" attrs="{'readonly':[('state','!=', 'draft')]}"
-                                       options="{'no_create': True, 'no_create_edit': True}"/>
-                                <field name="currency_id" required="True" readonly="True"
-                                       options="{'no_create': True, 'no_create_edit': True}"/>
+                                <field name="client_id" required="True" options="{'no_create': True, 'no_create_edit': True}"
+                                       attrs="{'readonly':['|', ('show_read','=', False), ('state','!=', 'draft')]}"/>
+                                <field name="currency_id" required="True" readonly="True"/>
                                 <field name="currency_company_id" invisible="True"/>
                                 <field name="objective_id" invisible="True"/>
                             </group>
                             <group name="second_group">
                                 <field name="period" required="True"
                                        options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"
-                                       attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                       attrs="{'readonly':['|', ('show_read','=', False), ('state','!=', 'draft')]}"/>
                                 <field name="name" attrs="{'readonly':[('state','!=', 'draft')]}"/>
                                 <field name="amount_unit" widget='monetary' required="True"
                                                options="{'currency_field': 'currency_id'}"
-                                       attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                       attrs="{'readonly':['|', ('show_read','=', False), ('state','!=', 'draft')]}"/>
                                 <field name="amount_currency" widget='monetary' required="True"
                                                options="{'currency_field': 'currency_company_id'}"/>
-                                <field name="clicks" attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                                <field name="clicks" attrs="{'readonly':['|', ('show_read','=', False), ('state','!=', 'draft')]}"/>
                                 <field name="percentage_fee"
-                                       attrs="{'readonly':['|', ('state','!=', 'draft'), ('show_product_fee','=', False)]}"/>
+                                       attrs="{'readonly':['|', ('state','!=', 'draft'), '|', ('show_read','=', False),
+                                       ('show_product_fee','=', False)]}"/>
                                 <field name="consume" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                 <field name="consume_currency" widget='monetary'
                                        options="{'currency_field': 'currency_company_id'}"/>
@@ -488,7 +493,7 @@
                         </group>
                         <notebook>
                             <page name="supplier" string="Suppliers">
-                                <field name="control_line_ids" attrs="{'readonly':[('state','!=', 'draft')]}">
+                                <field name="control_line_ids" attrs="{'readonly':['|', ('show_read','=', False), ('state','!=', 'draft')]}">
                                     <tree nolabel="1" editable="bottom" decoration-info="state == 'no_process'"
                                                decoration-muted="state == 'process'">
                                         <field name="control_id" invisible="True"/>

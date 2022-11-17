@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e-20221018\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-14 21:29+0000\n"
-"PO-Revision-Date: 2022-11-14 21:29+0000\n"
+"POT-Creation-Date: 2022-11-15 11:25+0000\n"
+"PO-Revision-Date: 2022-11-15 11:25+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -146,6 +146,16 @@ msgstr "Permiso de acceso"
 #: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
 msgid "Account"
 msgstr "Asiento contable"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/account_move.py:0
+#, python-format
+msgid ""
+"Account move cannot be cancelled. \n"
+" The related control is in \"Processed\" state!"
+msgstr ""
+"El asiento contable no puede ser cancelado. \n"
+" El control relacionado está en estado \"Procesado\"!"
 
 #. module: elogia_sale
 #: model:ir.model.fields.selection,name:elogia_sale.selection__account_move__type_move__accounting
@@ -1889,8 +1899,7 @@ msgstr "Este es el método de entrega"
 msgid ""
 "This is the source of the link, e.g. Search Engine, another domain, or name "
 "of email list"
-msgstr ""
-"Esta es la fuente del enlace"
+msgstr "Esta es la fuente del enlace"
 
 #. module: elogia_sale
 #: model:ir.model.constraint,message:elogia_sale.constraint_product_fee_setting_product_unique

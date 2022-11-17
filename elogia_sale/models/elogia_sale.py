@@ -30,6 +30,7 @@ class SaleOrderWizard(models.Model):
 
     date_order = fields.Date('Order date', required=True, index=True)
     check_fee = fields.Boolean('Management Fee')
+    description = fields.Char('Description', required=True)
     reference = fields.Char('No. reference')
     check_change = fields.Boolean('Change?')
     check_error = fields.Boolean('Error')
@@ -101,6 +102,13 @@ class SaleOrderWizard(models.Model):
                                 for currency_key, currency_value in control_by_currency.items():
                                     self.action_quotation_sale(currency_value, env_product_setting, env_pricelist_setting)
 
+    def compute_tax_id(self, line):
+        line_val = line['control'].client_id.with_company(line['control'].company_id)
+        fpos = line_val.property_account_position_id
+        # If company_id is set, always filter taxes by the company
+        taxes = line['product'].taxes_id.filtered(lambda t: t.company_id == line_val.env.company)
+        return fpos.map_tax(taxes)
+
     def action_quotation_sale(self, controls, setting, pricelist_ids):
         order_lines = []
         list_line = []
@@ -111,7 +119,6 @@ class SaleOrderWizard(models.Model):
                                   'price': control.billed_revenue - control.fee_revenue,
                                   'fee': False,
                                   'control': control
-
                                   })
             if control.percentage_fee > 0:
                 other_product = setting.filtered(lambda e: e.product_id == control.campaign_line_id.product_id)
@@ -128,7 +135,7 @@ class SaleOrderWizard(models.Model):
                 if self.check_fee:
                     if line['fee']:
                         name_line = line['control'].name + '- Fee de Gestion'
-                taxes = line['product'].taxes_id if line['product'].taxes_id else False
+                taxes = self.compute_tax_id(line)
                 line_vals = {
                     'price_unit': line['price'],
                     'product_id': line['product'].id,
@@ -152,7 +159,7 @@ class SaleOrderWizard(models.Model):
             'currency_id': control.currency_id.id,
             'user_id': self.env.user.id,
             'analytic_account_id': control.analytic_account_id.id,
-            'origin': self.reference,
+            'client_order_ref': self.reference,
         }
         sale_order = order_obj.create(order_vals)
         if sale_order:
@@ -274,21 +281,6 @@ class CampaignLineInvoice(models.Model):
         res = super(CampaignLineInvoice, self).unlink()
         return res
 
-    @api.onchange('invoice_id')
-    def onchange_invoice_id(self):
-        domain = {
-            'invoice_line_id': False,
-        }
-        values = {
-            'invoice_line_id': False,
-        }
-        if self.invoice_id:
-            domain = {'invoice_line_id': [('move_id', '=', self.invoice_id.id),
-                                          ('exclude_from_invoice_tab', '=', False),
-                                          ('journal_id.type', '=', 'sale')]}
-        self.update(values)
-        return {'domain': domain}
-
 
 class ControlLineSupplier(models.Model):
     _name = 'control.line.supplier'
@@ -402,6 +394,7 @@ class ControlLineSupplier(models.Model):
     def _create_lines_purchase_order(self, purchase, lines):
         purchase_line_obj = self.env['purchase.order.line']
         for line in lines:
+            taxes = self.compute_tax_id(line)
             vals = {
                 'order_id': purchase.id,
                 'product_id': line.control_id.campaign_line_id.product_id.id,
@@ -410,7 +403,7 @@ class ControlLineSupplier(models.Model):
                 'date_planned': fields.datetime.now(),
                 'product_qty': 1,
                 'price_unit': line.invoice_provision,
-                'taxes_id': [(6, 0, line.control_id.campaign_line_id.product_id.supplier_taxes_id.ids)],
+                'taxes_id': [(6, 0, taxes.ids)] if taxes else False,
                 'control_id': line.control_id.id,
                 'campaign_elogia_id': line.control_id.campaign_id.id
             }
@@ -418,6 +411,13 @@ class ControlLineSupplier(models.Model):
             if create_line:
                 line.write({'order_line_id': create_line.id})
         return True
+
+    def compute_tax_id(self, line):
+        line_val = line.partner_id.with_company(line.company_id)
+        fpos = line_val.property_account_position_id
+        # If company_id is set, always filter taxes by the company
+        taxes = line.control_id.campaign_line_id.product_id.supplier_taxes_id.filtered(lambda t: t.company_id == line_val.env.company)
+        return fpos.map_tax(taxes)
 
 
 class PeriodCampaign(models.Model):
@@ -469,8 +469,7 @@ class ControlCampaign(models.Model):
     name = fields.Char(string='Description', required=True, index=True)
     campaign_line_id = fields.Many2one('campaign.marketing.line', 'Product line', required=True, ondelete='restrict',
                                        index=True)
-    campaign_id = fields.Many2one('campaign.marketing.elogia', 'Campaign', required=True, ondelete='restrict',
-                                  tracking=1)
+    campaign_id = fields.Many2one('campaign.marketing.elogia', 'Campaign', ondelete='restrict', tracking=1)
     company_id = fields.Many2one('res.company', 'Company', tracking=1)
     project_id = fields.Many2one('project.project', 'Project', tracking=1)
     state = fields.Selection([
@@ -530,6 +529,7 @@ class ControlCampaign(models.Model):
     show_purchase = fields.Boolean('Purchase process?', compute='get_purchase_process')
     show_sale = fields.Boolean('Sale process?', compute='get_sale_process')
     show_move = fields.Boolean('Move process?', compute='get_move_process')
+    show_read = fields.Boolean('Read data?', compute='get_check_readonly')
     check_new_fee = fields.Boolean('New fee?')
     process_line = fields.Integer('Processed line')
     process_sale = fields.Integer('Processed sale')
@@ -585,6 +585,7 @@ class ControlCampaign(models.Model):
             'partner_id': record.client_id.id,
             'currency_id': record.currency_id.id,
             'type_move': 'accounting',
+            'process_control': True,
             'line_ids': []
         }
         billed_currency = record.billed_revenue
@@ -603,6 +604,7 @@ class ControlCampaign(models.Model):
                 'currency_id': record.currency_id.id,
                 'debit': billed_amount if item['key'] == 'debit' else 0,
                 'credit': billed_amount if item['key'] == 'credit' else 0,
+                'analytic_account_id': record.campaign_id.analytic_account_id.id
             })))
         obj_move = env_mov.with_context(check_move_validity=False).create(vals)
         if obj_move:
@@ -621,7 +623,8 @@ class ControlCampaign(models.Model):
             self.company_id = self.campaign_id.company_id.id
             self.client_id = self.campaign_id.client_id.id
             self.percentage_fee = self.campaign_id.percentage_fee
-            self.campaign_line_id = False
+            obj_line = self.campaign_id.campaign_line_ids.filtered(lambda e: e.product_id == self.campaign_id.product_id)
+            self.campaign_line_id = obj_line[0].id if obj_line else False
             self.check_new_fee = True
 
     def write(self, vals):
@@ -751,7 +754,7 @@ class ControlCampaign(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_journal_line")
         action['domain'] = [('id', 'in', self.invoice_ids.filtered(
             lambda e: e.move_id.move_type == 'entry').mapped('move_id.id'))]
-        action['context'] = {'default_move_type': 'entry', 'view_no_maturity': True}
+        action['context'] = {'default_move_type': 'entry', 'view_no_maturity': True, 'default_process_control': True}
         return action
 
     @api.depends('amount_unit', 'clicks', 'amount_currency', 'consume', 'percentage_fee')
@@ -838,6 +841,39 @@ class ControlCampaign(models.Model):
         for record in self:
             if not record.show_product_fee:
                 record.percentage_fee = 0
+
+    @api.depends('control_line_ids', 'state', 'type_invoice')
+    def get_check_readonly(self):
+        show_read = True
+        for record in self:
+            if record.state == 'draft':
+                if record.type_invoice == 'account':
+                    generate_purchase = record.control_line_ids.filtered(
+                        lambda e: e.type_payment != 'client' and e.state != 'no_process')
+                    generate_move = record.invoice_ids.mapped('move_id').filtered(
+                        lambda e: e.state == 'posted' and e.type_move == 'accounting')
+                    if generate_purchase or generate_move:
+                        show_read = False
+                else:
+                    generate_purchase = record.control_line_ids.filtered(lambda e: e.type_payment != 'client' and e.state != 'no_process')
+                    generate_sale = record.order_ids.mapped('order_id').filtered(lambda e: e.state == 'sale')
+                    if generate_purchase or generate_sale:
+                        show_read = False
+            record.show_read = show_read
+
+    @api.onchange('analytic_account_id')
+    def onchange_project_by_account_id(self):
+        domain = {
+            'project_id': False,
+        }
+        values = {
+            'project_id': False,
+        }
+        if self.analytic_account_id:
+            domain = {'project_id': [('message_follower_ids.partner_id', '=', self.env.user.partner_id.id),
+                                     ('analytic_account_id', '=', self.analytic_account_id.id)]}
+        self.update(values)
+        return {'domain': domain}
 
 
 class ObjectiveCampaignMarketing(models.Model):
@@ -1007,12 +1043,22 @@ class CampaignMarketingElogia(models.Model):
     invoice_ids = fields.One2many('account.move.line', 'campaign_elogia_id', 'Move lines')
     purchase_ids = fields.One2many('purchase.order.line', 'campaign_elogia_id', 'Purchase')
     check_generated = fields.Boolean('Generated objectives', compute='get_new_objectives')
+    show_move = fields.Boolean('Move process?', compute='get_move_process')
 
     def set_closed(self):
         self.state = 'closed'
 
     def set_open(self):
         self.state = 'open'
+
+    @api.depends('invoice_line_ids')
+    def get_move_process(self):
+        show_move = False
+        for record in self:
+            if record.state == 'open':
+                if any(record.invoice_line_ids.filtered(lambda e: e.state != 'process')):
+                    show_move = True
+            record.show_move = show_move
 
     def get_delete_objectives(self):
         env_objective = self.env['objective.campaign.marketing']
@@ -1110,6 +1156,20 @@ class CampaignMarketingElogia(models.Model):
         }
         if group_ids:
             domain = {'user_ids': [('groups_id', 'in', group_ids)]}
+        self.update(values)
+        return {'domain': domain}
+
+    @api.onchange('analytic_account_id')
+    def onchange_project_by_account_id(self):
+        domain = {
+            'project_id': False,
+        }
+        values = {
+            'project_id': False,
+        }
+        if self.analytic_account_id:
+            domain = {'project_id': [('message_follower_ids.partner_id', '=', self.env.user.partner_id.id),
+                                     ('analytic_account_id', '=', self.analytic_account_id.id)]}
         self.update(values)
         return {'domain': domain}
 
@@ -1274,7 +1334,7 @@ class CampaignMarketingElogia(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_journal_line")
         action['domain'] = [('id', 'in',  self.invoice_ids.filtered(
             lambda e: e.move_id.move_type == 'entry').mapped('move_id.id'))]
-        action['context'] = {'default_move_type': 'entry', 'view_no_maturity': True}
+        action['context'] = {'default_move_type': 'entry', 'view_no_maturity': True, 'default_process_campaign': True}
         return action
 
     def get_count_objectives(self):
@@ -1331,6 +1391,7 @@ class CampaignMarketingElogia(models.Model):
             'partner_id': record.campaign_id.client_id.id,
             'currency_id': record.currency_id.id,
             'type_move': 'accounting',
+            'process_campaign': True,
             'line_ids': []
         }
         for item in list_setting:
@@ -1347,7 +1408,8 @@ class CampaignMarketingElogia(models.Model):
                 'amount_currency': - amount_currency if item['key'] == 'credit' else amount_currency,
                 'currency_id': record.currency_id.id,
                 'debit': amount_val if item['key'] == 'debit' else 0,
-                'credit': amount_val if item['key'] == 'credit' else 0
+                'credit': amount_val if item['key'] == 'credit' else 0,
+                'analytic_account_id': record.campaign_id.analytic_account_id.id
             })))
         obj_move = env_mov.with_context(check_move_validity=False).create(vals)
         if obj_move:
