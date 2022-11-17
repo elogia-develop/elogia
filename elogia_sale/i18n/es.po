@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e-20221018\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-15 11:25+0000\n"
-"PO-Revision-Date: 2022-11-15 11:25+0000\n"
+"POT-Creation-Date: 2022-11-17 14:50+0000\n"
+"PO-Revision-Date: 2022-11-17 14:50+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -152,10 +152,10 @@ msgstr "Asiento contable"
 #, python-format
 msgid ""
 "Account move cannot be cancelled. \n"
-" The related control is in \"Processed\" state!"
+" The related control must be in \"Draft\" state!"
 msgstr ""
 "El asiento contable no puede ser cancelado. \n"
-" El control relacionado está en estado \"Procesado\"!"
+" El control relacionado debe estar en estado \"Borrador\"!"
 
 #. module: elogia_sale
 #: model:ir.model.fields.selection,name:elogia_sale.selection__account_move__type_move__accounting
@@ -256,10 +256,17 @@ msgid "Amount(ml)"
 msgstr "Importe(ml)"
 
 #. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_account_move_line__analytic_account_id
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_line__account_analytic_id
+msgid "Analytic Account"
+msgstr "Cuenta analítica"
+
+#. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__analytic_account_id
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__analytic_account_id
 #: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__analytic_account_id
 #: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__analytic_account_id
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_line__analytic_account_id
 #: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_search
 #: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
 #: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_search
@@ -338,7 +345,7 @@ msgstr "Líneas campañas"
 #: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
 #: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_tree
 msgid "Campaign marketing"
-msgstr "Campaña Marketing"
+msgstr "Campañas"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__consume
@@ -351,7 +358,10 @@ msgid "Campaign revenue(ml)"
 msgstr "Ingreso campaña(ml)"
 
 #. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_account_bank_statement_line__campaign_id
+#: model:ir.model.fields,field_description:elogia_sale.field_account_move__campaign_id
 #: model:ir.model.fields,field_description:elogia_sale.field_account_move_line__campaign_elogia_id
+#: model:ir.model.fields,field_description:elogia_sale.field_account_payment__campaign_id
 #: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__campaign_id
 #: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_line__campaign_elogia_id
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_line__campaign_elogia_id
@@ -450,7 +460,7 @@ msgstr "Consumido fee"
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_line__control_id
 #: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
 msgid "Control"
-msgstr "Control"
+msgstr "Controles"
 
 #. module: elogia_sale
 #: model:ir.model,name:elogia_sale.model_control_campaign_marketing
@@ -719,6 +729,7 @@ msgstr "Débito (Factura)"
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__name
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__name
 #: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__name
+#: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__description
 msgid "Description"
 msgstr "Descripción"
 
@@ -1063,7 +1074,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_line_invoice_form
 #: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_line_invoice_tree
 msgid "Line invoice"
-msgstr "Línea factura"
+msgstr "Líneas de facturas"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__invoice_line_ids
@@ -1081,14 +1092,14 @@ msgstr "¡Las líneas de facturas han sido procesadas en esta Campaña!"
 #. module: elogia_sale
 #: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
 msgid "Line products"
-msgstr ""
+msgstr "Productos"
 
 #. module: elogia_sale
 #: model:ir.actions.act_window,name:elogia_sale.action_control_line_supplier
 #: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_form
 #: model_terms:ir.ui.view,arch_db:elogia_sale.control_line_supplier_tree
 msgid "Line supplier"
-msgstr "Productos"
+msgstr "Líneas de proveedores"
 
 #. module: elogia_sale
 #: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_second1
@@ -1206,6 +1217,7 @@ msgid "Move lines"
 msgstr "Líneas de asiento"
 
 #. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__show_move
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__show_move
 msgid "Move process?"
 msgstr "Asiento procesado?"
@@ -1479,6 +1491,20 @@ msgid "Pricelists"
 msgstr "Lista de precios"
 
 #. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_account_bank_statement_line__process_campaign
+#: model:ir.model.fields,field_description:elogia_sale.field_account_move__process_campaign
+#: model:ir.model.fields,field_description:elogia_sale.field_account_payment__process_campaign
+msgid "Process campaign"
+msgstr "Proc. desde Campaña"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_account_bank_statement_line__process_control
+#: model:ir.model.fields,field_description:elogia_sale.field_account_move__process_control
+#: model:ir.model.fields,field_description:elogia_sale.field_account_payment__process_control
+msgid "Process control"
+msgstr "Proc. desde Control"
+
+#. module: elogia_sale
 #: model:ir.model.fields.selection,name:elogia_sale.selection__campaign_line_invoice__state__process
 #: model:ir.model.fields.selection,name:elogia_sale.selection__control_campaign_marketing__state__both
 #: model:ir.model.fields.selection,name:elogia_sale.selection__control_line_supplier__state__process
@@ -1580,7 +1606,7 @@ msgstr "Provisión"
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__invoice_provision_ml
 msgid "Provision (mt)"
-msgstr "Provision (mt)"
+msgstr "Provisión (mt)"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__purchase_ids
@@ -1603,10 +1629,10 @@ msgstr "Pedido compra"
 #, python-format
 msgid ""
 "Purchase order cannot be cancelled. \n"
-" The related control is in \"Processed\" state!"
+" The related control must be in \"Draft\" state!"
 msgstr ""
 "El pedido de compra no puede ser cancelado. \n"
-" El control relacionado está en estado \"Procesado\"!"
+" El control relacionado debe estar en estado \"Borrador\"!"
 
 #. module: elogia_sale
 #: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__type_purchase
@@ -1633,6 +1659,11 @@ msgstr "Compras"
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__purchase_ml
 msgid "Purchases(ml)"
 msgstr "Compras(ml)"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__show_read
+msgid "Read data?"
+msgstr "Solo lectura"
 
 #. module: elogia_sale
 #: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_graph
@@ -1684,10 +1715,10 @@ msgstr "Crear Pedidos de venta"
 #, python-format
 msgid ""
 "Sale order cannot be cancelled. \n"
-" The related control is in \"Processed\" state!"
+" The related control must be in \"Draft\" state!"
 msgstr ""
 "El pedido de venta no puede ser cancelado. \n"
-" El control relacionado está en estado \"Procesado\"!"
+" El control relacionado debe estar en estado \"Borrador\"!"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__show_sale
@@ -1869,6 +1900,9 @@ msgid "This currency already has a related Pricelist!"
 msgstr "¡Esta moneda ya tiene una lista de precios relacionada!"
 
 #. module: elogia_sale
+#: model:ir.model.fields,help:elogia_sale.field_account_bank_statement_line__campaign_id
+#: model:ir.model.fields,help:elogia_sale.field_account_move__campaign_id
+#: model:ir.model.fields,help:elogia_sale.field_account_payment__campaign_id
 #: model:ir.model.fields,help:elogia_sale.field_campaign_line_invoice__campaign_id
 #: model:ir.model.fields,help:elogia_sale.field_campaign_marketing_elogia__campaign_id
 #: model:ir.model.fields,help:elogia_sale.field_control_campaign_marketing__campaign_id
@@ -2113,7 +2147,7 @@ msgstr "Margen factor(ml)"
 #. module: elogia_sale
 #: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_tree
 msgid "margin_ml"
-msgstr ""
+msgstr "Margen(ml)"
 
 #. module: elogia_sale
 #: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_tree
