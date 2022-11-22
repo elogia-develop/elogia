@@ -23,7 +23,7 @@ MONTHS = ("Enero",
           "Diciembre")
 
 
-class SaleOrderWizard(models.Model):
+class SaleOrderWizard(models.TransientModel):
     _name = 'sale.order.wizard'
     _description = 'Sale Order Wizard'
     _rec_name = 'date_order'
@@ -183,12 +183,27 @@ class HistoricalDateObjectives(models.Model):
 class ExpenseEntrySetting(models.Model):
     _name = 'expense.entry.setting'
     _description = 'Expense Entry Setting'
-    _rec_name = 'expense_account'
+    _rec_name = 'passive_account'
 
     company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company)
     journal_id = fields.Many2one('account.journal', 'Journal', required=True)
-    expense_account = fields.Many2one('account.account', 'Expense Account', required=True)
+    expense_account = fields.Many2many('account.account', 'rel_account_expense', 'expense_id', 'account_id',
+                                       string='Expense Accounts', required=True)
     passive_account = fields.Many2one('account.account', 'Passive Account', required=True)
+
+    _sql_constraints = [
+        ('passive_company_unique', 'unique (company_id, passive_account)',
+         'This passive account already has a related Expense Entry!')
+    ]
+
+    @api.constrains('expense_account')
+    def check_expense_account(self):
+        env_expense = self.env['expense.entry.setting']
+        for record in self:
+            obj_expenses = env_expense.search([('id', '!=', record.id)])
+            for item in record.expense_account:
+                if item in obj_expenses.mapped('expense_account'):
+                    raise UserError(_('A setup already exists for expense account {}.' .format(item.name)))
 
 
 class PriceListSetting(models.Model):
@@ -388,6 +403,7 @@ class ControlLineSupplier(models.Model):
             'origin': 'Control Campaign',
             'currency_id': lines[0].currency_id.id,
             'date_planned': fields.datetime.now(),
+            'check_vertical': True
         }
         return vals
 
@@ -405,7 +421,8 @@ class ControlLineSupplier(models.Model):
                 'price_unit': line.invoice_provision,
                 'taxes_id': [(6, 0, taxes.ids)] if taxes else False,
                 'control_id': line.control_id.id,
-                'campaign_elogia_id': line.control_id.campaign_id.id
+                'campaign_elogia_id': line.control_id.campaign_id.id,
+                'account_analytic_id': line.control_id.analytic_account_id.id
             }
             create_line = purchase_line_obj.create(vals)
             if create_line:
