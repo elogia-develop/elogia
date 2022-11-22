@@ -99,10 +99,65 @@
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button class="oe_stat_button" name="action_view_expense" type="object" icon="fa-copy">
+                        <field string="Expense Entries" name="count_expense" widget="statinfo"/>
+                    </button>
+                </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='analytic_tag_ids']" position="after">
                     <field name="campaign_elogia_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                     <field name="control_id" options="{'no_open':True, 'no_create': True, 'no_create_edit': True}"/>
                 </xpath>
+            </field>
+        </record>
+
+        <!-- View inherit tree purchase.order -->
+        <record id="purchase_order_inherit_expense_elogia_tree" model="ir.ui.view">
+            <field name="name">purchase.order.inherit.expense.elogia.tree</field>
+            <field name="model">purchase.order</field>
+            <field name="arch" type="xml">
+                <tree string="Purchase Order" decoration-info="state in ['draft', 'sent']" decoration-muted="state == 'cancel'"
+                      decoration-bf="message_unread==True"  sample="1" create="false" delete="false">
+                    <header>
+                        <button name="create_expense_entry" type="object" class="btn-primary"
+                                string="Generate Expense Entry"/>
+                    </header>
+                    <field name="priority" optional="show" widget="priority" nolabel="1"/>
+                    <field name="message_unread" invisible="1"/>
+                    <field name="partner_ref" optional="hide"/>
+                    <field name="name" string="Reference" readonly="1" decoration-bf="1"/>
+                    <field name="date_approve" invisible="context.get('quotation_only', False)" optional="show"/>
+                    <field name="partner_id" readonly="1"/>
+                    <field name="company_id" readonly="1" options="{'no_create': True}"
+                        groups="base.group_multi_company" optional="show"/>
+                    <field name="date_planned" invisible="context.get('quotation_only', False)" optional="show"/>
+                    <field name="product_qty" optional="show"/>
+                    <field name="qty_to_invoice" optional="show"/>
+                    <field name="qty_invoiced" optional="show"/>
+                    <field name="amount_untaxed" sum="Total Untaxed amount" string="Total amount" widget="monetary"
+                           optional="show" decoration-bf="state in ['purchase', 'done']"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="state" optional="show" widget="badge" decoration-success="state == 'purchase' or state == 'done'"
+                        decoration-warning="state == 'to approve'" decoration-info="state == 'draft' or state == 'sent'"/>
+                    <field name="invoice_status" optional="show"/>
+                    <field name="state_expense" optional="show"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_purchase_order_inherit_expense_elogia" model="ir.actions.act_window">
+            <field name="name">Purchase order</field>
+            <field name="res_model">purchase.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="elogia_sale.purchase_order_inherit_expense_elogia_tree"/>
+            <field name="search_view_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="target">main</field>
+            <field name="context">{'search_default_approved': 1, 'view_from_vertical': True}</field>
+            <field name="domain">[('check_vertical','=', True)]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    No Purchase Order to display
+                </p>
             </field>
         </record>
 
@@ -1392,7 +1447,8 @@
                     <sheet>
                         <group>
                             <group name="first_group">
-                                <field name="expense_account" domain="[('user_type_id.type', '=', 'other'),
+                                <field name="expense_account" widget="many2many_tags" options="{'no_create': True,
+                                'no_create_edit': True}" domain="[('user_type_id.type', '=', 'other'),
                                 ('user_type_id.internal_group', '=', 'expense')]"/>
                                 <field name="passive_account" domain="[('user_type_id.type', '=', 'other'),
                                 ('user_type_id.internal_group', '=', 'liability')]"/>
@@ -1413,7 +1469,7 @@
             <field name="model">expense.entry.setting</field>
             <field name="arch" type="xml">
                 <tree string="Expense entry" editable="bottom" sample="1">
-                    <field name="expense_account" options="{'no_create': True, 'no_create_edit': True}"
+                    <field name="expense_account" widget="many2many_tags" options="{'no_create': True, 'no_create_edit': True}"
                            domain="[('user_type_id.type', '=', 'other'), ('user_type_id.internal_group', '=', 'expense')]"/>
                     <field name="passive_account" options="{'no_create': True, 'no_create_edit': True}"
                            domain="[('user_type_id.type', '=', 'other'), ('user_type_id.internal_group', '=', 'liability')]"/>
@@ -1465,14 +1521,15 @@
             <menuitem name="Control Campaigns" id="campaign_marketing_menu_item_second" sequence="2" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
                 <menuitem name="Control Campaigns" id="campaign_marketing_menu_second0" action="action_control_campaign_marketing" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
                 <menuitem name="Line suppliers" id="campaign_marketing_menu_second1" action="action_control_line_supplier" sequence="2" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
+                <menuitem name="Purchase Order" id="campaign_marketing_menu_second2" action="action_purchase_order_inherit_expense_elogia" sequence="3" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group"/>
                 <menuitem name="Vendors" id="campaign_marketing_menu_second3" action="account.res_partner_action_supplier" sequence="4" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
             </menuitem>
             <menuitem name="Products" id="campaign_marketing_menu_item_thirty" sequence="3" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
                 <menuitem name="Products" id="campaign_marketing_menu_thirty0" action="sale.product_template_action" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
                 <menuitem name="Pricelists" id="campaign_marketing_menu_thirty1" action="product.product_pricelist_action2" sequence="2" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
             </menuitem>
-            <menuitem name="Report KPIs" id="campaign_marketing_menu_item_four" sequence="4" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group">
-                <menuitem name="Control KPIs" id="campaign_marketing_menu_four0" action="action_kpi_control_campaign_marketing" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group,elogia_sale.sale_elogia_user_group"/>
+            <menuitem name="Report KPIs" id="campaign_marketing_menu_item_four" sequence="4" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group">
+                <menuitem name="Control KPIs" id="campaign_marketing_menu_four0" action="action_kpi_control_campaign_marketing" sequence="1" groups="elogia_sale.sale_elogia_admin_group,elogia_sale.sale_elogia_manager_group"/>
             </menuitem>
             <menuitem name="Settings" id="campaign_marketing_menu_item_last" sequence="999" groups="elogia_sale.sale_elogia_admin_group">
                 <menuitem name="Periods" id="campaign_marketing_menu_last0" action="action_period_campaign" sequence="1" groups="elogia_sale.sale_elogia_admin_group"/>

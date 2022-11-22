@@ -3,6 +3,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from datetime import datetime
 
 
 class AccountMove(models.Model):
@@ -17,6 +18,21 @@ class AccountMove(models.Model):
     campaign_id = fields.Many2one('campaign.marketing.elogia', 'Campaigns', required=False)
     process_control = fields.Boolean('Process control')
     process_campaign = fields.Boolean('Process campaign')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(AccountMove, self).create(vals_list)
+        if res and res.line_ids.mapped('purchase_line_id.order_id'):
+            purchase = res.line_ids.mapped('purchase_line_id.order_id')
+            move_reverse = purchase.move_line_ids.filtered(
+                lambda l: l.move_type == 'entry' and l.type_move == 'provision' and l.state == 'draft')
+            val_day = datetime.today().date()
+            if res.invoice_date:
+                val_day = res.invoice_date
+            if move_reverse:
+                move_reverse.write({'date': val_day, 'auto_post': False})
+                move_reverse.action_post()
+        return res
 
 
 class AccountMoveLine(models.Model):
