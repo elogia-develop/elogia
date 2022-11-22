@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e-20221018\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-17 14:50+0000\n"
-"PO-Revision-Date: 2022-11-17 14:50+0000\n"
+"POT-Creation-Date: 2022-11-22 16:17+0000\n"
+"PO-Revision-Date: 2022-11-22 16:17+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -134,6 +134,12 @@ msgid "= sum(Campaign revenue of controls * rate currency)"
 msgstr "= Sum(Ingreso de controles)"
 
 #. module: elogia_sale
+#: code:addons/elogia_sale/models/elogia_sale.py:0
+#, python-format
+msgid "A setup already exists for expense account {}."
+msgstr "Ya existe una configuración para la cuenta de gastos {}."
+
+#. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__access_warning
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__access_warning
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__access_warning
@@ -186,6 +192,12 @@ msgstr "Cuentas para control de campañas"
 #: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_accounting_setting_form
 msgid "Accounts for invoice"
 msgstr "Cuentas para facturas"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/purchase.py:0
+#, python-format
+msgid "Accrued Expense entry as of %s"
+msgstr "Entrada de gastos acumulado a partir de %s"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_needaction
@@ -282,6 +294,11 @@ msgstr "Cuenta analítica"
 #: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__message_attachment_count
 msgid "Attachment Count"
 msgstr "Adjuntos"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order__qty_invoiced
+msgid "Billed Qty"
+msgstr "Facturado"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__billed_revenue
@@ -502,6 +519,11 @@ msgid "Controls"
 msgstr "Control"
 
 #. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order__count_expense
+msgid "Count Expenses"
+msgstr "Cantidad Gastos"
+
+#. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__count_invoice_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__count_invoice_sale
 msgid "Count Invoice sale"
@@ -621,6 +643,7 @@ msgstr "Creado por"
 #. module: elogia_sale
 #: code:addons/elogia_sale/models/elogia_sale.py:0
 #: code:addons/elogia_sale/models/elogia_sale.py:0
+#: code:addons/elogia_sale/models/purchase.py:0
 #, python-format
 msgid "Created move: {}"
 msgstr "Asiento contable creado: {}"
@@ -734,6 +757,12 @@ msgid "Description"
 msgstr "Descripción"
 
 #. module: elogia_sale
+#: code:addons/elogia_sale/models/purchase.py:0
+#, python-format
+msgid "Different journals: {} are configured for the same purchase order {}."
+msgstr "Diferentes diarios: {} están configurados para el pedido de compra {}"
+
+#. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_accounting_setting__display_name
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__display_name
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__display_name
@@ -768,13 +797,24 @@ msgstr "Error"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting__expense_account
-msgid "Expense Account"
-msgstr "Cuenta gasto"
+msgid "Expense Accounts"
+msgstr "Cuentas de gastos"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.view_purchase_order_form_inherit_elogia
+msgid "Expense Entries"
+msgstr "Entrada de gastos"
 
 #. module: elogia_sale
 #: model:ir.model,name:elogia_sale.model_expense_entry_setting
 msgid "Expense Entry Setting"
 msgstr "Entradas de gastos"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/purchase.py:0
+#, python-format
+msgid "Expense account for the products: {} is not set up."
+msgstr "La cuenta de gastos para los productos: {} no está configurada."
 
 #. module: elogia_sale
 #: model_terms:ir.ui.view,arch_db:elogia_sale.expense_entry_setting_elogia_form
@@ -836,6 +876,21 @@ msgstr "Seguidores (Contactos)"
 #: model:ir.model.fields,help:elogia_sale.field_period_campaign__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Icono de fuente, p. fa-tareas"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order__check_vertical
+msgid "From vertical?"
+msgstr "Desde vertical"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__purchase_order__state_expense__full
+msgid "Full"
+msgstr "Completo"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.purchase_order_inherit_expense_elogia_tree
+msgid "Generate Expense Entry"
+msgstr "Generar entrada de gastos"
 
 #. module: elogia_sale
 #: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
@@ -1223,6 +1278,7 @@ msgid "Move process?"
 msgstr "Asiento procesado?"
 
 #. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order__move_line_ids
 #: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
 #: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_form
 msgid "Moves"
@@ -1290,6 +1346,16 @@ msgstr "Resumen de siguiente actividad"
 #: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__activity_type_id
 msgid "Next Activity Type"
 msgstr "Tipo Siguiente actividad"
+
+#. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__purchase_order__state_expense__no
+msgid "No"
+msgstr "No"
+
+#. module: elogia_sale
+#: model_terms:ir.actions.act_window,help:elogia_sale.action_purchase_order_inherit_expense_elogia
+msgid "No Purchase Order to display"
+msgstr "No hay Pedidos de compra que mostrar"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__reference
@@ -1609,10 +1675,22 @@ msgid "Provision (mt)"
 msgstr "Provisión (mt)"
 
 #. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order__state_expense
+msgid "Provisioned"
+msgstr "Provisionado"
+
+#. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__purchase_ids
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__purchase_ids
 msgid "Purchase"
 msgstr "Compras"
+
+#. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_purchase_order
+#: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_second2
+#: model_terms:ir.ui.view,arch_db:elogia_sale.purchase_order_inherit_expense_elogia_tree
+msgid "Purchase Order"
+msgstr "Pedidos de compra"
 
 #. module: elogia_sale
 #: model:ir.model,name:elogia_sale.model_purchase_order_line
@@ -1620,6 +1698,7 @@ msgid "Purchase Order Line"
 msgstr "Línea de pedido de compra"
 
 #. module: elogia_sale
+#: model:ir.actions.act_window,name:elogia_sale.action_purchase_order_inherit_expense_elogia
 #: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__order_id
 msgid "Purchase order"
 msgstr "Pedido compra"
@@ -1661,9 +1740,19 @@ msgid "Purchases(ml)"
 msgstr "Compras(ml)"
 
 #. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order__product_qty
+msgid "Quantity"
+msgstr "Cantidad"
+
+#. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__show_read
 msgid "Read data?"
 msgstr "Solo lectura"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.purchase_order_inherit_expense_elogia_tree
+msgid "Reference"
+msgstr "Ref."
 
 #. module: elogia_sale
 #: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_graph
@@ -1689,6 +1778,12 @@ msgstr "Restablecer objetivos"
 #: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__activity_user_id
 msgid "Responsible User"
 msgstr "Usuario responsable"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/purchase.py:0
+#, python-format
+msgid "Reversal of: %s"
+msgstr "Reversión de: %s"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_line_invoice__message_has_sms_error
@@ -1878,6 +1973,12 @@ msgid "There are no campaign lines created in this Campaign!"
 msgstr "¡No existen líneas de campaña creadas en esta campaña!"
 
 #. module: elogia_sale
+#: code:addons/elogia_sale/models/purchase.py:0
+#, python-format
+msgid "There are no configured Expense Entries created"
+msgstr "No hay entradas de gastos configuradas"
+
+#. module: elogia_sale
 #: code:addons/elogia_sale/models/elogia_sale.py:0
 #, python-format
 msgid "There are no line invoices created in this Campaign!"
@@ -1936,9 +2037,19 @@ msgid ""
 msgstr "Esta es la fuente del enlace"
 
 #. module: elogia_sale
+#: model:ir.model.constraint,message:elogia_sale.constraint_expense_entry_setting_passive_company_unique
+msgid "This passive account already has a related Expense Entry!"
+msgstr "Esta cuenta pasiva ya tiene una entrada de gastos relacionada!"
+
+#. module: elogia_sale
 #: model:ir.model.constraint,message:elogia_sale.constraint_product_fee_setting_product_unique
 msgid "This product already has a related Product Fee Setting!"
 msgstr "¡Este producto ya tiene una configuración de tarifa de producto relacionada!"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order__qty_to_invoice
+msgid "To Invoice Quantity"
+msgstr "A facturar"
 
 #. module: elogia_sale
 #: model_terms:ir.ui.view,arch_db:elogia_sale.campaign_marketing_elogia_form
@@ -1960,6 +2071,16 @@ msgstr "Abrir"
 #. module: elogia_sale
 #: model_terms:ir.ui.view,arch_db:elogia_sale.objective_campaign_marketing_sum_tree
 msgid "Total"
+msgstr "Total"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.purchase_order_inherit_expense_elogia_tree
+msgid "Total Untaxed amount"
+msgstr "Total"
+
+#. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.purchase_order_inherit_expense_elogia_tree
+msgid "Total amount"
 msgstr "Total"
 
 #. module: elogia_sale
@@ -2073,6 +2194,11 @@ msgid "Year"
 msgstr "Año"
 
 #. module: elogia_sale
+#: model:ir.model.fields.selection,name:elogia_sale.selection__purchase_order__state_expense__yes
+msgid "Yes"
+msgstr "Si"
+
+#. module: elogia_sale
 #: code:addons/elogia_sale/models/elogia_sale.py:0
 #, python-format
 msgid "You can't delete a campaign if you have associated controls."
@@ -2113,6 +2239,12 @@ msgstr "No puede eliminar una campaña si tiene facturas de proveedores asociada
 #, python-format
 msgid "You cannot delete an line invoice in the processed state."
 msgstr "No puede eliminar una línea de factura en estado procesado."
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/purchase.py:0
+#, python-format
+msgid "You cannot generate an Expense Entry for an order in \"Full\" status."
+msgstr "No puede generar una entrada de gastos para un pedido en estado: \"Completado\"."
 
 #. module: elogia_sale
 #: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_tree

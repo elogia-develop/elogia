@@ -113,11 +113,14 @@ class PurchaseOrder(models.Model):
                     if purchase_by_passive:
                         for passive_key, passive_value in purchase_by_passive.items():
                             val_amount = 0
+                            val_currency = 0
                             if len(set([item['passive'] for item in passive_value])) == 1:
                                 if record.qty_to_invoice == record.product_qty:
                                     val_amount = sum([item['line'].price_subtotal for item in passive_value])
+                                    val_currency = sum([item['line'].price_subtotal for item in passive_value])
                                 if record.product_qty > record.qty_to_invoice > 0:
                                     val_amount = sum([item['line'].qty_to_invoice * item['line'].price_unit for item in passive_value])
+                                    val_currency = sum([item['line'].qty_to_invoice * item['line'].price_unit for item in passive_value])
                                 if record.currency_id != record.company_id.currency_id and record.currency_id.rate > 0:
                                     val_amount = val_amount / record.currency_id.rate
                                 line_move = {
@@ -126,7 +129,7 @@ class PurchaseOrder(models.Model):
                                     'partner_id': record.partner_id.id,
                                     'control_id': passive_value[0]['line'].control_id.id,
                                     'campaign_elogia_id': passive_value[0]['line'].campaign_elogia_id.id,
-                                    'amount_currency': val_amount,
+                                    'amount_currency': val_currency,
                                     'currency_id': record.currency_id.id,
                                     'debit': val_amount,
                                     'credit': 0,
@@ -138,7 +141,7 @@ class PurchaseOrder(models.Model):
                                     'partner_id': record.partner_id.id,
                                     'control_id': passive_value[0]['line'].control_id.id,
                                     'campaign_elogia_id': passive_value[0]['line'].campaign_elogia_id.id,
-                                    'amount_currency': val_amount,
+                                    'amount_currency': - val_currency,
                                     'currency_id': record.currency_id.id,
                                     'debit': 0,
                                     'credit': val_amount,
