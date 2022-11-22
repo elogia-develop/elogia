@@ -111,6 +111,39 @@
             </field>
         </record>
 
+        <!-- View inherit tree purchase.order-->
+        <record id="purchase_order_view_tree_inherit_elogia" model="ir.ui.view">
+            <field name="name">purchase.order.view.tree.inherit.elogia</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_view_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='amount_total']" position="before">
+                    <field name="product_qty" optional="show"/>
+                    <field name="qty_to_invoice" optional="show"/>
+                    <field name="qty_invoiced" optional="show"/>
+                </xpath>
+                <xpath expr="//field[@name='invoice_status']" position="after">
+                    <field name="state_expense" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="purchase_order_view_other_tree_inherit_elogia" model="ir.ui.view">
+            <field name="name">purchase.order.view.other.tree.inherit.elogia</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='amount_total']" position="before">
+                    <field name="product_qty" optional="show"/>
+                    <field name="qty_to_invoice" optional="show"/>
+                    <field name="qty_invoiced" optional="show"/>
+                </xpath>
+                <xpath expr="//field[@name='invoice_status']" position="after">
+                    <field name="state_expense" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+
         <!-- View inherit tree purchase.order -->
         <record id="purchase_order_inherit_expense_elogia_tree" model="ir.ui.view">
             <field name="name">purchase.order.inherit.expense.elogia.tree</field>
@@ -118,10 +151,6 @@
             <field name="arch" type="xml">
                 <tree string="Purchase Order" decoration-info="state in ['draft', 'sent']" decoration-muted="state == 'cancel'"
                       decoration-bf="message_unread==True"  sample="1" create="false" delete="false">
-                    <header>
-                        <button name="create_expense_entry" type="object" class="btn-primary"
-                                string="Generate Expense Entry"/>
-                    </header>
                     <field name="priority" optional="show" widget="priority" nolabel="1"/>
                     <field name="message_unread" invisible="1"/>
                     <field name="partner_ref" optional="hide"/>
@@ -163,6 +192,17 @@
 
         <record id="purchase.action_accrued_expense_entry" model="ir.actions.act_window">
            <field name="binding_model_id"></field>
+        </record>
+
+        <record id="action_purchase_order_by_vertical" model="ir.actions.server">
+            <field name="name">Generate Expense Entry</field>
+            <field name="model_id" ref="model_purchase_order"/>
+            <field name="binding_model_id" ref="elogia_sale.model_purchase_order"/>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    records.create_expense_entry()
+            </field>
         </record>
 
         <!-- View Form campaign.marketing.elogia -->
@@ -439,11 +479,14 @@
                         <button name="set_pending" string="Pending" type="object" class="btn-primary"
                                 attrs="{'invisible':[('state','!=', 'draft')]}"/>
                         <button name="generate_sale" string="Generate Sale" type="object" class="btn-primary"
-                                attrs="{'invisible':[('show_sale', '=', False)]}"/>
+                                attrs="{'invisible':[('show_sale', '=', False)]}"
+                                groups="elogia_sale.sale_elogia_admin_group"/>
                         <button name="generate_move" string="Generate Move" type="object" class="btn-primary"
-                                attrs="{'invisible':[('show_move', '=', False)]}"/>
+                                attrs="{'invisible':[('show_move', '=', False)]}"
+                                groups="elogia_sale.sale_elogia_admin_group"/>
                         <button name="generate_purchase" string="Generate Purchase" type="object" class="btn-primary"
-                                attrs="{'invisible':[('show_purchase', '=', False)]}"/>
+                                attrs="{'invisible':[('show_purchase', '=', False)]}"
+                                groups="elogia_sale.sale_elogia_admin_group"/>
                         <button name="set_draft" string="set to draft" type="object"
                                 attrs="{'invisible':[('state','not in', ['pending', 'cancel'])]}"/>
                         <button name="set_cancel" string="set to cancel" type="object"
