@@ -23,20 +23,11 @@ class SaleOrderLine(models.Model):
             if self._context.get('active_model') == 'control.campaign.marketing':
                 return env_control.search([('id', '=', self._context.get('active_id'))], limit=1)
 
-    def _get_default_account(self):
-        env_campaign = self.env['campaign.marketing.elogia']
-        env_control = self.env['control.campaign.marketing']
-        if 'active_model' in self._context:
-            if self._context.get('active_model') == 'campaign.marketing.elogia':
-                return env_campaign.search([('id', '=', self._context.get('active_id'))], limit=1).mapped('analytic_account_id')
-            elif self._context.get('active_model') == 'control.campaign.marketing':
-                return env_control.search([('id', '=', self._context.get('active_id'))], limit=1).mapped('analytic_account_id')
-
     campaign_elogia_id = fields.Many2one('campaign.marketing.elogia', 'Campaigns', ondelete='restrict',
                                          default=_get_default_campaign)
     control_id = fields.Many2one('control.campaign.marketing', 'Control', ondelete='restrict',
                                  default=_get_default_control)
-    analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic account', default=_get_default_account)
+    analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic account')
 
     def _prepare_invoice_line(self, **optional_values):
         values = super(SaleOrderLine, self)._prepare_invoice_line(**optional_values)

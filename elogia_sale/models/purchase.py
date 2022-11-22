@@ -54,10 +54,11 @@ class PurchaseOrder(models.Model):
             if record.qty_invoiced >= record.product_qty:
                 state = 'full'
             if record.qty_to_invoice > 0 and any(record.move_line_ids.filtered(
-                    lambda e: e.state != 'cancel' and e.reversed_entry_id)):
+                    lambda e: e.state == 'draft' and e.reversed_entry_id)):
                 state = 'yes'
             record.state_expense = state
 
+    @api.model
     def create_expense_entry(self):
         env_mov = self.env['account.move']
         env_setting = self.env['expense.entry.setting']
@@ -68,6 +69,8 @@ class PurchaseOrder(models.Model):
             for record in self:
                 if record.state_expense == 'full':
                     raise UserError(_('You cannot generate an Expense Entry for an order in "Full" status.'))
+                if any(record.move_line_ids.filtered(lambda e: e.state == 'draft' and e.reversed_entry_id)):
+                    raise UserError(_('You cannot generate an Expense Entry, it has moves in "Draft" status.'))
                 else:
                     self.generated_account_move(record, env_mov, obj_setting)
 
@@ -207,22 +210,10 @@ class PurchaseOrderLine(models.Model):
             if self._context.get('active_model') == 'control.campaign.marketing':
                 return env_control.search([('id', '=', self._context.get('active_id'))], limit=1)
 
-    def _get_default_account(self):
-        env_campaign = self.env['campaign.marketing.elogia']
-        env_control = self.env['control.campaign.marketing']
-        if 'active_model' in self._context:
-            if self._context.get('active_model') == 'campaign.marketing.elogia':
-                return env_campaign.search([('id', '=', self._context.get('active_id'))], limit=1).mapped('analytic_account_id')
-            elif self._context.get('active_model') == 'control.campaign.marketing':
-                return env_control.search([('id', '=', self._context.get('active_id'))], limit=1).mapped('analytic_account_id')
-
     campaign_elogia_id = fields.Many2one('campaign.marketing.elogia', 'Campaigns', ondelete='restrict',
                                          default=_get_default_campaign)
     control_id = fields.Many2one('control.campaign.marketing', 'Control', ondelete='restrict',
                                  default=_get_default_control)
-    account_analytic_id = fields.Many2one('account.analytic.account', store=True, string='Analytic Account',
-                                          compute='_compute_account_analytic_id', readonly=False,
-                                          default=_get_default_account)
 
     def _prepare_account_move_line(self, move=False):
         res = super(PurchaseOrderLine, self)._prepare_account_move_line(move=False)
