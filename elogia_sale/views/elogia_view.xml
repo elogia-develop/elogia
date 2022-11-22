@@ -161,6 +161,10 @@
             </field>
         </record>
 
+        <record id="purchase.action_accrued_expense_entry" model="ir.actions.act_window">
+           <field name="binding_model_id"></field>
+        </record>
+
         <!-- View Form campaign.marketing.elogia -->
         <record model="ir.ui.view" id="campaign_marketing_elogia_form">
             <field name="name">campaign.marketing.elogia.form</field>
