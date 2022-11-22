@@ -8,7 +8,7 @@
     'website': "https://www.rapsodoo.com/es/",
     'category': 'Sales/Sales',
     'license': 'LGPL-3',
-    'version': '15.0.1.0.29',
+    'version': '15.0.1.0.30',
     'depends': [
         'base',
         'sale',
