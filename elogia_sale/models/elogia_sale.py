@@ -166,8 +166,9 @@ class SaleOrderWizard(models.TransientModel):
             sale_order.action_confirm()
             _logger.info('Order Created')
             _logger.info(sale_order.name)
-            control.write({'process_sale': +1})
-            control.message_post(body=_("Created sale order: {}").format(sale_order.name))
+            for control in controls:
+                control.write({'process_sale': +1})
+                control.message_post(body=_("Created sale order: {}").format(sale_order.name))
 
 
 class HistoricalDateObjectives(models.Model):
@@ -872,7 +873,8 @@ class ControlCampaign(models.Model):
                     if generate_purchase or generate_move:
                         show_read = False
                 else:
-                    generate_purchase = record.control_line_ids.filtered(lambda e: e.type_payment != 'client' and e.state != 'no_process')
+                    generate_purchase = record.control_line_ids.filtered(
+                        lambda e: e.type_payment != 'client' and e.state != 'no_process')
                     generate_sale = record.order_ids.mapped('order_id').filtered(lambda e: e.state == 'sale')
                     if generate_purchase or generate_sale:
                         show_read = False
