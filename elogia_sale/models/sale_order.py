@@ -5,6 +5,24 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 
+class ResPartner(models.Model):
+    _inherit = "res.partner"
+
+    # trade_name = fields.Char('Trade name', index=True)
+    property_account_passive_id = fields.Many2one('account.account', company_dependent=True, string="Account Passive",
+                                                  domain="[('user_type_id.type', '=', 'other'), "
+                                                         "('user_type_id.internal_group', '=', 'liability'), "
+                                                         "('company_id', '=', current_company_id)]")
+
+    @api.constrains('vat')
+    def check_expense_account(self):
+        env_partner = self.env['res.partner']
+        for record in self:
+            obj_partner = env_partner.search([('id', '!=', record.id), ('vat', '=', record.vat)])
+            if obj_partner:
+                raise UserError(_('There is already a contact with the same VAT: {}.'.format(record.vat)))
+
+
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 

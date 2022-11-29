@@ -1476,7 +1476,7 @@ msgstr "Fecha pedido"
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting__passive_account
 msgid "Passive Account"
-msgstr "Cuenta Pasiva"
+msgstr "Cuenta tipo pasivo"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__type_payment

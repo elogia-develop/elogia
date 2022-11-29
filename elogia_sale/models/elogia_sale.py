@@ -23,13 +23,49 @@ MONTHS = ("Enero",
           "Diciembre")
 
 
+class PurchaseOrderWizard(models.TransientModel):
+    _name = 'purchase.order.wizard'
+    _description = 'Purchase Order Wizard'
+    _rec_name = 'date_order'
+
+    date_order = fields.Date('Order date', required=True, index=True)
+    description = fields.Char('Description', required=True)
+    reference = fields.Char('No. reference')
+    check_change = fields.Boolean('Change?')
+    check_error = fields.Boolean('Error')
+    list_error = fields.Char('List errors')
+
+    @api.onchange('check_change')
+    def onchange_change_wizard(self):
+        env_control = self.env['control.line.supplier']
+        if self.check_change and 'active_model' in self._context:
+            if self._context.get('active_model') == 'control.line.supplier':
+                obj_control = env_control.search([('id', 'in', self._context.get('active_ids'))])
+                control_filter = obj_control.filtered(
+                    lambda e: e.state != 'no_process' or e.type_payment == 'client' and e.control_id.state in ['pending', 'sale']) \
+                    if obj_control else False
+                if control_filter:
+                    self.check_error = True
+                    self.list_error = '{}'.format(control_filter.mapped('control_id').mapped('name'))
+
+    def action_create_order(self):
+        _logger.info('Begin: action_purchase_sale')
+        env_control = self.env['control.line.supplier']
+        if 'active_model' in self._context:
+            obj_control = env_control.search([('id', 'in', self._context.get('active_ids'))])
+            if self._context.get('active_model') == 'control.campaign.marketing':
+                obj_control = env_control.search([('control_id', 'in', self._context.get('active_ids'))])
+            if obj_control:
+                obj_control.create_purchase_order(self)
+
+
 class SaleOrderWizard(models.TransientModel):
     _name = 'sale.order.wizard'
     _description = 'Sale Order Wizard'
     _rec_name = 'date_order'
 
     date_order = fields.Date('Order date', required=True, index=True)
-    check_fee = fields.Boolean('Management Fee')
+    check_fee = fields.Boolean('Management Fee', default=True)
     description = fields.Char('Description', required=True)
     reference = fields.Char('No. reference')
     check_change = fields.Boolean('Change?')
@@ -42,7 +78,8 @@ class SaleOrderWizard(models.TransientModel):
         if self.check_change:
             obj_control = env_control.search([('id', 'in', self._context.get('active_ids'))])
             control_filter = obj_control.filtered(
-                lambda e: e.state not in ['pending', 'purchase'] or e.type_invoice != 'sale') if obj_control else False
+                lambda e: e.state not in ['pending', 'purchase'] or e.type_invoice != 'sale' or e.billed_revenue == 0) \
+                if obj_control else False
             if control_filter:
                 self.check_error = True
             self.list_error = '{}' .format(control_filter.mapped('name'))
@@ -85,7 +122,7 @@ class SaleOrderWizard(models.TransientModel):
             obj_control_ids = env_control.search([('id', 'in', self._context.get('active_ids'))])
             if obj_control_ids:
                 control_filter = obj_control_ids.filtered(
-                    lambda e: e.state in ['pending', 'purchase'] and e.type_invoice == 'sale') \
+                    lambda e: e.state in ['pending', 'purchase'] and e.type_invoice == 'sale' and e.billed_revenue != 0) \
                     if obj_control_ids else False
                 price_not_setting = (control_filter.mapped('currency_id') -
                                      env_pricelist_setting.mapped('currency_id')).mapped('name')
@@ -116,8 +153,9 @@ class SaleOrderWizard(models.TransientModel):
         for control in controls:
             if not control.billed_revenue - control.fee_revenue == 0:
                 list_line.append({'product': control.campaign_line_id.product_id,
-                                  'price': control.billed_revenue - control.fee_revenue,
+                                  'price': (control.billed_revenue - control.fee_revenue) / control.clicks,
                                   'fee': False,
+                                  'clicks': control.clicks,
                                   'control': control
                                   })
             if control.percentage_fee > 0:
@@ -127,6 +165,7 @@ class SaleOrderWizard(models.TransientModel):
                         'product': other_product[0].other_product_id,
                         'price': control.fee_revenue,
                         'fee': True,
+                        'clicks': 1,
                         'control': control
                     })
         if list_line:
@@ -140,7 +179,7 @@ class SaleOrderWizard(models.TransientModel):
                     'price_unit': line['price'],
                     'product_id': line['product'].id,
                     'product_uom': line['product'].uom_id.id,
-                    'product_uom_qty': 1,
+                    'product_uom_qty': line['clicks'],
                     'name': name_line,
                     'tax_id': [(6, 0, taxes.ids)] if taxes else False,
                     'currency_id': line['control'].currency_id.id,
@@ -164,6 +203,7 @@ class SaleOrderWizard(models.TransientModel):
         sale_order = order_obj.create(order_vals)
         if sale_order:
             sale_order.action_confirm()
+            sale_order.write({'date_order': self.date_order})
             _logger.info('Order Created')
             _logger.info(sale_order.name)
             for control in controls:
@@ -184,17 +224,16 @@ class HistoricalDateObjectives(models.Model):
 class ExpenseEntrySetting(models.Model):
     _name = 'expense.entry.setting'
     _description = 'Expense Entry Setting'
-    _rec_name = 'passive_account'
+    _rec_name = 'journal_id'
 
     company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company)
     journal_id = fields.Many2one('account.journal', 'Journal', required=True)
     expense_account = fields.Many2many('account.account', 'rel_account_expense', 'expense_id', 'account_id',
                                        string='Expense Accounts', required=True)
-    passive_account = fields.Many2one('account.account', 'Passive Account', required=True)
 
     _sql_constraints = [
-        ('passive_company_unique', 'unique (company_id, passive_account)',
-         'This passive account already has a related Expense Entry!')
+        ('journal_company_unique', 'unique (company_id, journal_id)',
+         'This journal already has a related Expense Entry!')
     ]
 
     @api.constrains('expense_account')
@@ -348,7 +387,7 @@ class ControlLineSupplier(models.Model):
                         val_tmp = record.invoice_provision * record.control_id.currency_id.rate
             record.invoice_provision_ml = val_tmp
 
-    def create_purchase_order(self):
+    def create_purchase_order(self, wizard):
         list_supplier = self.filtered(
             lambda a: a.state == 'no_process' and a.type_payment != 'client' and a.control_id.state in ['pending', 'sale'])
         if list_supplier:
@@ -358,7 +397,7 @@ class ControlLineSupplier(models.Model):
                     line_by_currency = self._group_line_by_currency(supplier_value)
                     if line_by_currency:
                         for currency_key, currency_value in line_by_currency.items():
-                            self.create_purchase(currency_value, supplier_key)
+                            self.create_purchase(wizard, currency_value, supplier_key)
                             for item in currency_value:
                                 item.state = 'process'
         for control in list_supplier.mapped('control_id'):
@@ -390,20 +429,28 @@ class ControlLineSupplier(models.Model):
                 line_by_currency[currency].append(record)
         return line_by_currency
 
-    def create_purchase(self, lines, supplier):
+    def create_purchase(self, wizard, lines, supplier):
         purchase_obj = self.env['purchase.order']
-        vals_purchase = self._prepare_vals_purchase_order(lines, supplier)
+        vals_purchase = self._prepare_vals_purchase_order(wizard, lines, supplier)
         purchase = purchase_obj.create(vals_purchase)
         lines = self._create_lines_purchase_order(purchase, lines)
         if lines:
             purchase.button_confirm()
+            purchase.write({
+                'date_order': wizard.date_order,
+                'date_approve': wizard.date_order,
+                'date_planned': wizard.date_order,
+            })
 
-    def _prepare_vals_purchase_order(self, lines, supplier):
+    def _prepare_vals_purchase_order(self, wizard, lines, supplier):
         vals = {
             'partner_id': supplier.id,
-            'origin': 'Control Campaign',
+            'partner_ref': wizard.description,
+            'origin': wizard.reference,
             'currency_id': lines[0].currency_id.id,
-            'date_planned': fields.datetime.now(),
+            'date_order': wizard.date_order,
+            'date_approve': wizard.date_order,
+            'date_planned': wizard.date_order,
             'check_vertical': True
         }
         return vals
@@ -553,6 +600,11 @@ class ControlCampaign(models.Model):
     process_sale = fields.Integer('Processed sale')
     process_move = fields.Integer('Processed move')
 
+    @api.model
+    def set_pending_tree(self):
+        for record in self.filtered(lambda e: e.state == 'draft'):
+            record.state = 'pending'
+
     def set_pending(self):
         for record in self:
             record.state = 'pending'
@@ -630,9 +682,15 @@ class ControlCampaign(models.Model):
             obj_move.action_post()
 
     def generate_purchase(self):
-        for record in self:
-            if record.control_line_ids:
-                record.control_line_ids.create_purchase_order()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Create purchase order',
+            'res_model': 'purchase.order.wizard',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'target': 'new',
+            'context': {'origin_view': 'wizard_into'}
+        }
 
     @api.onchange('campaign_id')
     def onchange_campaign_id(self):
@@ -654,7 +712,8 @@ class ControlCampaign(models.Model):
                     self.state = 'both'
                 else:
                     self.state = 'purchase'
-                    if self.type_invoice == 'account' and not self.show_move:
+                    if self.type_invoice == 'account' and not self.show_move or self.type_invoice == 'sale' \
+                            and self.billed_revenue == 0:
                         self.state = 'both'
         if 'process_sale' in vals:
             if not self.show_sale:
@@ -838,7 +897,8 @@ class ControlCampaign(models.Model):
             if record.type_invoice == 'sale':
                 if record.state in ['pending', 'purchase']:
                     show_sale = True
-                    if any(record.order_ids.mapped('order_id').filtered(lambda e: e.state == 'sale')):
+                    if any(record.order_ids.mapped('order_id').filtered(
+                            lambda e: e.state == 'sale')) or record.billed_revenue == 0:
                         show_sale = False
             record.show_sale = show_sale
 
