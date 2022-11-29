@@ -34,6 +34,16 @@ class AccountMove(models.Model):
                 move_reverse.action_post()
         return res
 
+    def write(self, vals):
+        if 'state' in vals and vals.get('state') == 'cancel':
+            purchase = self.invoice_line_ids.mapped('purchase_line_id').mapped('order_id')
+            move_reverse = purchase.move_line_ids.filtered(
+                lambda l: l.move_type == 'entry' and l.type_move == 'provision' and l.state == 'draft')
+            if move_reverse:
+                move_reverse.write({'date': datetime.today().date(), 'auto_post': False})
+                move_reverse.action_post()
+        return super(AccountMove, self).write(vals)
+
 
 class AccountMoveLine(models.Model):
     """ Override AccountInvoice_line to add the link to the purchase order line it is related to"""
@@ -82,4 +92,3 @@ class AccountMoveLine(models.Model):
                         if any(obj_control_ids.filtered(lambda e: e.state != 'draft')):
                             raise UserError(_('Account move cannot be cancelled. \n '
                                               'The related control must be in "Draft" state!'))
-

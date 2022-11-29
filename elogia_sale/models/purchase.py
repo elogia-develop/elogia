@@ -64,13 +64,16 @@ class PurchaseOrder(models.Model):
         env_setting = self.env['expense.entry.setting']
         obj_setting = env_setting.search([('company_id', '=', self.company_id.id)])
         if not obj_setting:
-            raise UserError(_('There are no configured Expense Entries created'))
+            raise UserError(_('There are no configured Expense Entries created.'))
         else:
             for record in self:
                 if record.state_expense == 'full':
                     raise UserError(_('You cannot generate an Expense Entry for an order in "Full" status.'))
                 if any(record.move_line_ids.filtered(lambda e: e.state == 'draft' and e.reversed_entry_id)):
                     raise UserError(_('You cannot generate an Expense Entry, it has moves in "Draft" status.'))
+                if not record.partner_id.property_account_passive_id:
+                    raise UserError(_('The vendor {} does not have the passive type account assigned.'
+                                      .format(record.partner_id.name)))
                 else:
                     self.generated_account_move(record, env_mov, obj_setting)
 
@@ -79,7 +82,6 @@ class PurchaseOrder(models.Model):
             'product': item.product_id,
             'line': item,
             'journal': False,
-            'passive': False,
             } for item in record.order_line
         ]
         for line in line_ids:
@@ -92,7 +94,6 @@ class PurchaseOrder(models.Model):
                 for setting in list_setting:
                     if line['product'].property_account_expense_id.id in setting['expenses']:
                         line['journal'] = setting['setting'].journal_id
-                        line['passive'] = setting['setting'].passive_account
         if line_ids:
             journal = [item['journal'] for item in line_ids]
             unique_journal = [item['journal'].name for item in line_ids]
@@ -111,59 +112,54 @@ class PurchaseOrder(models.Model):
                     'line_ids': [],
                 }
                 purchase_by_account = self._group_purchase_by_account(line_ids)
-                for purchase_key, purchase_value in purchase_by_account.items():
-                    purchase_by_passive = self._group_purchase_by_passive(purchase_value)
-                    if purchase_by_passive:
-                        for passive_key, passive_value in purchase_by_passive.items():
-                            val_amount = 0
-                            val_currency = 0
-                            if len(set([item['passive'] for item in passive_value])) == 1:
-                                if record.qty_to_invoice == record.product_qty:
-                                    val_amount = sum([item['line'].price_subtotal for item in passive_value])
-                                    val_currency = sum([item['line'].price_subtotal for item in passive_value])
-                                if record.product_qty > record.qty_to_invoice > 0:
-                                    val_amount = sum([item['line'].qty_to_invoice * item['line'].price_unit for item in passive_value])
-                                    val_currency = sum([item['line'].qty_to_invoice * item['line'].price_unit for item in passive_value])
-                                if record.currency_id != record.company_id.currency_id and record.currency_id.rate > 0:
-                                    val_amount = val_amount / record.currency_id.rate
-                                line_move = {
-                                    'account_id': purchase_key.id,
-                                    'name': record.name + ' - Accrued Expense by {}' .format(passive_value[0]['line'].account_analytic_id.name),
-                                    'partner_id': record.partner_id.id,
-                                    'control_id': passive_value[0]['line'].control_id.id,
-                                    'campaign_elogia_id': passive_value[0]['line'].campaign_elogia_id.id,
-                                    'amount_currency': val_currency,
-                                    'currency_id': record.currency_id.id,
-                                    'debit': val_amount,
-                                    'credit': 0,
-                                    'analytic_account_id': passive_value[0]['line'].account_analytic_id.id
-                                }
-                                line_expense = {
-                                    'account_id': passive_key.id,
-                                    'name': 'Total accrued',
-                                    'partner_id': record.partner_id.id,
-                                    'control_id': passive_value[0]['line'].control_id.id,
-                                    'campaign_elogia_id': passive_value[0]['line'].campaign_elogia_id.id,
-                                    'amount_currency': - val_currency,
-                                    'currency_id': record.currency_id.id,
-                                    'debit': 0,
-                                    'credit': val_amount,
-                                    'analytic_account_id': passive_value[0]['line'].account_analytic_id.id
-                                }
-                                dict_move['line_ids'].append((0, 0, line_move))
-                                dict_move['line_ids'].append((0, 0, line_expense))
-                obj_move = env_mov.with_context(check_move_validity=False).create(dict_move)
-                if obj_move:
-                    record.move_line_ids += obj_move
-                    record.message_post(body=_("Created move: {}") .format(obj_move.ref))
-                    obj_move._post()
-                    reverse_move = obj_move._reverse_moves(default_values_list=[{
-                        'ref': _('Reversal of: %s', obj_move.ref),
-                        'date': record.date_planned + relativedelta(years=100),
-                    }])
-                    reverse_move.write({'date': record.date_planned + relativedelta(years=100)})
-                    reverse_move._post()
-                    record.move_line_ids += reverse_move
+                if purchase_by_account:
+                    for purchase_key, purchase_value in purchase_by_account.items():
+                        val_amount = 0
+                        val_currency = 0
+                        if len(set([item['product'].property_account_expense_id for item in purchase_value])) == 1:
+                            if record.qty_to_invoice == record.product_qty:
+                                val_amount = sum([item['line'].price_subtotal for item in purchase_value])
+                                val_currency = sum([item['line'].price_subtotal for item in purchase_value])
+                            if record.product_qty > record.qty_to_invoice > 0:
+                                val_amount = sum([item['line'].qty_to_invoice * item['line'].price_unit for item in purchase_value])
+                                val_currency = sum([item['line'].qty_to_invoice * item['line'].price_unit for item in purchase_value])
+                            if record.currency_id != record.company_id.currency_id and record.currency_id.rate > 0:
+                                val_amount = val_amount / record.currency_id.rate
+                            line_move = {
+                                'account_id': purchase_key.id,
+                                'name': record.name + ' - Accrued Expense by {}' .format(purchase_value[0]['line'].account_analytic_id.name),
+                                'partner_id': record.partner_id.id,
+                                'control_id': purchase_value[0]['line'].control_id.id,
+                                'campaign_elogia_id': purchase_value[0]['line'].campaign_elogia_id.id,
+                                'amount_currency': val_currency,
+                                'currency_id': record.currency_id.id,
+                                'debit': val_amount,
+                                'credit': 0,
+                                'analytic_account_id': purchase_value[0]['line'].account_analytic_id.id
+                            }
+                            dict_move['line_ids'].append((0, 0, line_move))
+                    line_expense = {
+                        'account_id': record.partner_id.property_account_passive_id.id,
+                        'name': 'Total accrued',
+                        'partner_id': record.partner_id.id,
+                        'amount_currency': - sum([item[2]['amount_currency'] for item in dict_move['line_ids']]),
+                        'currency_id': record.currency_id.id,
+                        'debit': 0,
+                        'credit': sum([item[2]['debit'] for item in dict_move['line_ids']])
+                    }
+                    dict_move['line_ids'].append((0, 0, line_expense))
+                    obj_move = env_mov.with_context(check_move_validity=False).create(dict_move)
+                    if obj_move:
+                        record.move_line_ids += obj_move
+                        record.message_post(body=_("Created move: {}") .format(obj_move.ref))
+                        obj_move._post()
+                        reverse_move = obj_move._reverse_moves(default_values_list=[{
+                            'ref': _('Reversal of: %s', obj_move.ref),
+                            'date': record.date_planned + relativedelta(years=100),
+                        }])
+                        reverse_move.write({'date': record.date_planned + relativedelta(years=100)})
+                        reverse_move._post()
+                        record.move_line_ids += reverse_move
 
     def _group_purchase_by_account(self, lines):
         """"
@@ -177,19 +173,6 @@ class PurchaseOrder(models.Model):
             else:
                 purchase_by_account[account].append(record)
         return purchase_by_account
-
-    def _group_purchase_by_passive(self, lines):
-        """"
-        Function to group the purchase by passive
-        """
-        purchase_by_passive = {}
-        for record in lines:
-            passive = record['passive']
-            if passive not in purchase_by_passive:
-                purchase_by_passive[passive] = [record]
-            else:
-                purchase_by_passive[passive].append(record)
-        return purchase_by_passive
 
 
 class PurchaseOrderLine(models.Model):
