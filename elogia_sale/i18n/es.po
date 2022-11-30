@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0+e-20221018\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 21:57+0000\n"
-"PO-Revision-Date: 2022-11-22 21:57+0000\n"
+"POT-Creation-Date: 2022-11-29 23:52+0000\n"
+"PO-Revision-Date: 2022-11-29 23:52+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -152,6 +152,12 @@ msgstr "Permiso de acceso"
 #: model_terms:ir.ui.view,arch_db:elogia_sale.control_campaign_marketing_search
 msgid "Account"
 msgstr "Asiento contable"
+
+#. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_res_partner__property_account_passive_id
+#: model:ir.model.fields,field_description:elogia_sale.field_res_users__property_account_passive_id
+msgid "Account Passive"
+msgstr "Cuenta tipo pasivo"
 
 #. module: elogia_sale
 #: code:addons/elogia_sale/models/account_move.py:0
@@ -387,6 +393,7 @@ msgid "Campaigns"
 msgstr "Campañas"
 
 #. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.purchase_order_elogia_wizard_form
 #: model_terms:ir.ui.view,arch_db:elogia_sale.sale_order_elogia_wizard_form
 msgid "Cancel"
 msgstr "Cancelar"
@@ -400,6 +407,7 @@ msgstr "Cancelado"
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__check_change
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__check_change
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_wizard__check_change
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__check_change
 msgid "Change?"
 msgstr "Cambio?"
@@ -470,6 +478,11 @@ msgid "Consumed Fee"
 msgstr "Consumido fee"
 
 #. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_account_move_line__control_id
 #: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__control_id
 #: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_line__control_id
@@ -513,6 +526,7 @@ msgid "Control lines"
 msgstr "Línea de control"
 
 #. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.purchase_order_elogia_wizard_form
 #: model_terms:ir.ui.view,arch_db:elogia_sale.sale_order_elogia_wizard_form
 msgid "Controls"
 msgstr "Control"
@@ -563,6 +577,7 @@ msgid "Count objectives"
 msgstr "Cant. Objetivos"
 
 #. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.purchase_order_elogia_wizard_form
 #: model_terms:ir.ui.view,arch_db:elogia_sale.sale_order_elogia_wizard_form
 msgid "Create"
 msgstr "Crear"
@@ -613,7 +628,7 @@ msgid "Create move"
 msgstr "Crear asiento"
 
 #. module: elogia_sale
-#: model:ir.actions.server,name:elogia_sale.action_control_line_supplier_campaign
+#: model:ir.actions.act_window,name:elogia_sale.action_control_line_supplier_campaign
 msgid "Create purchase order"
 msgstr "Crear pedido de compra"
 
@@ -635,6 +650,7 @@ msgstr "Crear pedido de venta"
 #: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__create_uid
 #: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__create_uid
 #: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__create_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_wizard__create_uid
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__create_uid
 msgid "Created by"
 msgstr "Creado por"
@@ -660,6 +676,7 @@ msgstr "Asiento contable creado: {}"
 #: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__create_date
 #: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__create_date
 #: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__create_date
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_wizard__create_date
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__create_date
 msgid "Created on"
 msgstr "Creado el"
@@ -751,6 +768,7 @@ msgstr "Débito (Factura)"
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_line__name
 #: model:ir.model.fields,field_description:elogia_sale.field_control_campaign_marketing__name
 #: model:ir.model.fields,field_description:elogia_sale.field_objective_campaign_marketing__name
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_wizard__description
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__description
 msgid "Description"
 msgstr "Descripción"
@@ -774,6 +792,7 @@ msgstr "Diferentes diarios: {} están configurados para el pedido de compra {}"
 #: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__display_name
 #: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__display_name
 #: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__display_name
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_wizard__display_name
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__display_name
 msgid "Display Name"
 msgstr "Nombre mostrado"
@@ -790,6 +809,7 @@ msgid "Due Date"
 msgstr "Fecha vencimiento"
 
 #. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_wizard__check_error
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__check_error
 msgid "Error"
 msgstr "Error"
@@ -957,6 +977,7 @@ msgstr "Histórico fecha objetivos"
 #: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__id
 #: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__id
 #: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__id
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_wizard__id
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__id
 msgid "ID"
 msgstr "ID"
@@ -1080,6 +1101,7 @@ msgstr "KPIS"
 #: model:ir.model.fields,field_description:elogia_sale.field_period_campaign____last_update
 #: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting____last_update
 #: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting____last_update
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_wizard____last_update
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard____last_update
 msgid "Last Modified on"
 msgstr "Última modificación el"
@@ -1097,6 +1119,7 @@ msgstr "Última modificación el"
 #: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__write_uid
 #: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__write_uid
 #: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__write_uid
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_wizard__write_uid
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__write_uid
 msgid "Last Updated by"
 msgstr "Última actualización por"
@@ -1114,6 +1137,7 @@ msgstr "Última actualización por"
 #: model:ir.model.fields,field_description:elogia_sale.field_period_campaign__write_date
 #: model:ir.model.fields,field_description:elogia_sale.field_pricelist_setting__write_date
 #: model:ir.model.fields,field_description:elogia_sale.field_product_fee_setting__write_date
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_wizard__write_date
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__write_date
 msgid "Last Updated on"
 msgstr "Última actualización en"
@@ -1161,6 +1185,7 @@ msgid "Line suppliers"
 msgstr "Líneas de proveedores"
 
 #. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_wizard__list_error
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__list_error
 msgid "List errors"
 msgstr "Lista errores"
@@ -1357,6 +1382,7 @@ msgid "No Purchase Order to display"
 msgstr "No hay Pedidos de compra que mostrar"
 
 #. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_wizard__reference
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__reference
 msgid "No. reference"
 msgstr "No. referencia"
@@ -1469,14 +1495,10 @@ msgid "Order Line"
 msgstr "Línea pedido compra"
 
 #. module: elogia_sale
+#: model:ir.model.fields,field_description:elogia_sale.field_purchase_order_wizard__date_order
 #: model:ir.model.fields,field_description:elogia_sale.field_sale_order_wizard__date_order
 msgid "Order date"
 msgstr "Fecha pedido"
-
-#. module: elogia_sale
-#: model:ir.model.fields,field_description:elogia_sale.field_expense_entry_setting__passive_account
-msgid "Passive Account"
-msgstr "Cuenta tipo pasivo"
 
 #. module: elogia_sale
 #: model:ir.model.fields,field_description:elogia_sale.field_campaign_marketing_elogia__type_payment
@@ -1697,6 +1719,11 @@ msgid "Purchase Order Line"
 msgstr "Línea de pedido de compra"
 
 #. module: elogia_sale
+#: model:ir.model,name:elogia_sale.model_purchase_order_wizard
+msgid "Purchase Order Wizard"
+msgstr "Pedido Compra Wziard"
+
+#. module: elogia_sale
 #: model:ir.actions.act_window,name:elogia_sale.action_purchase_order_inherit_expense_elogia
 #: model:ir.model.fields,field_description:elogia_sale.field_control_line_supplier__order_id
 msgid "Purchase order"
@@ -1844,6 +1871,11 @@ msgid "Security Token"
 msgstr "Token de seguridad"
 
 #. module: elogia_sale
+#: model:ir.actions.server,name:elogia_sale.action_control_set_pending
+msgid "Set to pending"
+msgstr "Pasar a Pediente procesar"
+
+#. module: elogia_sale
 #: model:ir.ui.menu,name:elogia_sale.campaign_marketing_menu_item_last
 msgid "Settings"
 msgstr "Configuración"
@@ -1930,6 +1962,12 @@ msgid "Suppliers"
 msgstr "Proveedores"
 
 #. module: elogia_sale
+#: code:addons/elogia_sale/models/purchase.py:0
+#, python-format
+msgid "The vendor {} does not have the passive type account assigned."
+msgstr "El proveedor no tiene asignada cuenta tipo pasivo"
+
+#. module: elogia_sale
 #: code:addons/elogia_sale/models/elogia_sale.py:0
 #, python-format
 msgid ""
@@ -1974,8 +2012,8 @@ msgstr "¡No existen líneas de campaña creadas en esta campaña!"
 #. module: elogia_sale
 #: code:addons/elogia_sale/models/purchase.py:0
 #, python-format
-msgid "There are no configured Expense Entries created"
-msgstr "No hay entradas de gastos configuradas"
+msgid "There are no configured Expense Entries created."
+msgstr "No hay entradas de gastos configuradas."
 
 #. module: elogia_sale
 #: code:addons/elogia_sale/models/elogia_sale.py:0
@@ -1988,6 +2026,12 @@ msgstr "¡No existen líneas de facturas creadas en esta campaña!"
 #: model_terms:ir.actions.act_window,help:elogia_sale.action_objective_campaign_sum_marketing
 msgid "There are no objectives to display!"
 msgstr "¡No existen objetivos para mostrar!"
+
+#. module: elogia_sale
+#: code:addons/elogia_sale/models/sale_order.py:0
+#, python-format
+msgid "There is already a contact with the same VAT: {}."
+msgstr "Existe un contacto con el mismo VAT: {}."
 
 #. module: elogia_sale
 #: model:ir.model.constraint,message:elogia_sale.constraint_campaign_accounting_setting_company_unique
@@ -2036,8 +2080,8 @@ msgid ""
 msgstr "Esta es la fuente del enlace"
 
 #. module: elogia_sale
-#: model:ir.model.constraint,message:elogia_sale.constraint_expense_entry_setting_passive_company_unique
-msgid "This passive account already has a related Expense Entry!"
+#: model:ir.model.constraint,message:elogia_sale.constraint_expense_entry_setting_journal_company_unique
+msgid "This journal already has a related Expense Entry!"
 msgstr "Esta cuenta pasiva ya tiene una entrada de gastos relacionada!"
 
 #. module: elogia_sale
@@ -2307,6 +2351,7 @@ msgid "sum(Fee revenue of controls * rate currency)"
 msgstr "= sum(Ingreso fee de controles)"
 
 #. module: elogia_sale
+#: model_terms:ir.ui.view,arch_db:elogia_sale.purchase_order_elogia_wizard_form
 #: model_terms:ir.ui.view,arch_db:elogia_sale.sale_order_elogia_wizard_form
 msgid "that cannot be processed."
 msgstr "no puede se procesado."
